@@ -1,0 +1,25 @@
+NAME
+        export-lib - exports bindings or context patterns from UNIE's library
+                     of definitions to file.
+
+SYNOPSIS
+        export-lib FILE_PATH [OPTION]
+
+DESCRIPTION
+
+OPTIONS
+        If no option is specified, all context and term bindings are exported 
+        to the specified file.
+
+        CTX_KIND 
+                Exports cost-equivalent context patterns of the specified 
+                context kind.
+        -ctxs   Exports all context bindings.
+        -terms  Exports all term bindings.
+     
+EXAMPLES
+
+NOTES
+
+SEE ALSO
+        CTX_KIND, FILE_PATH

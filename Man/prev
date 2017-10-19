@@ -1,0 +1,47 @@
+NAME
+        prev - moves the focus to the previous let binding or case alternative.
+
+SYNOPSIS
+        prev
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+        
+        Focussing on the previous let binding:
+            
+            unie> trans $let { x = 1; y = 2 } in x$
+            Information: transformation started.
+            let x = 1
+                y = 2
+            in x
+            [1]> left
+            ≡ x = 1
+            [2]> next
+            ≡ y = 2
+            [3]> prev
+            ≡ x = 1
+
+        Focussing on the previous case alternative:
+            
+            unie> trans $case xs of { (y :: ys) ➞ y; [] ➞ "error" } $
+            Information: transformation started.
+            case xs of 
+             (y :: ys) ➞ y
+             []        ➞ "error"
+            [1]> right
+            ≡ (y :: ys) ➞ y
+            [2]> next
+            ≡ [] ➞ "error"
+            [3]> prev
+            ≡ (y :: ys) ➞ y
+
+
+NOTES
+        prev is only available when UNIE is in TRANS or TRANSCRIPT mode, and
+        when focussed on a let binding or case alternative.
+
+SEE ALSO
+        left, next, rhs, right

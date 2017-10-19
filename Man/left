@@ -1,0 +1,45 @@
+NAME
+        left - moves the focus to the current node's left child node.
+
+SYNOPSIS
+        left
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+        
+        Focussing on an application's function:
+            
+            unie> trans $(λx.λy.x) a$
+            Information: transformation started.
+            (λx.λy.x) a
+            [1]> left
+            ≡ (λx.λy.x)
+
+        Focussing on a case statement's scrutinee:
+            
+            unie> trans $case xs of { (y :: ys) ➞ y; [] ➞ "error" } $
+            Information: transformation started.
+            case xs of 
+             (y :: ys) ➞ y
+             []        ➞ "error"
+            [1]> left
+            ≡ xs
+
+        Focussing on a let statement's first binding:
+            
+            unie> trans $let { x = 1; y = 2 } in x$
+            Information: transformation started.
+            let x = 1
+                y = 2
+            in x
+            [1]> left
+            ≡ x = 1
+
+NOTES
+        left is only available when UNIE is in TRANS or TRANSCRIPT mode.
+
+SEE ALSO
+        next, prev, rhs, right

@@ -1,0 +1,46 @@
+ESC[1mNAMEESC[m
+        zoom-out - restores focus to the full term but keeps focus
+                   highlighting active.
+      
+ESC[1mSYNOPSISESC[m
+        zoom-out
+     
+ESC[1mEXAMPLESESC[m
+        Turning on focus highlighting, navigating to a let statement's 
+        second binding, zooming in, and then zooming out:
+   
+            unie> trans $let { x = 1; y = 2 } in x$
+            let x = 1
+                y = 2
+            in x
+            [1]> highlight ON
+            Info: focus highlighting on.
+            ESC[30mESC[48;5;252mlet x = 1ESC[m
+                ESC[30mESC[48;5;252my = 2ESC[m
+            ESC[30mESC[48;5;252min xESC[m
+            [1]> left
+            ≡
+            let ESC[30mESC[48;5;252mx = 1ESC[m
+                y = 2
+            in x
+            [2]> next
+            ≡
+            let x = 1
+                ESC[30mESC[48;5;252my = 2ESC[m
+            in x
+            [3]> zoom-in
+            ESC[30mESC[48;5;252my = 2ESC[m
+            [3]> zoom-out
+            let x = 1
+                ESC[30mESC[48;5;252my = 2ESC[m
+            in x
+    
+ESC[1mNOTESESC[m
+        zoom-out is only available when UNIE is in TRANS or TRANSCRIPT 
+        MODE, and when focus highlighting is active.
+    
+ESC[1mSEE ALSOESC[m
+        MODE, highlight, zoom-in
+    
+    
+October 2017.

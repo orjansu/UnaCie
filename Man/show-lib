@@ -1,0 +1,38 @@
+NAME
+        show-lib - displays the contents of UNIE's library of definitions.
+
+SYNOPSIS
+        show-lib [OPTION]
+
+DESCRIPTION
+
+OPTIONS
+        If no option is specified, the identifiers of all context and term 
+        bindings are displayed, followed by all cost-equivalent context 
+        patterns.
+
+        CTX_KIND
+                Displays cost-equivalent context patterns of the specified 
+                context kind.
+        SRC_NAME
+                Displays the binding whose identifier matches the specified 
+                source name.
+        -ctxs   Displays the identifiers of all context bindings.
+        -ctx-eqs
+                Displays all cost-equivalent context patterns.
+        -defs   Displays the identifiers of all context and term bindings.
+        -terms  Displays the identifiers of all term bindings.
+
+EXAMPLES
+
+        Adding and showing a term binding:
+
+            unie> add-lib $foo = \x.x$
+            Information: library updated.
+            unie> show-lib 'foo
+            foo = \x.x
+
+NOTES
+
+SEE ALSO
+        CTX_KIND, SRC_NAME

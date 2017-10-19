@@ -1,0 +1,10 @@
+let 
+   (++) = λxs.λys.case xs of
+          []      ➞ ys
+          (z::zs) ➞ let rs = zs ++ ys in (z::rs)
+ 
+   reverse = let f = λxs.λys.case xs of 
+                      []      ➞ ys
+                      (z::zs) ➞ let ws = (z::ys) in f zs ws
+             in λxs.f xs []
+in reverse [1..10]

@@ -1,0 +1,25 @@
+NAME
+        import-lib - imports bindings and context patterns into UNIE's library 
+                     of definitions from file.
+
+SYNOPSIS
+        import-lib FILE_PATH [OPTION]
+
+DESCRIPTION
+
+OPTIONS
+        If no option is specified, the file is assumed to contain both context 
+        and term bindings, and they are imported accordingly.
+
+        CTX_KIND
+                Imports cost-equivalent context patterns under the assumption 
+                that they are of the specified context kind.
+        -ctxs   Imports context bindings.
+        -terms  Imports term bindings.
+
+EXAMPLES
+
+NOTES
+
+SEE ALSO
+        CTX_KIND, FILE_PATH 

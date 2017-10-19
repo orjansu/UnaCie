@@ -1,0 +1,51 @@
+ESC[1mNAMEESC[m    MODE - UNIE's different modes of operation.
+
+ESC[1mDESCRIPTIONESC[m
+        UNIE has four different modes of operation, which it transitions
+        between automatically when various commands are invoked by the user:
+
+        INITIAL
+                UNIE's base mode of operation. UNIE starts in this mode,
+                and will return to it each time it starts up.
+        TRANS
+                UNIE enters its transformation mode when a term is being 
+                transformed. A transformation is initiated using the 
+                trans command. UNIE leaves this mode when the user ends a 
+                transformation using end-trans.
+        SCRIPT
+                UNIE enters its script mode when a script is run using the
+                run-script or load-script commands. Script mode is exited
+                when the last active script is closed by with the exit-script 
+                command.
+
+        TRANSCRIPT
+                TRANSCRIPT = TRANS + SCRIPT.
+
+        The current mode of operation dictates how UNIE responds to certain 
+        commands. For example, navigation commands such as left and right
+        are only available during TRANS or TRANSCRIPT mode, as they are used
+        to navigate the AST of a term being transformed. Similarly exit-script
+        is only available if a script is active i.e., when UNIE is in SCRIPT or
+        TRANSCRIPT mode. Some commands are available in all modes of operation, 
+        for example, the quit command.
+
+        The information displayed by UNIE also depends on its current mode of 
+        operation. In its TRANS or TRANSCRIPT mode, UNIE will display the
+        focussed term under transformation, either in isolation from the 
+        remainder of the AST, or highlighted in position, depending on the 
+        highlighting settings selected by the user. In SCRIPT mode, the active
+        script will be displayed at the top of the terminal, along with the
+        name of the script command that will be executed next.
+
+        An important point regarding special input. In INITIAL mode, if the 
+        user presses the return key without specifying any input, UNIE
+        will simply echo an empty line back at them (just as if they were in
+        a standard shell). However, when in SCRIPT OR TRANSCRIPT mode, pressing 
+        the return key without any input will execute the next script command.
+
+        Note the user cannot manually instruct UNIE to enter a particular
+        mode of operation. Rather these transitions should be seen as
+        side effects of invoked commands.
+   
+   
+October 2017.

@@ -1,0 +1,43 @@
+NAME
+        rhs - moves the focus to the right-hand side of a let binding or case 
+              alternative.
+
+SYNOPSIS
+        rhs
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+        
+        Focussing on the right-hand side of a let binding:
+            
+            unie> trans $let { x = 1; y = 2 } in x$
+            Information: transformation started.
+            let x = 1
+                y = 2
+            in x
+            [1]> left
+            ≡ x = 1
+            [2]> rhs
+            ≡ 1
+           
+        Focussing on the right-hand side of a case alternative:
+            
+            unie> trans $case xs of { (y :: ys) ➞ y; [] ➞ "error" } $
+            Information: transformation started.
+            case xs of 
+             (y :: ys) ➞ y
+             []        ➞ "error"
+            [1]> right
+            ≡ (y :: ys) ➞ y
+            [2]> rhs
+            ≡ y
+
+NOTES
+        rhs is only available when UNIE is in TRANS or TRANSCRIPT mode, and
+        when focussed on a let binding or case alternative.
+
+SEE ALSO
+        left, next, prev, right

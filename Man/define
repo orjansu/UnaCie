@@ -1,0 +1,49 @@
+NAME
+        define - uses the term under transformation to define a binding to add 
+                 to UNIE's library of definitions. Once added, the new binding 
+                 is subsequently unapplied.
+
+SYNOPSIS
+        define [OPTION]
+
+DESCRIPTION
+
+OPTIONS
+        TERM_SRC_NAME
+                Uses the term under transformation as the binding's associated 
+                definition and the specified source name as the binding's 
+                identifier.
+        CVAR    Uses the CVAR's substitution to calculate a context definition
+                from the term under transformation. The CVAR's kind prefix
+                and identifier are then used in conjunction with this definition 
+                to define the context binding.
+
+EXAMPLES
+
+        Defining a term binding:
+
+            unie> trans $\x.x$
+            Information: transformation started.
+            \x.x
+            [1]> define 'foo
+            Information: library updated.
+            ≡ foo
+            [2]> show-lib 'foo
+            foo = \x.x
+
+        Defining a context binding:
+
+            unie> trans $\x.x$
+            Information: transformation started.
+            \x.x
+            [1]> define $V_Foo[x]$
+            Information: library updated.
+            ≡ V_Foo[x]
+            [2]> show-lib 'Foo
+            V_Foo = \x.[-]
+
+NOTES   
+        define is only available when UNIE is in TRANS or TRANSCRIPT mode.
+
+SEE ALSO
+        CVAR, TERM_SRC_NAME, TRANS, TRANSCRIPT, unapply

@@ -1,0 +1,100 @@
+quit
+man
+help
+quit
+help
+man highlight
+man help
+man
+quit
+:q
+quit
+!
+run-script "./Improvement scripts/exec-all"
+quit
+highlight ON
+highlight on
+end-trans
+reset-active-script
+highlight ON
+run-script "./Improvement scripts/exec-all"
+quit
+highlight ON
+run-script "./Improvement scripts/exec-all"
+highlight-on
+highlight on
+run-script "./Improvement scripts/exec-all"
+!
+run-script "./Improvement scripts/exec-all"
+quit
+!
+run-script "./Improvement scripts/exec-all"
+quit
+!
+run-script "./improvement scripts/reverse_cond_2"
+quit
+qui
+!
+run-script "./improvement scripts/reverse_cond_2"
+quit
+!
+run-script "./improvement scripts/reverse_cond_2"
+quit
+!
+run-script "./Improvement scripts/exec-all"
+quit
+run-script "./Improvement scripts/exec-all"
+quit
+!
+run-script "./Improvement scripts/exec-all"
+quit
+qut
+exit-script
+end-trans
+prev-cmd
+exit-script
+export-script ./rev_cond_2
+prev-cmd
+up
+rename-binder bs ys
+right
+rename-binder as xs
+back-hist
+show-lib 'Rep
+up
+rename-binder bs y
+right
+rename-binder bs y
+rename-binder as x
+next-cmd
+prev-cmd
+show-lib 'Rep
+import-lib eval ./libs/reverse_eval_cec
+prev-cmd
+show-lib eval
+import-lib eval ./libs/reverse_eval_cec
+del-lib eval
+show-lib
+prev-cmd
+exit-script
+prev-cmd
+end-trans
+exit-script
+back-hist
+prev-cmd
+import-lib eval ./libs/reverse_eval_cec
+prev-cmd
+exit-script
+run-script "./improvement scripts/exec-all"
+quit
+end-trans
+exit-script
+main
+exit-script
+export-lib eval ./test_lib
+add-lib EVAL $[-] ++ LIST$
+prev-cmd
+run-script "./improvement scripts/exec-all"
+quit
+qui
+:q

@@ -1,0 +1,19 @@
+NAME
+        reload-active-script - sets the command to be executed next as the 
+                               active script's first command.
+SYNOPSIS
+        reload-active-script
+
+DESCRIPTION
+
+OPTIONS
+
+
+EXAMPLES
+
+NOTES
+        reload-active-script is only available when UNIE is in SCRIPT or 
+        TRANSCRIPT mode.
+
+SEE ALSO
+        SCRIPT, TRANSCRIPT

@@ -1,0 +1,37 @@
+ESC[1mNAMEESC[m    PROP - a proof proposition.
+    
+ESC[1mDESCRIPTIONESC[m
+        Proof propositions can be passed as arguments to UNIE's trans 
+        command. They are used to initiate a program transformation that 
+        corresponds to an improvement proof.
+   
+        Supplying a proposition will initialise the global relation
+        and transformation goal for that proof.
+   
+        The global relation G will ensure that the operator of any 
+        transformation rule applied during that proof implies G.
+   
+        The user will be notified when the goal is reached. 
+          
+ESC[1mSYNTAXESC[m  Proof propositions have the following syntax:
+    
+        <TERM_SRC_CODE | TERM_SRC_NAME> 
+    
+                     <REL> 
+    
+        <TERM_SRC_CODE | TERM_SRC_NAME>
+     
+ESC[1mEXAMPLESESC[m
+        $x$ I $y$
+       
+        'foo WCE 'bar
+     
+        'foo WI $let x = 1 in x$
+           
+        $λx.x CE 'bar
+      
+ESC[1mSEE ALSOESC[m
+        REL, TERM_SRC_CODE, TERM_SRC_NAME
+    
+    
+October 2017.

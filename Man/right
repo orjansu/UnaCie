@@ -1,0 +1,43 @@
+NAME
+        right - moves the focus to the current node's right child node.
+
+SYNOPSIS
+        right
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+        
+        Focussing on a lambda's body:
+            
+            unie> trans $λx.λy.x$
+            Information: transformation started.
+            λx.λy.x
+            [1]> right
+            ≡ λy.x
+
+        Focussing on the first alternative of a case statement:
+            
+            unie> trans $case xs of { (y :: ys) ➞ y; [] ➞ "error" } $
+            Information: transformation started.
+            case xs of 
+             (y :: ys) ➞ y
+             []        ➞ "error"
+            [1]> right
+            ≡ (y :: ys) ➞ y
+
+        Focussing on an application's argument:
+            
+            unie> trans $(λx.λy.x) a$
+            Information: transformation started.
+            (λx.λy.x) a
+            [1]> right
+            ≡ a
+
+NOTES
+        right is only available when UNIE is in TRANS or TRANSCRIPT mode.
+
+SEE ALSO
+        left, next, prev, rhs

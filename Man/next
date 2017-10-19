@@ -1,0 +1,42 @@
+NAME
+        next - moves the focus to the next let binding or case alternative.
+
+SYNOPSIS
+        next
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+        
+        Focussing on the next let binding:
+            
+            unie> trans $let { x = 1; y = 2 } in x$
+            Information: transformation started.
+            let x = 1
+                y = 2
+            in x
+            [1]> left
+            ≡ x = 1
+            [2]> next
+            ≡ y = 2
+           
+        Focussing on the next case alternative:
+            
+            unie> trans $case xs of { (y :: ys) ➞ y; [] ➞ "error" } $
+            Information: transformation started.
+            case xs of 
+             (y :: ys) ➞ y
+             []        ➞ "error"
+            [1]> right
+            ≡ (y :: ys) ➞ y
+            [2]> next
+            ≡ [] ➞ "error"
+
+NOTES
+        next is only available when UNIE is in TRANS or TRANSCRIPT mode, and
+        when focussed on a let binding or case alternative.
+
+SEE ALSO
+        left, prev, rhs, right

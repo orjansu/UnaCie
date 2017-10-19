@@ -1,0 +1,41 @@
+NAME
+        add-lib - adds a binding or context pattern to UNIE's library of 
+                  definitions.
+
+SYNOPSIS
+        add-lib [OPTION]
+
+DESCRIPTION
+
+OPTIONS
+        CTX_BINDING
+                Adds the specified context binding.
+        CTX_KIND CTX_PAT
+                Adds the specified cost-equivalent context pattern under the
+                assumption that it is of the specified context kind.
+        TERM_BINDING
+                Adds the specified term binding.
+
+EXAMPLES
+
+        Adding a context binding:
+
+            unie> add-lib $V_Foo = \x.[-]$
+            Information: library updated.
+
+        Adding a term binding:
+
+            unie> add-lib $foo = \x.x$
+            Information: library updated.
+
+        Adding an evaluation cost-equivalent context pattern:
+
+            unie> add-lib EVAL $[-] ++ _$
+            Information: library updated.
+
+NOTES
+        When added, a binding will overwrite a previous binding with the same 
+        identifier without warning.
+
+SEE ALSO
+        CTX_BINDING, CTX_KIND, CTX_PAT, TERM_BINDING

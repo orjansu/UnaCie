@@ -1,0 +1,22 @@
+ESC[1mNAMEESC[m    help - prints help menus.
+      
+ESC[1mSYNOPSISESC[m
+        help [OPTION]
+     
+ESC[1mOPTIONSESC[m
+        If no option is specified, the main help menu is printed.
+    
+        HELP_MENU
+                Displays the specified help menu.
+   
+ESC[1mEXAMPLESESC[m
+        help
+        help CONTEXTS
+        help NAVIGATION
+        help SCRIPTS
+  
+ESC[1mSEE ALSOESC[m
+        HELP_MENU
+   
+   
+October 2017.

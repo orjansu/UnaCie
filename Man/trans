@@ -1,0 +1,55 @@
+ESC[1mNAMEESC[m
+        trans - initiates a program transformation.
+    
+ESC[1mSYNOPSISESC[m
+        trans OPTION
+   
+ESC[1mOPTIONSESC[m
+        trans TERM_SRC_CODE
+        trans TERM_SRC_NAME
+        trans PROP
+   
+ESC[1mEXAMPLESESC[m
+        Transformation a simple term:
+
+            unie> trans $x$
+            Info: transformation started.
+            x
+
+        Transforming a term stored in the library:
+
+            unie> add-lib $foo = λx.x$
+            Info: library updated.
+            unie> trans 'foo
+            Info: transformation started.
+            λx.x
+
+        Transforming using a proposition:
+
+            unie> trans $x$ I $let { x = 1 } in x$
+            Global relation set: ≳
+            Transformation goal set: let x = 1 in x
+            Info: transformation started.
+            x
+
+        Transforming using a proposition that refers to terms
+        stored in the library:
+
+            unie> add-lib $foo = λx.x$
+            Info: library updated.
+            unie> add-lib $bar = let x = 1 in x$
+            Info: library updated.
+            unie> trans 'foo WCE 'bar
+            Global relation set: ⪅⪆
+            Transformation goal set: let x = 1 in x
+            Info: transformation started.
+            λx.x
+       
+ESC[1mNOTESESC[m   trans is only available when UNIE is in INITIAL or 
+        SCRIPT MODE.
+   
+ESC[1mSEE ALSOESC[m
+        MODE, PROP, TERM_SRC_CODE, TERM_SRC_NAME, end-trans
+           
+   
+October 2017.

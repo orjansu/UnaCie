@@ -1,0 +1,21 @@
+NAME
+        show-active-script - displays the sequence of commands that make up
+                             the active command script.
+SYNOPSIS
+        show-active-script
+
+DESCRIPTION
+
+OPTIONS
+
+
+EXAMPLES
+
+NOTES
+        The command to be executed next is highlighted.
+
+        show-active-script is only available when UNIE is in SCRIPT or 
+        TRANSCRIPT mode.
+
+SEE ALSO
+        SCRIPT, TRANSCRIPT

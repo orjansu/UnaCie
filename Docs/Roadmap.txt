@@ -1,0 +1,196 @@
+
+-------------------------------------------------------------------------------
+/src:
+-------------------------------------------------------------------------------
+
+CtxEqLib:                                                                                     OKAY
+---------
+Library of cost-equivalent context (patterns).                                                
+
+ProofTacticParam:                                                                             OKAY
+-----------------
+Data types (basically bindings) for proof tactic parameters, e.g., for
+specifying parameters to improvement induction. Parameters are provided as a 
+list of instantiations: p_i := s_i.
+
+Normalisation:
+--------------
+Normalise syntax as per the paper.
+
+Subst:
+------
+Term and context substitution.
+
+Runners:
+--------
+Runners for monads TM, T and R.
+
+
+-------------------------------------------------------------------------------
+/src/AST:
+-------------------------------------------------------------------------------
+
+CtxAST:                                                                                       OKAY
+-------
+Data types for the abstract syntax manipulated by UNIE, relates to source
+language.
+
+CtxPatAST:                                                                                    OKAY
+----------
+Data types for context pattern abstract syntax (shorthand notation for 
+contexts).
+
+CtxKind:                                                                                      OKAY
+--------
+Data types for context kinds (standard, value etc.).
+
+
+
+-------------------------------------------------------------------------------
+/src/Parsing:
+-------------------------------------------------------------------------------
+
+IndentationParserLib:                                                                         OKAY
+---------------------
+Indentation parser combinators from Hutton's parsing paper.
+
+SourceParserLib:                                                                              OKAY
+----------------
+Parsers for consuming source language generically, abstracts out commonalities
+between parsing for CtxAST and parsing for CtxPatAST.
+
+CtxParser:                                                                                    OKAY
+----------
+Parser for CtxAST.
+
+CtxPatParser:                                                                                 OKAY
+------------
+Parser for CtxPastAST.
+
+
+
+-------------------------------------------------------------------------------
+/src/Printing:
+-------------------------------------------------------------------------------
+
+PPLib:                                                                                        EXTEND WITH OTHER PRINT FNS.
+------
+Library of pretty printing functions, used by CtxPP and CtxPatPP.              
+
+CtxPP:                                                                                        OKAY
+------
+Pretty printing for CtxAST.              
+
+CtxPatPP:                                                                                     OKAY
+---------
+Pretty printing for CtxPatAST.
+
+
+
+-------------------------------------------------------------------------------
+/src/CtxPatternMatching:
+-------------------------------------------------------------------------------
+
+CtxPatMatch:
+------------
+Context pattern matching algorithm.                                                           PATH SEARCHING INCOMPLETE
+
+
+
+-------------------------------------------------------------------------------
+/src/CtxChecking:
+-------------------------------------------------------------------------------
+
+CtxCheck:                                                                                     OKAY
+---------
+Check contexts are of a given kind. Includes cost-equivalent context
+check too.
+
+
+
+-------------------------------------------------------------------------------
+/src/CtxGeneration:
+-------------------------------------------------------------------------------
+
+CtxGen:                                                                                     COMMENTING
+---------
+Generate context/substitution pairs (and context nestings) over a given 
+context. Works for all kinds of contexts.
+
+
+
+-------------------------------------------------------------------------------
+/src/Utils:
+-------------------------------------------------------------------------------
+
+Utils:
+------
+Common utility functions used by other modules.
+
+CtxUtils:
+---------
+Common utility functions for the Ctx datatype.
+
+TranUtils:
+----------
+Common utility functions for KURE transformations.
+
+
+-------------------------------------------------------------------------------
+/src/KURE:
+-------------------------------------------------------------------------------
+
+Crumb:
+------
+
+Kure:
+-----
+
+KureContexts:
+-------------
+
+KureMonad:
+----------
+
+Universes:
+----------
+
+
+-------------------------------------------------------------------------------
+/src/Testing:
+-------------------------------------------------------------------------------
+.. test files
+
+
+
+
+
+-------------------------------------------------------------------------------
+Naming Conventions:
+-------------------------------------------------------------------------------
+
+Transformations ... T
+Rewrites        ... R
+Promotions      ... PT/PR
+Extractions     ... ET/ER
+
+Anything returning in the TM monad is just named in a standard fashion,
+with no suffix
+
+
+-------------------------------------------------------------------------------
+Notes:
+-------------------------------------------------------------------------------
+Always think about how functions fit in with the U type
+When using subst, think about man binds
+
+
+
+
+
+
+
+
+
+
+

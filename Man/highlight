@@ -1,0 +1,45 @@
+ESC[1mNAMEESC[m
+        highlight - turns focus highlighting on and off.
+  
+ESC[1mSYNOPSISESC[m
+        highlight [OPTION]
+  
+ESC[1mOPTIONSESC[m
+        on  Turns focus highlighting on.
+        off Turns focus highlighting off.
+  
+ESC[1mEXAMPLESESC[m
+        Turning focus highlighting on, navigating to a let 
+        statement's second binding, and then turning focus
+        highlighting off.
+     
+            unie> trans $let { x = 1; y = 2 } in x$
+            let x = 1
+                y = 2
+            in x
+            [1]> highlight on
+            Info: focus highlighting on.
+            ESC[30mESC[48;5;252mlet x = 1ESC[m
+                ESC[30mESC[48;5;252my = 2ESC[m
+            ESC[30mESC[48;5;252min xESC[m
+            [1]> left
+            ≡
+            let ESC[30mESC[48;5;252mx = 1ESC[m
+                y = 2
+            in x
+            [2]> next
+            ≡
+            let x = 1
+                ESC[30mESC[48;5;252my = 2ESC[m
+            in x
+            [2]> highlight off
+            ≡ y = 2
+     
+ESC[1mNOTESESC[m   highlight is only available when UNIE is in TRANS or 
+        TRANSCRIPT MODE.
+   
+ESC[1mSEE ALSOESC[m
+        MODE, zoom-in, zoom-out
+           
+   
+October 2017.

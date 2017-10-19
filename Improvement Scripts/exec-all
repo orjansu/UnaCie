@@ -1,0 +1,62 @@
+
+
+run-script "./Improvement Scripts/letrec_fusion_a"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/letrec_fusion_b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/reverse_ass_b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/reverse_cec_1"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/reverse_cec_2"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/reverse_cond_2"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/rolling_rule_a"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/rolling_rule_b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/tabulate_ass_b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/ww_1b_equiv_2b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/ww_a_imp_b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+run-script "./Improvement Scripts/ww_improv_ass_a_cond_1b"
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs

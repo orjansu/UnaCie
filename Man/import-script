@@ -1,0 +1,18 @@
+NAME
+        import-script - imports a command script into UNIE's library of scripts.
+
+SYNOPSIS
+        import-script NAME FILE_PATH
+            Imports the script at the specified filepath and saves it under the 
+            specified name. 
+
+DESCRIPTION
+
+OPTIONS
+
+EXAMPLES
+
+NOTES
+
+SEE ALSO
+        FILE_PATH, NAME, show-script, show-scripts

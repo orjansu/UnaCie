@@ -1,0 +1,14 @@
+ESC[1mNAMEESC[m
+        exit-script - exits the active script.
+          
+ESC[1mSYNOPSISESC[m
+        exit-script
+        
+ESC[1mNOTESESC[m   exit-script is only available when UNIE is in SCRIPT or 
+        TRANSCRIPT MODE.
+              
+ESC[1mSEE ALSOESC[m
+        MODE, load-script, run-script
+     
+    
+October 2017.

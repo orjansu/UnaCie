@@ -1,0 +1,19 @@
+NAME
+        next-cmd - sets the command to be executed next as the subsequent 
+                   command in the active script.
+
+SYNOPSIS
+        next-cmd
+
+DESCRIPTION
+
+OPTIONS
+
+
+EXAMPLES
+
+NOTES
+        next-cmd is only available when UNIE is in SCRIPT or TRANSCRIPT mode.
+
+SEE ALSO
+        prev-cmd, SCRIPT, TRANSCRIPT

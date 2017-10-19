@@ -1,0 +1,44 @@
+NAME
+        del-lib - deletes bindings or context patterns from UNIE's library of 
+                  definitions.
+
+SYNOPSIS
+        del-lib [OPTION]
+
+DESCRIPTION
+
+OPTIONS
+        SRC_NAME
+                Deletes the binding whose identifier matches the specified 
+                source name.
+        CTX_KIND 
+                Deletes cost-equivalent context patterns of the specified
+                context kind.
+        CTX_KIND IDX
+                Deletes a cost-equivalent context pattern of the specified
+                context kind by index.
+        -ctxs   Deletes all context bindings.
+        -ctx-eqs
+                Deletes all cost-equivalent context patterns.
+        -terms  Deletes all term bindings.
+
+EXAMPLES
+
+        Adding and deleting a term binding:
+          
+            unie> add-lib $foo = \x.x$
+            Information: library has been updated.
+            unie> del-lib 'foo
+            Information: library has been updated.
+
+        Deleting all applicative cost-equivalent context patterns:
+           
+            unie> del-lib APP
+            Information: library updated.
+
+NOTES
+        Use show-lib CTX_KIND to find the appropriate index to use in
+        conjunction with del-lib CTX_KIND IDX.
+
+SEE ALSO
+        CTX_KIND, IDX, show-lib

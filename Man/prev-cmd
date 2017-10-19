@@ -1,0 +1,19 @@
+NAME
+        prev-cmd - sets the command to be executed next as the previous
+                   command in the active script.
+
+SYNOPSIS
+        prev-cmd
+
+DESCRIPTION
+
+OPTIONS
+
+
+EXAMPLES
+
+NOTES
+        prev-cmd is only available when UNIE is in SCRIPT or TRANSCRIPT mode.
+
+SEE ALSO
+        next-cmd, SCRIPT, TRANSCRIPT

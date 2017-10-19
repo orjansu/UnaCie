@@ -1,0 +1,21 @@
+NAME
+        export-script - exports the sequence of successfully entered commands 
+                        currently stored in UNIE's transformation environment to 
+                        file as a command script.
+
+SYNOPSIS
+        export-script FILE_PATH
+
+DESCRIPTION
+
+OPTIONS
+
+
+EXAMPLES
+
+NOTES
+        export-script is only available when UNIE is in TRANS or TRANSCRIPT 
+        mode.
+
+SEE ALSO
+        FILE_PATH

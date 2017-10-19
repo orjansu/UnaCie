@@ -1,0 +1,461 @@
+
+This is proof of worker/wrapper assumption (B) for the tabulate
+example in Worker/Wrapper/Makes it/Faster,
+
+UNIE script found in: /Improvement Scripts/reverse_ass_b
+
+----------------------------------------------------------------------------------------------------
+Transformation info: -----
+----------------------------------------------------------------------------------------------------
+-- Goal: -----------------
+V_F[h]
+-- Global relation: ------
+⪅⪆
+-- Steps: ---------------
+65
+-- Navigation steps: ----
+47
+----------------------------------------------------------------------------------------------------
+Transformation history: --
+----------------------------------------------------------------------------------------------------
+    { trans $ V_Abs[V_Rep[V_F[h]]] $ WCE $ V_F[h] $ }
+
+V_Abs[V_Rep[V_F[h]]]
+
+  ≡ { apply-def 'Abs }
+
+λf.V_Rep[V_F[h]] 0 f
+
+  ≡ { apply-def 'Rep }
+
+λf.(λn.λf.let g = λx.let y = x + n in f y in V_F[h] g) 0 f
+
+  ≡ { right }
+
+λf.(λn.λf.let g = λx.let y = x + n in f y in V_F[h] g) 0 f
+
+ ≲≳ { beta }
+
+λf.(λf.let g = λx.let y = x + 0 in f y in V_F[h] g) f
+
+ ≲≳ { beta }
+
+λf.let g = λx.let y = x + 0 in f y in V_F[h] g
+
+  ≡ { left }
+
+λf.let g = λx.let y = x + 0 in f y in V_F[h] g
+
+  ≡ { rhs }
+
+λf.let g = λx.let y = x + 0 in f y in V_F[h] g
+
+  ≡ { right }
+
+λf.let g = λx.let y = x + 0 in f y in V_F[h] g
+
+  ≡ { left }
+
+λf.let g = λx.let y = x + 0 in f y in V_F[h] g
+
+  ≡ { rhs }
+
+λf.let g = λx.let y = x + 0 in f y in V_F[h] g
+
+ ≲≳ { add-right-ident }
+
+λf.let g = λx.let y = x in f y in V_F[h] g
+
+  ≡ { top }
+
+λf.let g = λx.let y = x in f y in V_F[h] g
+
+  ≡ { right }
+
+λf.let g = λx.let y = x in f y in V_F[h] g
+
+  ≡ { left }
+
+λf.let g = λx.let y = x in f y in V_F[h] g
+
+  ≡ { rhs }
+
+λf.let g = λx.let y = x in f y in V_F[h] g
+
+  ≡ { right }
+
+λf.let g = λx.let y = x in f y in V_F[h] g
+
+ ⪅⪆ { var-beta 'y $ let y = x in f [-] $ }
+
+λf.let g = λx.let y = x in f x in V_F[h] g
+
+ ≲≳ { gc 'y }
+
+λf.let g = λx.f x in V_F[h] g
+
+  ≡ { top }
+
+λf.let g = λx.f x in V_F[h] g
+
+  ≡ { apply-def 'F }
+
+λf.let g = λx.f x
+   in (λf.let g = λx.let y = x + 1 in f y
+              a = f 0
+              b = h g
+          in (a::b))
+      g
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in (λf.let g = λx.let y = x + 1 in f y
+              a = f 0
+              b = h g
+          in (a::b))
+      g
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in (λf.let g = λx.let y = x + 1 in f y
+              a = f 0
+              b = h g
+          in (a::b))
+      g
+
+ ≲≳ { beta }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in g y
+          a  = g 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { up }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in g y
+          a  = g 0
+          b  = h g0
+      in (a::b)
+
+ ≲≳ { value-beta 'g                          
+      $ let g = λx.f x                       
+        in let g0 = λx.let y = x + 1 in [-] y
+               a  = [-] 0                    
+               b  = h g0                     
+           in (a::b) $                        }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { left }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { rhs }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { left }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in ✔(λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+ ⪅⪆ { untick-intro }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { top }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { left }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { next }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { rhs }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { left }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = ✔(λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+ ⪅⪆ { untick-intro }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { top }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { left }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { rhs }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in (λx.f x) y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+ ≲≳ { beta }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { up }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { up }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { up }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { next }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { rhs }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = (λx.f x) 0
+          b  = h g0
+      in (a::b)
+
+ ≲≳ { beta }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = f 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { top }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = f 0
+          b  = h g0
+      in (a::b)
+
+  ≡ { right }
+
+λf.let g = λx.f x
+   in let g0 = λx.let y = x + 1 in f y
+          a  = f 0
+          b  = h g0
+      in (a::b)
+
+ ≲≳ { gc 'g }
+
+λf.let g0 = λx.let y = x + 1 in f y
+       a  = f 0
+       b  = h g0
+   in (a::b)
+
+  ≡ { top }
+
+λf.let g0 = λx.let y = x + 1 in f y
+       a  = f 0
+       b  = h g0
+   in (a::b)
+
+  ≡ { right }
+
+λf.let g0 = λx.let y = x + 1 in f y
+       a  = f 0
+       b  = h g0
+   in (a::b)
+
+  ≡ { up }
+
+λf.let g0 = λx.let y = x + 1 in f y
+       a  = f 0
+       b  = h g0
+   in (a::b)
+
+  ≡ { right }
+
+λf.let g0 = λx.let y = x + 1 in f y
+       a  = f 0
+       b  = h g0
+   in (a::b)
+
+  ≡ { rename-binder g0 g }
+
+λf.let g = λx.let y = x + 1 in f y
+       a = f 0
+       b = h g
+   in (a::b)
+
+  ≡ { top }
+
+λf.let g = λx.let y = x + 1 in f y
+       a = f 0
+       b = h g
+   in (a::b)
+
+  ≡ { unapply-def 'F }
+
+V_F[h]
+
+
+
+----------------------------------------------------------------------------------------------------
+-- Generated by UNIE on: 19-10-2017 ----------------------------------------------------------------

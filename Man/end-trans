@@ -1,0 +1,13 @@
+ESC[1mNAMEESC[m    end-trans - ends the current program transformation.
+    
+ESC[1mSYNOPSISESC[m
+        end-trans
+     
+ESC[1mNOTESESC[m   end-trans is only available when UNIE is in 
+        TRANS or TRANSCRIPT MODE.
+             
+ESC[1mSEE ALSOESC[m
+        MODE, trans
+   
+    
+October 2017.

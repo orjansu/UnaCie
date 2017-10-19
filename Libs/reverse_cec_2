@@ -1,0 +1,10 @@
+
+
+-- We derive this cost-equiv. evaluation context using
+-- script reverse_cec_2
+
+E_Cec2 = let a = [-] xs
+             b = case a of
+                 []        ➞ ys
+                 (z :: zs) ➞ let rs = zs ++ ys in (z :: rs)
+         in b

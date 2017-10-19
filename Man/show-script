@@ -1,0 +1,18 @@
+NAME
+        show-script - displays the sequence of commands that make up
+                      a particular command script.
+SYNOPSIS
+        show-script NAME
+            displays the sequence of commands that make up the command script 
+            saved under the specified name.
+
+DESCRIPTION
+
+OPTIONS
+
+
+EXAMPLES
+
+NOTES
+
+SEE ALSO
