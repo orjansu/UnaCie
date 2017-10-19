@@ -11,7 +11,7 @@ import CmdAST        (RawCmd)
 import CmdError      (CmdError(..))
 import PrintSettings (fileLineWidth)
 
-import Control.Monad.Extra    (ifM)
+import Language.KURE          (ifM)
 import Control.Monad.IO.Class (liftIO)
 import Data.Time              (defaultTimeLocale, formatTime, getCurrentTime)
 import IndentationParserLib   (Parser, runParser)
