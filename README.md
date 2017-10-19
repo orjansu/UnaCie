@@ -10,11 +10,11 @@ development and add further features.
 
 The following command will install the necessary packages that Unie requires:
 
-> > cabal install brick kure GraphSCC split extra monad-loops tuple ansi-terminal
+> \> cabal install brick kure GraphSCC split extra monad-loops tuple ansi-terminal
 
 Be sure to execute from the root directory:
 
-> > ghci /src/Interactive/Inter.hs
+> \> ghci /src/Interactive/Inter.hs
 
 Also please use a dark ANSI terminal.
 
