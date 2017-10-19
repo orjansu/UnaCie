@@ -743,7 +743,7 @@ singleNumber xs  =  fmap (\(x, i) ->
                         pad = whitePad (max - l + 1)
                     in '(' : si ++ ')' : pad ++ x) 
                    
-                    (zip xs [0..])
+                    (zip xs [1..])
                     where max = length $ show $ length xs - 1
 
 -- Add number/spacing to multiple lines and concatenate
@@ -759,7 +759,7 @@ multiNumber xss  =  concatMap (\(xs, i) ->
                         (y : ys) -> ('(' : si ++ ')' : pad ++ y) 
                                      : fmap (padRest ++) ys) 
                    
-                    (zip xss [0..])
+                    (zip xss [1..])
                     where max = length $ show $ length xss - 1
 
 -- Add number/spacing to multiple lines and concatenate
@@ -775,7 +775,7 @@ multiNumber' xss  =  fmap (\(xs, i) ->
                          (y : ys) -> ('(' : si ++ ')' : pad ++ y) 
                                       : fmap (padRest ++) ys) 
                     
-                     (zip xss [0..])
+                     (zip xss [1..])
                      where max = length $ show $ length xss - 1                  
 
 -- Add bullet to single line 

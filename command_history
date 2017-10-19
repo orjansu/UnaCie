@@ -1,100 +1,100 @@
 quit
-man
-help
-quit
-help
-man highlight
-man help
-man
-quit
-:q
-quit
-!
-run-script "./Improvement scripts/exec-all"
-quit
-highlight ON
-highlight on
+untick-eval
+trans $`(a b c)$
 end-trans
-reset-active-script
-highlight ON
-run-script "./Improvement scripts/exec-all"
-quit
-highlight ON
-run-script "./Improvement scripts/exec-all"
-highlight-on
-highlight on
-run-script "./Improvement scripts/exec-all"
-!
-run-script "./Improvement scripts/exec-all"
-quit
-!
-run-script "./Improvement scripts/exec-all"
-quit
-!
-run-script "./improvement scripts/reverse_cond_2"
-quit
-qui
-!
-run-script "./improvement scripts/reverse_cond_2"
-quit
-!
-run-script "./improvement scripts/reverse_cond_2"
-quit
-!
-run-script "./Improvement scripts/exec-all"
-quit
-run-script "./Improvement scripts/exec-all"
-quit
-!
-run-script "./Improvement scripts/exec-all"
-quit
-qut
-exit-script
-end-trans
-prev-cmd
-exit-script
-export-script ./rev_cond_2
-prev-cmd
-up
-rename-binder bs ys
-right
-rename-binder as xs
+untick-eval
+trans $`(a b c)$
 back-hist
-show-lib 'Rep
-up
-rename-binder bs y
-right
-rename-binder bs y
-rename-binder as x
-next-cmd
-prev-cmd
-show-lib 'Rep
-import-lib eval ./libs/reverse_eval_cec
-prev-cmd
-show-lib eval
-import-lib eval ./libs/reverse_eval_cec
-del-lib eval
-show-lib
-prev-cmd
-exit-script
-prev-cmd
-end-trans
-exit-script
-back-hist
-prev-cmd
-import-lib eval ./libs/reverse_eval_cec
-prev-cmd
-exit-script
-run-script "./improvement scripts/exec-all"
+untick-eval
+trans $`(a b c)$
 quit
-end-trans
+!
+run-script "./Improvement scripts/exec-all"
 exit-script
-main
-exit-script
-export-lib eval ./test_lib
+show-active-script
+prev-cmd
+show-active-script
+run-script "./Improvement scripts/exec-all"
+quit
+show-active-script
+run-script "./Improvement scripts/exec-all"
+quit
+show-active-script
+run-script "./Improvement scripts/exec-all"
+quit
+run-script "./Improvement scripts/exec-all"
+quit
+exit
+run-script "./Improvement scripts/exec-all"
+!
+run-script "./Improvement scripts/exec-all"
+quit
+unapply-def 'Revbody
+top
+eval-wce
+right
+append-assoc-lr-wce
+rhs
+next
+up
+eval-wce
+right ; rhs
+case-eval
 add-lib EVAL $[-] ++ LIST$
-prev-cmd
-run-script "./improvement scripts/exec-all"
+case-eval
+up ; up 
+beta
+bets
+right
+right  ; left
+apply-def 'Revbody
+top
+up ; beta
+beta
+left
+right
+apply-def 'Abs ; apply-def 'Rep
+trans $V_Abs[V_Rep[V_Revbody[f]]]$ WCE $V_Revbody[f]$
+show-lib defs
+import-lib ./libs/reverse
 quit
-qui
+show-lib defs
+run-script "./Improvement scripts/reverse_cond_2"
+quit
+untick-intro
+tick-elim
+trans $``x$ IMP $x$
+quit
+trans $x$ I $y$
+trans $x$ IMP $y$
+end-trans
+trans $x$
+trans $``x$ I $x$
+trans $``x$ imp $x$
+trans $``x$ I $x$
+trans $``x$ IMP $x$
+tranks $``x$ IMP $x$
+quit
+untick-intro
+tick-elim
+trans $``x$ I $x$
+end-trans
+end-tran
+untick-eval $[-] _ _$
+back-hist
+untick-eval $[-] b c$
+trans $`(a b c)$
+exit-script
+end-trans
+highlight ON
+highlight on
+run-script "./Improvement Scripts/exec-all"
+quit
 :q
+quit
+:q
+q
+show-lib
+end-trans
+exit-script
+0

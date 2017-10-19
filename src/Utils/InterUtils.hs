@@ -702,8 +702,8 @@ usrChoiceIdxWithCancel maxIdx  =  go
              Just "cancel" -> return Nothing 
              Just inp      -> case runParser integer inp of 
                                Nothing -> inpErr >> go
-                               Just n  -> if n >= 0 && n <= maxIdx 
-                                             then return (Just n)
+                               Just n  -> if n >= 1 && n <= (maxIdx + 1)
+                                             then return (Just $ n - 1)
                                              else idxErr >> go
        inpErr  = interPutError "invalid input, please choose an index or 'cancel'."
        idxErr  = interPutError "invalid index, please choose again or 'cancel'."

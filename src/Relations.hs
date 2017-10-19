@@ -75,7 +75,7 @@ strToRel :: String -> Maybe Relation
 strToRel s = case prepStr s of -- prepStr trims whitespace and lowers.
   "wi"  -> Just R_WI
   "wce" -> Just R_WCE
-  "i"   -> Just R_I
+  "imp" -> Just R_I
   "ce"  -> Just R_CE
   "eq"  -> Just R_EQ
   "u"   -> Just R_UNDEFINED
@@ -85,7 +85,7 @@ strToRel s = case prepStr s of -- prepStr trims whitespace and lowers.
 relToStr :: Relation -> String
 relToStr R_WI        = "WI"
 relToStr R_WCE       = "WCE"
-relToStr R_I         = "I"
+relToStr R_I         = "IMP"
 relToStr R_CE        = "CE"
 relToStr R_EQ        = "EQ"
 relToStr R_UNDEFINED = "UNDEFINED"

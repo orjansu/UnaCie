@@ -31,7 +31,7 @@ $opChar          =  [\!\#\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
 @srcName  =  \' $nonWhiteNoAp+
 @srcCode  =  "$" $nonSrcEnd+ "$"
 @src      =  @srcName | @srcCode
-@rel      =  I | WI | CE | WCE
+@rel      =  IMP | WI | CE | WCE
 @cmdName  =  $cmdChar+ | "(" $opChar+ ")" | $cmdChar+ $digit+
 
 tokens :- 

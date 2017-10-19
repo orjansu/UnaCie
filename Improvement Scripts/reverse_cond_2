@@ -6,7 +6,7 @@ import-lib ./libs/reverse
 import-lib eval ./libs/reverse_eval_cec2
 trans $
       V_Rep[✔V_Revbody[f]]
-      $ I $
+      $ IMP $
         V_G[✔V_Rep[f]]
         $
 apply-def 'Rep

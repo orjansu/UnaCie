@@ -5,7 +5,7 @@
 import-lib ./libs/rolling_rule
 trans $
       m
-      $ I $
+      $ IMP $
         ✔C_C[m]
         $
 apply-def 'm

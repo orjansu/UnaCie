@@ -1115,7 +1115,7 @@ ctxSubChoices' ps k prompt
     where
          choices = ps
          outputs = fmap (\(ctx, subs) -> 
-                    let maxIdx   = length subs - 1 
+                    let maxIdx   = length subs
                         maxWidth = length $ show maxIdx
                         m i      = let si = show (i :: Int)
                                    in "M" ++ si ++ replicate (maxWidth - length si) ' '

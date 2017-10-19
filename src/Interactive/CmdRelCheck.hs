@@ -54,4 +54,4 @@ cmdRelCheck cmd Nothing    _        = Right (cmd, Nothing)
 cmdRelCheck cmd mrel       Nothing  = Right (cmd, mrel)
 cmdRelCheck cmd (Just rel) (Just grel)
   | impl rel grel = Right (cmd, Just rel)
-  | otherwise     = Left $ RelationErr $ show rel ++ show strArr ++ show grel
+  | otherwise     = Left $ RelationErr $ show rel ++ " " ++ show strArr ++ " " ++ show grel
