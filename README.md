@@ -2,17 +2,21 @@
 # University of Nottingham Improvement Engine (Unie)
 Inequational reasoning for Improvement Theory
 
-Unie is currently not available on Hackage, but will be shortly. To execute 
-Unie from within GHCi, load the 'Inter.hs' file from /src/Interactive/ 
-and run 'main'.
+Unie is currently not available on Hackage, but will be shortly. The current
+version status is 0.9. It is a fully working system, but we plan to continue
+development and add further features.
 
-Be sure to execute from the root directory
+# Running Unie
 
-> ghci /src/Interactive/Inter.hs 
+The following command will install the necessary packages that Unie requires:
 
-Note that Unie does rely on a number of external packages, e.g.,
-The Kansas University Rewrite Engine (KURE), so these
-may need to be installed prior to running.
+> cabal install brick kure GraphSCC split extra monad-loops tuple ansi-terminal
+
+Be sure to execute from the root directory:
+
+> ghci /src/Interactive/Inter.hs
+
+Also please use a dark ANSI terminal.
 
 # Getting started
 
