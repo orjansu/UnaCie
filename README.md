@@ -16,7 +16,7 @@ Be sure to execute from the root directory:
 
 > \> ghci /src/Interactive/Inter.hs
 
-Also please use a dark ANSI terminal.
+Also please use an ANSI terminal with light font on a dark background.
 
 # Getting started
 
@@ -46,6 +46,12 @@ Press tab to see a full list of commands. Typing
 gives information on command usage. Please note, the help/man section is 
 currently under development and will be completed soon. Apologies for
 the delay.
+
+# Paper
+
+
+
+# Bug reporting and queries
 
 Please send any queries/bug reports to martin.handley@nottingham.ac.uk
 
