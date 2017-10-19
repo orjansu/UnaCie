@@ -22,6 +22,7 @@ Pressing return once the script is active will execute the next command.
 A script can be fully executed as follows:
   
   > unie> run-script "./Improvement Scripts/reverse_ass_b"
+  
   > unie> !
 
 Once the script has been run, you may wish to review the proof history:
