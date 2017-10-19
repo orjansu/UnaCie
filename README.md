@@ -19,12 +19,12 @@ command inside Unie:
   > unie> run-script "./Improvement Scripts/reverse_ass_b"
 
 Pressing return once the script is active will execute the next command.
-A script can be full executed as follows:
+A script can be fully executed as follows:
   
   > unie> run-script "./Improvement Scripts/reverse_ass_b"
   > unie> !
 
-Once the script has been run, review the proof history:
+Once the script has been run, you may wish to review the proof history:
 
  > unie> show-hist
 
@@ -32,7 +32,7 @@ Note that a number of scripts rely on the use of definitions
 in the 'lib' folders. These are imported by the scripts themselves.
 
 Press tab to see a full list of commands. Typing 
- > man <command name>
+ > unie man <<cmd_name>>
 
 gives information on command usage. Please note, the help/man section is 
 currently under development and will be completed soon. Apologies for
