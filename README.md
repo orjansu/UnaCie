@@ -2,7 +2,7 @@
 # University of Nottingham Improvement Engine (Unie)
 Inequational reasoning for Improvement Theory
 
-Unie is current not available on Hackage, but will be shortly. To execute 
+Unie is currently not available on Hackage, but will be shortly. To execute 
 Unie from within GHCi, load the 'Inter.hs' file from /src/Interactive/ 
 and run 'main'.
 
@@ -16,11 +16,19 @@ A good way to become familiar with the system is to execute one of the
 existing proof scripts. This can be done by using the 'run-script'
 command inside Unie:
   
-  > run-script "./Improvement Scripts/reverse_ass_b"
+  > unie> run-script "./Improvement Scripts/reverse_ass_b"
 
 Pressing return once the script is active will execute the next command.
+A script can be full executed as follows:
+  
+  > unie> run-script "./Improvement Scripts/reverse_ass_b"
+  > unie> !
 
-Note that a number of these scripts rely on the use of definitions
+Once the script has been run, review the proof history:
+
+ > unie> show-hist
+
+Note that a number of scripts rely on the use of definitions
 in the 'lib' folders. These are imported by the scripts themselves.
 
 Press tab to see a full list of commands. Typing 
