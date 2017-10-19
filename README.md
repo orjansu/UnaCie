@@ -32,7 +32,7 @@ Note that a number of scripts rely on the use of definitions
 in the 'lib' folders. These are imported by the scripts themselves.
 
 Press tab to see a full list of commands. Typing 
- > unie man <<cmd_name>>
+ > unie> man <command_name>
 
 gives information on command usage. Please note, the help/man section is 
 currently under development and will be completed soon. Apologies for
