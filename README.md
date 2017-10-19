@@ -6,6 +6,10 @@ Unie is currently not available on Hackage, but will be shortly. To execute
 Unie from within GHCi, load the 'Inter.hs' file from /src/Interactive/ 
 and run 'main'.
 
+Be sure to execute from the root directory
+
+> ghci /src/Interactive/Inter.hs 
+
 Note that Unie does rely on a number of external packages, e.g.,
 The Kansas University Rewrite Engine (KURE), so these
 may need to be installed prior to running.
@@ -22,7 +26,7 @@ Pressing return once the script is active will execute the next command.
 A script can be fully executed as follows:
   
   > unie> run-script "./Improvement Scripts/reverse_ass_b"
-  
+
   > unie> !
 
 Once the script has been run, you may wish to review the proof history:
