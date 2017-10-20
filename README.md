@@ -49,7 +49,8 @@ the delay.
 
 # Paper
 
-
+"Improving Haskell", a paper introducing the system, and the technical aspects
+of improvement theory, can be found [here](http://www.cs.nott.ac.uk/~pszgmh/improving.pdf).
 
 # Bug reporting and queries
 
