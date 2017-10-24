@@ -138,7 +138,8 @@ type KeywordMap = Map.Map String Doc
 plainKeywords :: KeywordMap
 plainKeywords  = Map.fromList 
  [ ("arrow"      , arr)
- , ("case"       , esac) 
+ , ("case"       , esac)
+ , ("colon"      , colon) 
  , ("colons"     , colons) 
  , ("comma"      , comma) 
  , ("dot"        , dot)
@@ -163,6 +164,7 @@ fancyKeywords :: KeywordMap
 fancyKeywords  = Map.fromList 
  [ ("arrow"      , arr)
  , ("case"       , ppr (esac, boldShowSettings)) 
+ , ("colon"      , colon)
  , ("colons"     , colons) 
  , ("comma"      , comma) 
  , ("dot"        , dot)
@@ -411,24 +413,30 @@ pprAppD (L_AppD (CONS, [var@L_Var{}, L_AppD (NIL, [], _)], ss), map, f)
 pprAppD (L_AppD (CONS, [var1@L_Var{}, var2@L_Var{}], ss), map, f) 
  = pprKeyword' "lparen" map ss
     <> ppr (lCtxLabelCombine f ss var1, map, f) 
-    <> pprKeyword' "colons" map ss
+    <> pprKeyword' "colon" map ss
     <> ppr (lCtxLabelCombine f ss var2, map, f)
     <> pprKeyword' "rparen" map ss
                                       
 -- Use [,] notation if the list is of uniform atoms
--- Use (::) notation if the list is of non-uniform atoms
-pprAppD x@(l@(L_AppD (CONS, _, ss)), map, _) 
+-- Use (::) notation if the list is non-uniform or does
+pprAppD x@(l@(L_AppD (CONS, _, ss)), map, f) 
  | isUniformAtomicList l = pprKeyword' "lbrack" map ss
                             <> (hcat 
                                  . intersperse (pprKeyword' "comma" map ss) 
                                  . pprList') x 
                             <> pprKeyword' "rbrack" map ss
- | isAtomicList l        = (hcat 
-                            . intersperse (ppr (space, ss) 
-                                            <> pprKeyword' "colons" map ss
-                                            <> ppr (space, ss)) 
-                            . pprList) x
+ | isList l = (hcat 
+                . intersperse (ppr (space, ss) 
+                   <> pprKeyword' "colon" map ss
+                   <> ppr (space, ss)) 
+                . pprList) x
 
+ | isMixedList l = pprParen (lCtxLabelCombine f ss h, map, f) 
+                    <> ppr (space, ss) 
+                    <> pprKeyword' "colon" map ss
+                    <> ppr (space, ss) 
+                    <> pprParen (lCtxLabelCombine f ss t, map, f) 
+   where L_AppD (CONS, [h, t], _) = l
 -- Anything else is an invalid datatype (currently)
 pprAppD _ = invalidDT
 
@@ -481,7 +489,7 @@ pprCon CONS       [ns] map ss i = pprKeyword' "lbrack" map ss
 pprCon CONS       nss  map ss i = pprKeyword' "lparen" map ss 
                                    <> (hcat 
                                        . intersperse (ppr (space, ss) 
-                                          <> pprKeyword' "colons" map ss
+                                          <> pprKeyword' "colon" map ss
                                           <> ppr (space, ss))
                                        . fmap (ppr . (, ss) . text)) nss 
                                    <> pprKeyword' "rparen" map ss 
@@ -568,12 +576,14 @@ isUniformAtomicList (L_AppD (CONS, [L_LitInt{}, sctx], _)) = isLitIntList sctx
 isUniformAtomicList (L_AppD (CONS, [L_LitStr{}, sctx], _)) = isLitStrList sctx
 isUniformAtomicList _                                      = False
 
+{-
 isAtomicList :: L_Ctx ShowSettings -> Bool 
 isAtomicList (L_AppD (NIL, [], _))                  = True  
 isAtomicList (L_AppD (CONS, [L_Var{}, sctx], _))    = isAtomicList sctx
 isAtomicList (L_AppD (CONS, [L_LitInt{}, sctx], _)) = isAtomicList sctx
 isAtomicList (L_AppD (CONS, [L_LitStr{}, sctx], _)) = isAtomicList sctx
 isAtomicList _                                      = False
+-}
 
 isVarList :: L_Ctx ShowSettings -> Bool 
 isVarList (L_AppD (NIL, [], _))                  = True
@@ -589,3 +599,14 @@ isLitStrList :: L_Ctx ShowSettings -> Bool
 isLitStrList (L_AppD (NIL, [], _))                  = True
 isLitStrList (L_AppD (CONS, [L_LitStr{}, sctx], _)) = isLitStrList sctx
 isLitStrList _                                      = False
+
+isMixedList :: L_Ctx ShowSettings -> Bool 
+isMixedList (L_AppD (NIL, [], _))                = True
+isMixedList (L_AppD (CONS, [_, s@L_AppD{}], _))  = isMixedList s
+isMixedList (L_AppD (CONS, [_, _], _))           = True 
+isMixedList _                                    = False 
+
+isList :: L_Ctx ShowSettings -> Bool 
+isList (L_AppD (NIL, [], _))         = True
+isList (L_AppD (CONS, [_, sctx], _)) = isList sctx
+isList _                             = False

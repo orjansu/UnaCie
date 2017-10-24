@@ -1,21 +1,20 @@
 
 module CtxPP (pprCon) where 
-
 import CtxAST        ( Alt(..), Bind(..), Con(..)
                      , Ctx(..), GBind(..), Name )
-import Utils         (deggar)
-import CtxUtils      (isVarList, bindsToPairs)
+import CtxUtils      (bindsToPairs)
 import CtxKind       (ctxKindToChar)
 import PrintSettings (terminalLineStyle)
+import Utils         (deggar)
 import PPLib 
   ( Outputable(..)
   , arr
-  , colons
   , dot
   , emptyHole
   , eq
   , esac
   , fo
+  , ifCons
   , isInfix
   , lambda
   , ni
@@ -139,17 +138,16 @@ pprApp ctx = go ctx []
 -- Data types: ----------------------------------------------------------------
 
 pprAppD :: Ctx -> Doc 
-pprAppD (AppD NIL []) = nil  
-pprAppD (AppD CONS [Var ns, AppD NIL []]) = lbrack <> text ns <> rbrack    
-pprAppD (AppD CONS [Var ns1, Var ns2]) = parens $ text ns1 <> colons <> text ns2
--- Use (::) notation if the list is mixed with variables and literals                                                  
-pprAppD l@(AppD CONS [Var ns, ctx]) 
-  | isVarList l = hcat . intersperse colons . fmap ppr . fromList $ l
-  | otherwise   = parens (text ns <+> colons <+> ppr ctx)                     
-pprAppD l@(AppD CONS _) = lbrack <> (hcat  
-                                      . intersperse comma 
-                                      . fmap ppr 
-                                      . fromList) l <> rbrack
+pprAppD (AppD NIL []) = nil   
+pprAppD (AppD CONS [Var ns1, Var ns2]) = parens (text ns1 <> ifCons <> text ns2)
+pprAppD l@(AppD CONS _) 
+ | isUniformAtomicList l = lbrack <> (hcat  
+                                    . intersperse comma 
+                                    . fmap ppr 
+                                    . fromList) l <> rbrack
+ | isList l = hcat . intersperse ifCons . fmap pprParen . fromList $ l 
+ | isMixedList l = pprParen h <> ifCons <> pprParen t
+    where AppD CONS [h, t] = l
 pprAppD _ = text "## unrecognised data type ##"
 
 -- Let bindings: --------------------------------------------------------------
@@ -170,7 +168,7 @@ pprAlt' (Alt con ns ctx _) = (render $ pprCon con ns, ctx)
 pprCon :: Con -> [Name] -> Doc
 pprCon VARIABLE   [n] = text n 
 pprCon CONS       [n] = lbrack <> text n <> rbrack
-pprCon CONS       ns  = (parens . hcat . intersperse colons . fmap text) ns                            
+pprCon CONS       ns  = (parens . hcat . intersperse ifCons . fmap text) ns                            
 pprCon NIL        []  = nil
 pprCon DEFAULT    []  = wildcard
 pprCon (LITINT i) []  = int i
@@ -199,3 +197,38 @@ fromList :: Ctx -> [Ctx]
 fromList (AppD NIL [])       = [] 
 fromList (AppD CONS [c1,c2]) = c1 : fromList c2
 fromList ctx                 = [ctx]
+
+-- Checking the form of list elements: --
+
+isUniformAtomicList :: Ctx -> Bool 
+isUniformAtomicList (AppD NIL [])             = True
+isUniformAtomicList (AppD CONS [Var{}, t])    = isVarList t
+isUniformAtomicList (AppD CONS [LitInt{}, t]) = isLitIntList t
+isUniformAtomicList (AppD CONS [LitStr{}, t]) = isLitStrList t
+isUniformAtomicList _                         = False
+
+isVarList :: Ctx -> Bool 
+isVarList (AppD NIL [])          = True
+isVarList (AppD CONS [Var{}, t]) = isVarList t
+isVarList _                      = False
+
+isLitIntList :: Ctx -> Bool 
+isLitIntList (AppD NIL [])             = True
+isLitIntList (AppD CONS [LitInt{}, t]) = isLitIntList t
+isLitIntList _                         = False
+
+isLitStrList :: Ctx -> Bool 
+isLitStrList (AppD NIL [])             = True
+isLitStrList (AppD CONS [LitStr{}, t]) = isLitStrList t
+isLitStrList _                         = False
+
+isMixedList :: Ctx -> Bool
+isMixedList (AppD NIL [])             = True
+isMixedList (AppD CONS [_, t@AppD{}]) = isMixedList t 
+isMixedList (AppD CONS [_, _])        = True 
+isMixedList _                         = False 
+
+isList :: Ctx -> Bool 
+isList (AppD NIL [])      = True
+isList (AppD CONS [_, t]) = isList t
+isList _                  = False

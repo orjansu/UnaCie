@@ -8,14 +8,15 @@ module PPLib
   , indentHighlightError
 
     -- Terminal symbols: -- 
-  , arr      
+  , arr    
   , coloneq  
   , colons   
   , dot      
   , emptyHole 
   , eq        
   , esac    
-  , fo       
+  , fo  
+  , ifCons     
   , lambda    
   , mid        
   , newline  
@@ -91,7 +92,7 @@ lambda, dot, tick, emptyHole      :: Doc
 tel, eq, coloneq, ni, esac        :: Doc 
 fo, colons, nil, arr, newline     :: Doc 
 mid, wildcard, underscore, strArr :: Doc
-miss, invalidDT, invalidC         :: Doc
+miss, invalidDT, invalidC, ifCons :: Doc
 
 lambda     = char '\955'
 dot        = char '.'
@@ -104,6 +105,7 @@ ni         = text "in"
 esac       = text "case"
 fo         = text "of"
 colons     = text "::"
+ifCons     = text " : "
 nil        = text "[]"
 arr        = char '\10142'
 newline    = char '\n'

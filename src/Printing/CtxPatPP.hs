@@ -10,12 +10,12 @@ import Utils         (deggar)
 import PPLib 
   ( Outputable(..)
   , arr
-  , colons
   , dot
   , emptyHole
   , eq
   , esac
   , fo
+  , ifCons
   , isInfix
   , lambda
   , ni
@@ -140,19 +140,16 @@ pprApp ctx = go ctx []
 -- Data types: ----------------------------------------------------------------
 
 pprAppD :: CtxPat -> Doc 
-pprAppD (PAppD NIL []) = nil  
-pprAppD (PAppD CONS [PVar ns, PAppD NIL []]) = lbrack <> text ns <> rbrack    
-pprAppD (PAppD CONS [PVar ns1, PVar ns2]) = parens (text ns1 <> colons <> text ns2)
--- Use (::) notation if the list is mixed with variables and literals                                                  
-pprAppD l@(PAppD CONS [PVar ns, ctx])
-  | isPVarList l = (hcat . intersperse colons . fmap ppr . fromList) l
-  | otherwise    = parens (text ns <+> colons <+> ppr ctx)                     
-pprAppD l@(PAppD CONS _) = lbrack 
-                            <> (hcat 
-                                . intersperse comma 
-                                . fmap ppr 
-                                . fromList) l 
-                            <> rbrack
+pprAppD (PAppD NIL []) = nil   
+pprAppD (PAppD CONS [PVar ns1, PVar ns2]) = parens (text ns1 <> ifCons <> text ns2)
+pprAppD l@(PAppD CONS _) 
+ | isUniformAtomicList l = lbrack <> (hcat  
+                                    . intersperse comma 
+                                    . fmap ppr 
+                                    . fromList) l <> rbrack
+ | isList l = hcat . intersperse ifCons . fmap pprParen . fromList $ l
+ | isMixedList l = pprParen h <> ifCons <> pprParen t
+    where PAppD CONS [h, t] = l
 pprAppD _ = text "## unrecognised data type ##"
 
 -- Let Bindings: --------------------------------------------------------------
@@ -214,12 +211,37 @@ fromList (PAppD NIL [])       = []
 fromList (PAppD CONS [c1,c2]) = c1 : fromList c2
 fromList ctx                  = [ctx]
 
--- Check if a list contains PVars only.
-isPVarList :: CtxPat -> Bool 
-isPVarList (PAppD NIL []) = True 
-isPVarList (PAppD CONS ts) 
-  | length ts == 2 = all (\t -> isPVar t || isPVarList t) ts
-    where 
-      isPVar PVar{} = True
-      isPVar _      = False
-isPVarList _ = False
+-- Checking the form of list elements: --
+
+isUniformAtomicList :: CtxPat -> Bool 
+isUniformAtomicList (PAppD NIL [])              = True
+isUniformAtomicList (PAppD CONS [PVar{}, t])    = isVarList t
+isUniformAtomicList (PAppD CONS [PLitInt{}, t]) = isLitIntList t
+isUniformAtomicList (PAppD CONS [PLitStr{}, t]) = isLitStrList t
+isUniformAtomicList _                           = False
+
+isVarList :: CtxPat -> Bool 
+isVarList (PAppD NIL [])           = True
+isVarList (PAppD CONS [PVar{}, t]) = isVarList t
+isVarList _                        = False
+
+isLitIntList :: CtxPat -> Bool 
+isLitIntList (PAppD NIL [])             = True
+isLitIntList (PAppD CONS [PLitInt{}, t]) = isLitIntList t
+isLitIntList _                         = False
+
+isLitStrList :: CtxPat -> Bool 
+isLitStrList (PAppD NIL [])              = True
+isLitStrList (PAppD CONS [PLitStr{}, t]) = isLitStrList t
+isLitStrList _                           = False
+
+isMixedList :: CtxPat -> Bool
+isMixedList (PAppD NIL [])              = True
+isMixedList (PAppD CONS [_, t@PAppD{}]) = isMixedList t 
+isMixedList (PAppD CONS [_, _])         = True 
+isMixedList _                           = False 
+
+isList :: CtxPat -> Bool 
+isList (PAppD NIL [])      = True
+isList (PAppD CONS [_, t]) = isList t
+isList _                   = False
