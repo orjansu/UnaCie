@@ -25,7 +25,7 @@ import CtxAST    (Alt(..), Bind(..), Ctx(..))
 import CtxPatAST (AltPat(..), BindPat(..), CtxConstPat(..), CtxPat(..))
 import CtxUtils  ( hasHoles, hasHolesAlt, hasHolesAlts
                  , hasHolesBind, hasHolesBinds, isList
-                 , nestingFilter, validateCtxNestings )
+                 , nestingFilter, validateCtxNestings, isVar )
 import Kure      ()
 import KureExtra (liftT)
 import Universes (U(..))
@@ -218,7 +218,7 @@ eqConstPat P_DATA    AppD{}   = True
 -- LitInt/ListStr are built-in P_DATA
 eqConstPat P_DATA    LitInt{} = True 
 eqConstPat P_DATA    LitStr{} = True
-eqConstPat P_LIST    ctx      = isList ctx
+eqConstPat P_LIST    ctx      = isList ctx || isVar ctx
 eqConstPat _         _        = False
 
 -- Binds: ---------------------------------------------------------------------
