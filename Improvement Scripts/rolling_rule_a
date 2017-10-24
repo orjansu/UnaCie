@@ -3,15 +3,9 @@
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/rolling_rule
-trans $
-      m
-      $ IMP $
-        ✔C_C[m]
-        $
+trans $ m $ IMP $ ✔C_C[m] $
 apply-def 'm
-value-beta 'x $
-           ✔V_G[-]
-           $
+value-beta 'x $ ✔V_G[-] $
 unapply-def 'm
 unapply-def 'C
 exit-script

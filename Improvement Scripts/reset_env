@@ -1,0 +1,10 @@
+
+-- "Reset environment"
+
+end-trans
+del-lib terms
+del-lib ctxs
+del-lib ctx-eqs
+exit-script
+
+-- "Reset environment"

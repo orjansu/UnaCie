@@ -1,5 +1,4 @@
 
-
 Here we prove that worker/wrapper assumption A implies assumption B.
 For me, this is an interesting example because the paper proof in 
 Worker/Wrapper/Makes it/Faster is so short, but when we flesh out the details

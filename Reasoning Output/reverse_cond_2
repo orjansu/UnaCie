@@ -1,0 +1,331 @@
+
+This is the proof of worker/wrapper improvement condition 2 for 
+the reverse example in Worker/Wrapper/Makes it/Faster
+
+UNIE script found in: /Improvement Scripts/reverse_cond_2
+
+----------------------------------------------------------------------------------------------------
+Transformation info: -----
+----------------------------------------------------------------------------------------------------
+-- Goal: -----------------
+V_G[✔V_Rep[f]]
+-- Global relation: ------
+≳
+-- Steps: ---------------
+51
+-- Navigation steps: ----
+33
+----------------------------------------------------------------------------------------------------
+Transformation history: --
+----------------------------------------------------------------------------------------------------
+    { trans $ V_Rep[✔V_Revbody[f]] $ IMP $ V_G[✔V_Rep[f]] $ }
+
+V_Rep[✔V_Revbody[f]]
+
+  ≡ { apply-def 'Rep }
+
+λxs.λys.(✔V_Revbody[f] xs) ++ ys
+
+  ≡ { apply-def 'Revbody }
+
+λxs.λys.(✔(λxs.case xs of
+                []       ➞ []
+                (y : ys) ➞ (f ys) ++ [y])
+         xs) ++ ys
+
+  ≡ { right }
+
+λxs.λys.(✔(λxs.case xs of
+                []       ➞ []
+                (y : ys) ➞ (f ys) ++ [y])
+         xs) ++ ys
+
+  ≡ { right }
+
+λxs.λys.(✔(λxs.case xs of
+                []       ➞ []
+                (y : ys) ➞ (f ys) ++ [y])
+         xs) ++ ys
+
+ ≲≳ { tick-eval $ ([-] xs) ++ ys $ }
+
+λxs.λys.✔(((λxs.case xs of
+                 []       ➞ []
+                 (y : ys) ➞ (f ys) ++ [y])
+           xs) ++ ys)
+
+  ≡ { right }
+
+λxs.λys.✔(((λxs.case xs of
+                 []       ➞ []
+                 (y : ys) ➞ (f ys) ++ [y])
+           xs) ++ ys)
+
+  ≡ { left }
+
+λxs.λys.✔(((λxs.case xs of
+                 []       ➞ []
+                 (y : ys) ➞ (f ys) ++ [y])
+           xs) ++ ys)
+
+  ≡ { right }
+
+λxs.λys.✔(((λxs.case xs of
+                 []       ➞ []
+                 (y : ys) ➞ (f ys) ++ [y])
+           xs) ++ ys)
+
+ ≲≳ { beta }
+
+λxs.λys.✔((case xs of
+            []       ➞ []
+            (y : ys) ➞ (f ys) ++ [y]) ++ ys)
+
+  ≡ { up }
+
+λxs.λys.✔((case xs of
+            []       ➞ []
+            (y : ys) ➞ (f ys) ++ [y]) ++ ys)
+
+  ≡ { up }
+
+λxs.λys.✔((case xs of
+            []       ➞ []
+            (y : ys) ➞ (f ys) ++ [y]) ++ ys)
+
+ ≲≳ { case-eval $ [-] ++ ys $ }
+
+λxs.λys.✔(case xs of
+           []        ➞ [] ++ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≡ { right }
+
+λxs.λys.✔(case xs of
+           []        ➞ [] ++ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≡ { rhs }
+
+λxs.λys.✔(case xs of
+           []        ➞ [] ++ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≳ { append-ident }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≡ { up }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≡ { next }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≡ { rhs }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ ((f ys0) ++ [y]) ++ ys)
+
+  ≳ { append-assoc-lr-i }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ ([y] ++ ys))
+
+  ≡ { right }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ ([y] ++ ys))
+
+  ≳ { eval-i }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ (y : ys))
+
+  ≡ { up }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ (y : ys))
+
+  ≡ { up }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ (y : ys))
+
+  ≡ { up }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ (y : ys))
+
+  ≡ { up }
+
+λxs.λys.✔(case xs of
+           []        ➞ ys
+           (y : ys0) ➞ (f ys0) ++ (y : ys))
+
+ ≲≳ { case-eval $ ✔[-] $ }
+
+λxs.λys.case xs of
+         []        ➞ ✔ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { right }
+
+λxs.λys.case xs of
+         []        ➞ ✔ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { rhs }
+
+λxs.λys.case xs of
+         []        ➞ ✔ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≳ { tick-elim }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { up }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { next }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { rhs }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { right }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔((f ys0) ++ (y : ys))
+
+  ≡ { desugar app }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔(let a = (y : ys) in (f ys0) ++ a)
+
+  ≡ { right }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔(let a = (y : ys) in (f ys0) ++ a)
+
+ ≲≳ { unbeta $ (λas.λbs.(f as) ++ bs) ys0 a $ }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔(let a = (y : ys) in (λas.λbs.(f as) ++ bs) ys0 a)
+
+  ≡ { up }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔(let a = (y : ys) in (λas.λbs.(f as) ++ bs) ys0 a)
+
+  ≡ { up }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ ✔(let a = (y : ys) in (λas.λbs.(f as) ++ bs) ys0 a)
+
+ ≲≳ { untick-eval $ let a = (y : ys) in [-] ys0 a $ }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λas.λbs.(f as) ++ bs) ys0 a
+
+  ≡ { right }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λas.λbs.(f as) ++ bs) ys0 a
+
+  ≡ { left }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λas.λbs.(f as) ++ bs) ys0 a
+
+  ≡ { left }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λas.λbs.(f as) ++ bs) ys0 a
+
+  ≡ { right }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λas.λbs.(f as) ++ bs) ys0 a
+
+  ≡ { rename-binder as xs }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λxs.λbs.(f xs) ++ bs) ys0 a
+
+  ≡ { right }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λxs.λbs.(f xs) ++ bs) ys0 a
+
+  ≡ { rename-binder bs ys }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λxs.λys.(f xs) ++ ys) ys0 a
+
+  ≡ { up }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔(λxs.λys.(f xs) ++ ys) ys0 a
+
+  ≡ { unapply-def 'Rep }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔V_Rep[f] ys0 a
+
+  ≡ { top }
+
+λxs.λys.case xs of
+         []        ➞ ys
+         (y : ys0) ➞ let a = (y : ys) in ✔V_Rep[f] ys0 a
+
+    { define $ V_G[✔V_Rep[f]] $ }
+
+V_G[✔V_Rep[f]]
+
+
+
+----------------------------------------------------------------------------------------------------
+-- Generated by UNIE on: 24-10-2017 ----------------------------------------------------------------

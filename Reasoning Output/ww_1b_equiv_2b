@@ -1,8 +1,7 @@
 
-
 Here we prove that worker/wrapper 1-beta and 2-beta are equivalent under
-assumption (C).
-For this, we have encoded assumption (C) as an improvement rule
+assumption C.
+For this, we have encoded assumption C as an improvement rule
 in our standard library as unww-ass-c.
 
 UNIE script found in: /Improvement Scripts/ww_1b_equiv_2b

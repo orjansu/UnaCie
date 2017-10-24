@@ -3,14 +3,10 @@
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/letrec_fusion
-trans $ m $ IMP $ `C_C[m]$
+trans $ m $ IMP $ `V_C[m]$
 apply-def 'm
-value-beta 'x $
-           ✔V_H[-]
-           $
-ass IMP $
-    ✔V_G[✔V_H[x]]
-    $
+value-beta 'x $ ✔V_H[-] $
+ass IMP $ ✔V_G[✔V_H[x]] $
 unapply-def 'm
 unapply-def 'C
 exit-script

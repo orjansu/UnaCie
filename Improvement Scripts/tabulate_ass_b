@@ -3,10 +3,7 @@
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/tabulate
-trans $
-      V_Abs[V_Rep[V_F[h]]]
-      $ WCE $
-            V_F[h] $
+trans $ V_Abs[V_Rep[V_F[h]]] $ WCE $ V_F[h] $
 apply-def 'Abs
 apply-def 'Rep
 right
@@ -23,9 +20,7 @@ right
 left
 rhs
 right
-var-beta-wce 'y $
-                let y = x in f [-]
-                $
+var-beta-wce 'y $ let y = x in f [-] $
 gc 'y
 top
 apply-def 'F
@@ -38,7 +33,7 @@ value-beta 'g $
            in let g0 = λx.let y = x + 1 in [-] y
                   a  = [-] 0
                   b  = h g0
-              in (a::b)
+              in (a : b)
            $
 right
 left

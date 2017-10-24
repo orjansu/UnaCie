@@ -1,41 +1,18 @@
 
-
 ----------------------------------------------------------------------------------------------------
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
-trans $
-      let x = V_F[x] in x
-      $ WI $ 
-           let x = V_G[x] in V_Abs[x]
-           $
-unww-ass-c $
-           V_Abs[-]
-           $ $
-             V_Rep[-]
-             $ $
-               V_F[-]
-               $
-unrolling-rule $
-               V_Abs[-]
-               $ $
-                 V_Rep[V_F[-]]
-                 $
-let-float-val $
-              [-]
-              $
-unlet-float-val $
-                V_Abs[-]
-                $
+trans $ let x = V_F[x] in x $ WI $  let x = V_G[x] in V_Abs[x] $
+unww-ass-c $ V_Abs[-] $ $ V_Rep[-] $ $ V_F[-] $
+unrolling-rule $ V_Abs[-] $ $ V_Rep[V_F[-]] $
+let-float-val $ [-] $
+unlet-float-val $ V_Abs[-] $
 right
 left
 rhs
-ass WI $        
-    V_G[x]
-    $
+ass WI $ V_G[x] $
 top
-let-float-val $
-              V_Abs[-]
-              $
+let-float-val $ V_Abs[-] $
 exit-script
 
 

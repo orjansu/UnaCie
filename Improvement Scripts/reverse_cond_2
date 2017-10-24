@@ -4,27 +4,19 @@
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/reverse
 import-lib eval ./libs/reverse_eval_cec2
-trans $
-      V_Rep[✔V_Revbody[f]]
-      $ IMP $
-        V_G[✔V_Rep[f]]
-        $
+trans $ V_Rep[✔V_Revbody[f]] $ IMP $ V_G[✔V_Rep[f]] $
 apply-def 'Rep
 apply-def 'Revbody
 right
 right
-tick-eval $
-          ([-] xs) ++ ys
-          $
+tick-eval $ [-] xs ++ ys $
 right
 left
 right
 beta
 up
 up
-case-eval $
-          [-] ++ ys
-          $
+case-eval $ [-] ++ ys $
 right
 rhs
 append-ident
@@ -38,9 +30,7 @@ up
 up
 up
 up
-case-eval $
-          ✔[-]
-          $
+case-eval $ ✔[-] $
 right
 rhs
 tick-elim
@@ -50,14 +40,10 @@ rhs
 right
 desugar app
 right
-unbeta $
-       (λas.λbs.(f as) ++ bs) ys0 a
-       $
+unbeta $ (λas.λbs.(f as) ++ bs) ys0 a $
 up
 up
-untick-eval $
-            let a = (y::ys) in [-] ys0 a
-            $
+untick-eval $ let a = (y : ys) in [-] ys0 a $
 right
 left
 left
@@ -68,9 +54,7 @@ rename-binder bs ys
 up
 unapply-def 'Rep
 top
-define $
-       V_G[✔V_Rep[f]]
-       $
+define $ V_G[✔V_Rep[f]] $
 exit-script
 
 

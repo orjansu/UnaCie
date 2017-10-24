@@ -4,11 +4,7 @@
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/reverse
 import-lib EVAL ./libs/reverse_eval_cec1
-trans $
-      V_Abs[V_Rep[V_Revbody[f]]]
-      $ WCE $
-        V_Revbody[f]
-        $
+trans $ V_Abs[V_Rep[V_Revbody[f]]] $ WCE $ V_Revbody[f] $
 apply-def 'Abs
 apply-def 'Rep
 right

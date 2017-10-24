@@ -2,31 +2,17 @@
 ----------------------------------------------------------------------------------------------------
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
-trans $
-      V_Abs[V_Rep[V_F[y]]]
-      $ WCE $
-        V_F[y]
-        $
+trans $ V_Abs[V_Rep[V_F[y]]] $ WCE $ V_F[y] $
 right
 right
 tick-intro
 top
-ungc $
-     x = V_F[y]
-     $
-unvalue-beta 'x $
-             let x = V_F[y] in V_Abs[V_Rep[-]]
-             $
+ungc $ x = V_F[y] $
+unvalue-beta 'x $ let x = V_F[y] in V_Abs[V_Rep[-]] $
 right
-ww-ass-a $
-         V_Abs[-]
-         $ $
-           V_Rep[-]
-           $
+ww-ass-a $ V_Abs[-] $ $ V_Rep[-] $
 top
-value-beta 'x $
-           let x = V_F[y] in [-]
-           $
+value-beta 'x $ let x = V_F[y] in [-] $
 right
 untick-intro
 top

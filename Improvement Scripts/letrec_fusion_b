@@ -3,16 +3,10 @@
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/letrec_fusion
-trans $
-      ✔V_C[n]
-      $ CE $
-        n
-        $
+trans $ ✔V_C[n] $ CE $ n $
 apply-def 'n
 apply-def 'C
-unvalue-beta 'y $
-             [-]
-             $
+unvalue-beta 'y $ [-] $
 unapply-def 'n
 exit-script
 

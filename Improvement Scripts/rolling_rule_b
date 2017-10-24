@@ -3,16 +3,10 @@
 -- Commands: --
 ----------------------------------------------------------------------------------------------------
 import-lib ./libs/rolling_rule
-trans $
-      ✔C_C[n]
-      $ IMP $
-        n
-        $
+trans $ ✔C_C[n] $ IMP $ n $
 apply-def 'C
 apply-def 'n
-unvalue-beta 'y $
-             [-]
-             $
+unvalue-beta 'y $ [-] $
 unapply-def 'n
 exit-script
 
