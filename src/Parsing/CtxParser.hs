@@ -17,7 +17,7 @@ module CtxParser
   , gBinds'  -- CBinds must have holes.
   , list     -- List sugars.
   , tBind
-  , term 
+  , term
 
   ) where 
 
@@ -25,7 +25,7 @@ import CtxAST   ( Alt(..), Bind(..), Con(..)
                 , Ctx(..), GBind(..), Name, Term )
 import CtxKind  (CtxKind(..))
 import CtxUtils (isTerm, bindBinder, hasHoles, reindexBinds)
-import Utils    (singleton, noDupes)
+import Utils    (noDupes)
 import qualified SourceParserLib as SPL
 
 import IndentationParserLib
@@ -34,11 +34,11 @@ import IndentationParserLib
   , bracket
   , chainl1
   , choice
-  , colons_
   , comma_
   , dots_
   , emptyhole_
   , eq_
+  , ifCons_
   , isSymChar
   , lbrack_
   , lparen_
@@ -104,8 +104,8 @@ tBind  = TBind <$> SPL.tBindName <*> (eq_ *> term)
 
 -- Contexts/terms: -- 
 
-ctx :: Parser Ctx
-ctx  = (list +++ nonAppCtx) `chainl1` app
+--ctx :: Parser Ctx
+--ctx  = (list +++ nonAppCtx) `chainl1` app
 
 term :: Parser Term 
 term  = ctx >>= \c -> c <$ guard (isTerm c)
@@ -119,9 +119,6 @@ ctx'  = ctx >>= \c -> c <$ guard (hasHoles c)
 
 var :: Parser Ctx
 var  = SPL.var Var
-
-nonSymVar :: Parser Ctx 
-nonSymVar  = SPL.nonSymVar Var
 
 litInt :: Parser Ctx
 litInt  = SPL.litInt LitInt 
@@ -175,45 +172,27 @@ alt'  = SPL.alt (\con ns ctx -> Alt con ns ctx 0) ctx
 list :: Parser Ctx
 list  = choice 
          [ sugar1    -- [LitInt]
-         , sugar2    -- [LitInt]
+         , sugar2    -- [LitInt] with range
          , sugar3    -- [LitStr]
-         , sugar4a   -- (::) <int> xs, where xs is [LitInt]/[Var]/Var
-         , sugar4b   -- (::) <str> xs, where xs is [LitStr]/[Var]/Var
-         , sugar4c   -- (::) <var> xs, where xs is [..]
-         , sugar5a   -- infix 4a
-         , sugar5b   -- infix 4b
-         , sugar5c   -- infix 4c
-         , sugar6    -- (::) x xs, x :: xs, [x], [] where x and xs Var
+         , sugar4    -- postfix (:)
+         , sugar5    -- infix   (:)
+         , sugar6    -- singleton
          ]
- where
+ where 
    -- [LitInt]
-   sugar1  = toList <$> bracket lbrack_ (litInt `sepby0` comma_) rbrack_  
+   sugar1 = toList <$> bracket lbrack_ (litInt `sepby0` comma_) rbrack_  
    -- [st..fi] for [LitInt]
-   sugar2  = toList <$> bracket lbrack_ ((\st fi -> fmap LitInt [st..fi]) 
-                                           <$> natural
-                                           <*> (dots_ *> natural)) 
-                                rbrack_
+   sugar2 = toList <$> bracket lbrack_ ((\st fi -> fmap LitInt [st..fi]) 
+                                         <$> natural
+                                         <*> (dots_ *> natural)) 
+                               rbrack_
    -- [LitStr]
-   sugar3  = toList <$> bracket lbrack_ (litStr `sepby0` comma_) rbrack_
-   -- (::) <int> xs, where xs is [LitInt]/[Var]/Var
-   sugar4a = AppD CONS <$> sequence [pfCons_ *> litInt, nonStrSugars +++ nonSymVar]
-   -- (::) <str> xs, where xs is [LitStr]/[Var]/Var
-   sugar4b = AppD CONS <$> sequence [pfCons_ *> litStr, nonIntSugars +++ nonSymVar]
-   -- (::) <var> xs, where xs is [..]
-   sugar4c = AppD CONS <$> sequence [pfCons_ *> nonSymVar, list]
-   -- <int> :: xs, where xs is [LitInt]/[Var]/Var
-   sugar5a = AppD CONS <$> sequence [litInt <* colons_, nonStrSugars +++ nonSymVar]
-   -- <str> :: xs, where xs is [LitStr]/[Var]/Var
-   sugar5b = AppD CONS <$> sequence [litStr <* colons_, nonIntSugars +++ nonSymVar]
-   -- <var> :: xs, where xs is [..]
-   sugar5c = AppD CONS <$> sequence [nonSymVar <* colons_, list]
-   -- (::) x xs/x :: xs/[x]/[], where x and xs Var
-   sugar6  = fmap Var <$> SPL.listVar >>= \vs -> 
-             if | null vs      -> return (AppD NIL [])
-                | singleton vs -> return (toList vs)
-                | otherwise    -> return (AppD CONS vs)
-   nonIntSugars = choice [sugar3, sugar4b, sugar4c, sugar5b, sugar5c, sugar6]
-   nonStrSugars = choice [sugar1, sugar2, sugar4a, sugar4c, sugar5a, sugar5c, sugar6]
+   sugar3 = toList <$> bracket lbrack_ (litStr `sepby0` comma_) rbrack_
+   -- (:) ac1 ac2, where ac1 and ac2 are atomic contexts
+   sugar4 = AppD CONS <$> sequence [pfCons_ *> aCtx, aCtx]
+   -- ac1 : ac2 : .. : acn where ac1, ac2, .., acn are atomic contexts
+   sugar5 = AppD CONS <$> sequence [aCtx <* ifCons_, aCtx]
+   sugar6 = (\actx -> AppD CONS [actx, AppD NIL []]) <$> bracket lbrack_ aCtx rbrack_
 
 hole :: Parser Ctx
 hole  = const Hole <$> emptyhole_
@@ -235,22 +214,29 @@ cVar  = uncurry CVar
           <*> (const Nothing <$> emptyhole_) 
          -- Substituted.
           +++ (Just <$> bracket lbrack_ ctx rbrack_) 
-                                                         
-bCtx :: Parser Ctx
-bCtx  = bracket lparen_ ctx rparen_
+                                                    
+-- Atomic context
+aCtx :: Parser Ctx 
+aCtx  = choice 
+         [ var                               -- Variable
+         , cVar                              -- Context variable
+         , litInt                            -- Integer literal
+         , litStr                            -- String literal
+         , hole                              -- Hole
+      -- , dcon                              -- Data constructor
+         , bracket lparen_ ctx rparen_       -- Parenthesised context
+         ]
 
-nonAppCtx :: Parser Ctx
-nonAppCtx  = choice [ litInt  -- LitInt
-                    , litStr  -- LitStr
-                    , abs     -- Abs
-                    , tick    -- Tick 
-                    , tel     -- Let
-                    , esac    -- Case
-                    , hole    -- Hole
-                    , cVar    -- CVar
-                    , var     -- Var
-                    , bCtx    -- ( <ctx> )
-                    ]
+-- Context
+ctx :: Parser Ctx
+ctx  = choice 
+        [ (list +++ aCtx) `chainl1` app    -- Application
+        , aCtx                             -- Atomic context
+        , abs                              -- Abstraction
+        , tel                              -- Let statement
+        , esac                             -- Case statement
+        , tick                             -- Tick 
+        ]
 
 -------------------------------------------------------------------------------
 -- Helpers: --

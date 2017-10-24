@@ -29,13 +29,13 @@ import IndentationParserLib
   , bracket
   , case_
   , choice
-  , colons_
   , dot_
   , eq_
   , fwdslash_
   , identifier
   , in_
   , integer
+  , ifCons_
   , lbrace_
   , lbrack_
   , let_
@@ -79,7 +79,7 @@ import Control.Monad  (guard)
 reserved :: [String]
 reserved  = [ "let", "in", "case", "of", "->", ",", "[", "]" 
             ,  "[]", "::", ".", "=", "'", "`", ":=", "..", ":" 
-            ,  "_", "[-]", "(::)", ";"
+            ,  "_", "[-]", "(::)", ";", "-"
             ]
 
 {-- Names that aren't reserved: -----------------------------------------------
@@ -148,7 +148,7 @@ litStr :: (String -> a) -> Parser a
 litStr  = (<$> str)
 
 abs :: (Name -> b -> a) -> Parser b -> Parser a 
-abs f p = f <$> (fwdslash_ +++ plambda_ *> absBindName) <*> (dot_ *> p)
+abs f p = f <$> ((fwdslash_ +++ plambda_) *> absBindName) <*> (dot_ *> p)
 
 tick :: (a -> a) -> Parser a -> Parser a
 tick f p = f <$> (tick_ +++ ptick_ *> p)
@@ -204,12 +204,12 @@ listVar  = choice [ pfCons     -- Prefix CONS
                   , nil        -- NIL
                   ]
   where 
-    -- (::) x xs
+    -- (:) x xs
     pfCons    = sequence [pfCons_ *> nonSymVarName, nonSymVarName] 
-    -- x::xs/(x::xs)
-    ifCons    = sequence [nonSymVarName <* colons_, nonSymVarName] 
+    -- x:xs/(x:xs)
+    ifCons    = sequence [nonSymVarName <* ifCons_, nonSymVarName] 
                 +++ bracket lparen_ (sequence [nonSymVarName 
-                        <* colons_, nonSymVarName]) rparen_
+                        <* ifCons_, nonSymVarName]) rparen_
     -- [x]
     singleton = return <$> bracket lbrack_ nonSymVarName rbrack_
     -- [] 

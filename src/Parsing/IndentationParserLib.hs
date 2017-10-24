@@ -66,6 +66,7 @@ module IndentationParserLib
   , emptyhole_  
   , eq_        
   , fwdslash_ 
+  , ifCons_
   , in_         
   , langle_     
   , lbrace_   
@@ -97,8 +98,8 @@ module IndentationParserLib
   ) where 
 
 import Prelude hiding             (abs, print)
-import Data.Char                  ( isAlpha, isAlphaNum, isDigit, isLower
-                                  , isPrint, isSpace, isUpper )
+import Data.Char                  ( isAlpha, isAlphaNum, isDigit, isAsciiLower
+                                  , isPrint, isSpace, isAsciiUpper )
 import Control.Monad.Reader       (ReaderT, ask, local, runReaderT)
 import Control.Monad.State.Strict ( MonadState, StateT(..), get, guard
                                   , modify, mplus, mzero, put, void )
@@ -229,12 +230,7 @@ char  = sat . (==)
 
 symChar :: Parser Char 
 symChar  = sat isSymChar
-
-isSymChar  :: Char -> Bool 
-isSymChar c = c >= '!'
-                && c <= '@' 
-                && c `notElem` "()$0123456789" 
-                               
+                        
 digit :: Parser Char 
 digit  = sat isDigit
 
@@ -242,10 +238,10 @@ alpha :: Parser Char
 alpha  = sat isAlpha
 
 upper :: Parser Char                 
-upper  = sat isUpper
+upper  = sat isAsciiUpper
 
 lower :: Parser Char
-lower  = sat isLower
+lower  = sat isAsciiLower
 
 alphaNum :: Parser Char
 alphaNum  = sat isAlphaNum
@@ -325,11 +321,11 @@ sym  = token . string
 pChar :: Char -> Parser String 
 pChar c  = token $ return <$> char c
 
--- Lower -> alphanum*
+-- lower alphanum*
 identifier :: Parser String 
 identifier  = token ident
 
--- Upper -> alphanum*
+-- upper alphanum*
 uIdentifier :: Parser String 
 uIdentifier  = token uIdent
 
@@ -353,7 +349,7 @@ emptyhole_, nil_          ::  Parser String
 comment_, semicolon_      ::  Parser String
 mid_, quote_, rangle_     ::  Parser String
 langle_ ,ptick_, plambda_ ::  Parser String
-parr_                     ::  Parser String
+parr_, ifCons_            ::  Parser String
 
 let_        = sym "let"
 in_         = sym "in"
@@ -367,7 +363,8 @@ dot_        = sym "."
 dots_       = sym ".."
 comma_      = sym ","
 colons_     = sym "::"
-pfCons_     = sym "(::)"
+ifCons_     = sym ":"
+pfCons_     = sym "(:)"
 coloneq_    = sym ":="
 tick_       = sym "`"
 lparen_     = sym "("
@@ -390,3 +387,11 @@ quote_      = sym "\'"
 ptick_      = pChar '\10004'
 plambda_    = pChar '\955'
 parr_       = pChar '\10142'
+
+-- Helpers: -------------------------------------------------------------------
+
+-- Valid symbolic characters, to be used in symbolic variable names
+isSymChar :: Char -> Bool 
+isSymChar c = c >= '!'
+                && c <= '@' 
+                && c `notElem` "()$0123456789"
