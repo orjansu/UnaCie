@@ -13,6 +13,8 @@ import CtxKind   (CtxKind(..))
 import CtxPatAST (CtxPat)
 import Utils     (deleteAtIdx)
 
+import Data.List (nub)
+
 {-
   <TO-DO>: - Long term goal is to introduce a mechanism that allows users to 
              verify these are cost-equivalent. Then mark them as safe/unsafe 
@@ -57,10 +59,10 @@ ctxKindToProj APP  = app
 -- Insert cost-equiv. contexts of a specific kind
 insertCtxEqs :: [CtxPat] -> CtxKind -> CtxEqLib -> CtxEqLib
 insertCtxEqs pcs k lib = case k of 
-  STD  -> lib { std  = std  lib ++ pcs } 
-  VAL  -> lib { val  = val  lib ++ pcs } 
-  EVAL -> lib { eval = eval lib ++ pcs } 
-  APP  -> lib { app  = app  lib ++ pcs }
+  STD  -> lib { std  = nub $ std  lib ++ pcs } 
+  VAL  -> lib { val  = nub $ val  lib ++ pcs } 
+  EVAL -> lib { eval = nub $ eval lib ++ pcs } 
+  APP  -> lib { app  = nub $ app  lib ++ pcs }
 
 -- Delete a specific cost-equiv. context of a given kind;
 -- Fails if incorrect index.
