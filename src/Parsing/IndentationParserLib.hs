@@ -394,4 +394,4 @@ parr_       = pChar '\10142'
 isSymChar :: Char -> Bool 
 isSymChar c = c >= '!'
                 && c <= '@' 
-                && c `notElem` "()$0123456789"
+                && c `notElem` "()$\"0123456789"

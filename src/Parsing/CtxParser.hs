@@ -18,6 +18,7 @@ module CtxParser
   , list     -- List sugars.
   , tBind
   , term
+  , litStr
 
   ) where 
 
