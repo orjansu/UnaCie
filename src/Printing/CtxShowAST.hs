@@ -503,8 +503,8 @@ pprCon _          _    _   _  _ = invalidC
 
 conWidth :: Con  -> [Name] -> Int 
 conWidth VARIABLE   [ns] = length ns
-conWidth CONS       [ns] = length ns + 2
-conWidth CONS       nss  = (sum $ fmap length nss) + 6                                  
+conWidth CONS       [ns] = length ns + 1
+conWidth CONS       nss  = (sum $ fmap length nss) + 5                                  
 conWidth NIL        []   = 2
 conWidth DEFAULT    []   = 1
 conWidth (LITINT i) []   = length (show i)
@@ -534,7 +534,7 @@ pprList' :: ( L_Ctx ShowSettings
 pprList' (L_AppD (NIL, [], _), _, _) = []
 pprList' (L_AppD (CONS, [sc1, sc2], ss), map, f) 
  = ppr (lCtxLabelCombine f ss sc1, map, f) 
-    : pprList (lCtxLabelCombine f ss sc2, map, f)
+    : pprList' (lCtxLabelCombine f ss sc2, map, f)
 pprList' x = [ppr x]
 
 -------------------------------------------------------------------------------
