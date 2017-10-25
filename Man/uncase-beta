@@ -1,0 +1,40 @@
+ESC[1mNAMEESC[m    uncase-beta - analogous to beta expansion, but for case statements.
+
+ESC[1mRELATIONESC[m 
+        cost-equivalent: ≲≳ 
+
+ESC[1mSYNOPSISESC[m
+        uncase-beta SRC_CODE
+
+ESC[1mDESCRIPTIONESC[m
+        uncase-beta essentially undoes case analysis (opposite to case-beta).
+
+        Note that the command's parameter must be a compatible case statement. 
+        That is, for a term T currently being transformed, if R reduces to T via 
+        a case-beta reduction, then R can be provided as a parameter to unbeta.
+   
+ESC[1mEXAMPLESESC[m
+
+    Correct application of uncase-beta:
+
+      unie> trans $1$
+      [1]> uncase-beta $ case [1,2] of { (x : xs) -> x; [] -> "error: empty list" }$
+      case [1,2] of
+       (x : xs) ➞ x
+       []       ➞ "error: empty list"
+
+    Incorrect applications of uncase-beta:
+
+      unie> trans $1$
+      [1]> uncase-beta $ case [1,2] of { [] -> "error: empty list" }$
+      Param. error: case not exhaustive.
+
+      unie> trans $1$
+      [1]> uncase-beta $ case [] of { [] -> "error: empty list" }$
+      Param. error: incompatible case statement.
+
+ESC[1mNOTESESC[m
+        uncase-beta is only available when the system is in TRANS or TRANSCRIPT mode.
+
+ESC[1mSEE ALSOESC[m
+        case-beta

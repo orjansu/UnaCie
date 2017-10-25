@@ -1,0 +1,37 @@
+ESC[1mNAMEESC[m    case-beta - analogous to beta reduction, but for case statements.
+
+ESC[1mRELATIONESC[m 
+        cost-equivalent: ≲≳ 
+
+ESC[1mSYNOPSISESC[m
+        case-beta 
+   
+ESC[1mEXAMPLESESC[m
+
+    Correct application of case-beta:
+
+      unie> trans $ case [1,2] of { (x : xs) -> x; [] -> "error: empty list" }$
+      case [1,2] of
+       (x : xs) ➞ x
+       []       ➞ "error: empty list"
+      [1]> case-beta
+      ≲≳ 1
+
+    Incorrect applications of case-beta:
+
+      unie> trans $foo$
+      foo 
+      [1]> case-beta
+      Error: not a case statement.
+
+      unie> trans $ case [1,2] of { [] -> "error: empty list" }$
+      case [1,2] of
+       [] ➞ "error: empty list"   
+      [1]> case-beta
+      Error: case not exhaustive.
+      
+ESC[1mNOTESESC[m
+        case-beta is only available when the system is in TRANS or TRANSCRIPT mode.
+
+ESC[1mSEE ALSOESC[m
+        uncase-beta

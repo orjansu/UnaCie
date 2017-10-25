@@ -134,6 +134,13 @@ kureCmdSettings  = Map.fromList
                    , interp  = TickKureCmd.interp_beta
                    })
  ,
+  ("beta-all"
+  , KureCmdSetting { rel     = R_CE
+                   , matcher = TickKureCmd.matcher_betaAll
+                   , refiner = TickKureCmd.refiner_beta
+                   , interp  = TickKureCmd.interp_beta
+                   })
+ ,
   ("unbeta"
   , KureCmdSetting { rel     = R_CE
                    , matcher = TickKureCmd.matcher_unbeta

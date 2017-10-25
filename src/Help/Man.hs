@@ -6,6 +6,8 @@ module Man (lookupMan) where
 lookupMan :: String -> Maybe [String]
 lookupMan s = case s of
   "add-lib"              -> Just addLibCmd
+  "beta"                 -> Just betaCmd
+  "beta-all"             -> Just betaAllCmd
   "define"               -> Just defineCmd
   "del-lib"              -> Just delLibCmd
   "end-trans"            -> Just endTransCmd
@@ -34,6 +36,7 @@ lookupMan s = case s of
   "show-scripts"         -> Just showScriptsCmd
   "top"                  -> Just topCmd
   "trans"                -> Just transCmd
+  "unbeta"               -> Just unbetaCmd
   "up"                   -> Just upCmd
   "zoom-in"              -> Just zoomInCmd
   "zoom-out"             -> Just zoomOutCmd
@@ -183,6 +186,64 @@ upCmd  =
   , "    "
   , "SEE ALSO"
   , "        top"
+  ]
+
+unbetaCmd :: [String]
+unbetaCmd  =
+  [ "\ESC[1mNAME\ESC[m    unbeta - beta expansion."
+  , "    "
+  , "\ESC[1mRELATION\ESC[m "
+  , "        cost-equivalent: \8818\8819 "
+  , "    "
+  , "\ESC[1mSYNOPSIS\ESC[m"
+  , "        unbeta TERM_SRC_CODE"
+  , "    "
+  , "\ESC[1mDESCRIPTION\ESC[m"
+  , "        unbeta is used to apply beta expansion. unbeta is opposite to commands "
+  , "        beta and beta-all (not just beta), as its parameter can contain "
+  , "        a (curried) function with arbitrary arity."
+  , "    "
+  , "        Note that the command's parameter must be a compatible function "
+  , "        application. That is, for a term T currently being transformed, if R "
+  , "        reduces to T via one or more applications of beta reduction, then R can "
+  , "        be provided as a parameter to unbeta."
+  , "   "
+  , "\ESC[1mEXAMPLES\ESC[m"
+  , "    "
+  , "    Correct applications of unbeta:"
+  , "    "
+  , "        unie> trans $a$"
+  , "        a"
+  , "        [1]> unbeta $(\955x.x) a$"
+  , "        \8818\8819 (\955x.x) a"
+  , "    "
+  , "        unie> trans $a$"
+  , "        a"
+  , "        [1]> unbeta $(\955x.\955y.x) a b$"
+  , "        \8818\8819 (\955x.\955y.x) a b"
+  , "    "
+  , "    Incorrect applications of unbeta:"
+  , "        "
+  , "        unie> trans $a$"
+  , "        a"
+  , "        [1]> unbeta $foo$"
+  , "        Parameter error: not a function application."
+  , "    "
+  , "        unie> trans $a$"
+  , "        a"
+  , "        [1]> unbeta $(\955x.\955y.x) a b c$"
+  , "        Error: invalid function application [too many arguments]."
+  , "    "
+  , "        unie> trans $a$"
+  , "        a"
+  , "        [1]> unbeta $(\955x.\955y.x) 1 2$"
+  , "        Error: incompatible function application."
+  , "    "
+  , "\ESC[1mNOTES\ESC[m"
+  , "        unbeta is only available when the system is in TRANS or TRANSCRIPT mode."
+  , "    "
+  , "\ESC[1mSEE ALSO\ESC[m"
+  , "        beta, beta-all"
   ]
 
 transCmd :: [String]
@@ -1104,7 +1165,7 @@ delLibCmd  =
 
 defineCmd :: [String]
 defineCmd  =
-  [ "NAME"
+  [ "\ESC[1mNAME\ESC[m"
   , "        define - uses the term under transformation to define a binding to add "
   , "                 to UNIE's library of definitions. Once added, the new binding "
   , "                 is subsequently unapplied."
@@ -1153,6 +1214,107 @@ defineCmd  =
   , "    "
   , "SEE ALSO"
   , "        CVAR, TERM_SRC_NAME, TRANS, TRANSCRIPT, unapply"
+  ]
+
+betaAllCmd :: [String]
+betaAllCmd  =
+  [ "\ESC[1mNAME\ESC[m    beta-all - (repeated) beta reduction for curried functions."
+  , "    "
+  , "\ESC[1mRELATION\ESC[m "
+  , "        cost-equivalent: \8818\8819 "
+  , "    "
+  , "\ESC[1mSYNOPSIS\ESC[m"
+  , "        beta-all"
+  , "    "
+  , "\ESC[1mDESCRIPTION\ESC[m"
+  , "        In the case where a (curried) function is applied to multiple arguments, "
+  , "        beta-all will apply beta reduction to the nested application repeatedly "
+  , "        until all arguments have been consumed:"
+  , "    "
+  , "         (1) Beta reduce inner application"
+  , "               "
+  , "          \ESC[30m\ESC[48;5;252m(\955x.\955y.x) a\ESC[m b"
+  , "    "
+  , "         (2) Beta reduce outer application"
+  , "            "
+  , "          \ESC[30m\ESC[48;5;252m(\955y.a) b\ESC[m"
+  , "    "
+  , "         (3) Result"
+  , "    "
+  , "          \8818\8819 a"
+  , "    "
+  , "        Note that the given number of arguments must be less than or equal to "
+  , "        the arity of the function, otherwise the command will fail. (I.e.,"
+  , "        partial/full application is allowed). "
+  , "   "
+  , "\ESC[1mEXAMPLES\ESC[m"
+  , "    "
+  , "    Correct application of beta-all:"
+  , "    "
+  , "        unie> trans $(\955x.\955y.x) a b$"
+  , "        (\955x.\955y.x) a b"
+  , "        [1]> beta-all"
+  , "        \8818\8819 a"
+  , "    "
+  , "    Incorrect applications of beta-all:"
+  , "    "
+  , "        unie> trans $x$"
+  , "        x"
+  , "        [1]> beta-all"
+  , "        Error: not a function application."
+  , "    "
+  , "        unie> trans $(\955x.\955y.x) a b c$"
+  , "        (\955x.\955y.x) a b c"
+  , "        [1]> beta-all"
+  , "        Error: invalid function application [too many arguments]."
+  , "    "
+  , "\ESC[1mNOTES\ESC[m"
+  , "        beta-all is only available when the system is in TRANS or TRANSCRIPT mode."
+  , "    "
+  , "\ESC[1mSEE ALSO\ESC[m"
+  , "        beta, unbeta"
+  ]
+
+betaCmd :: [String]
+betaCmd  =
+  [ "\ESC[1mNAME\ESC[m    beta - beta reduction."
+  , "    "
+  , "\ESC[1mRELATION\ESC[m "
+  , "        cost-equivalent: \8818\8819 "
+  , "    "
+  , "\ESC[1mSYNOPSIS\ESC[m"
+  , "        beta "
+  , "   "
+  , "\ESC[1mEXAMPLES\ESC[m"
+  , "    "
+  , "    Correct application of beta:"
+  , "    "
+  , "        unie> trans $(\955x.x) a$"
+  , "        (\955x.x) a"
+  , "        [1]> beta"
+  , "        \8818\8819 a"
+  , "    "
+  , "    Incorrect applications of beta:"
+  , "    "
+  , "        unie> trans $x$"
+  , "        x"
+  , "        [1]> beta"
+  , "        Error: not a redex."
+  , "    "
+  , "        unie> trans $(\955x.\955y.x) a b$"
+  , "        (\955x.\955y.x) a b"
+  , "        [1]> beta               -- beta-all is valid here, but beta isn't."
+  , "        Error: not a redex.   "
+  , "        [1]> left               -- Instead, nav. to a redex to use beta."
+  , "        \8801 (\955x.\955y.x) a"
+  , "        [2]> beta"
+  , "        \8818\8819 \955y.a"
+  , "    "
+  , "\ESC[1mNOTES\ESC[m"
+  , "        beta is only available when the system is in TRANS or TRANSCRIPT mode."
+  , "    "
+  , "\ESC[1mSEE ALSO\ESC[m"
+  , "        beta-all, unbeta"
   ]
 
 addLibCmd :: [String]

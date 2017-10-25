@@ -1,4 +1,4 @@
-NAME
+ESC[1mNAMEESC[m
         define - uses the term under transformation to define a binding to add 
                  to UNIE's library of definitions. Once added, the new binding 
                  is subsequently unapplied.

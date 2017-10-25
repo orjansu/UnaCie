@@ -1,0 +1,38 @@
+ESC[1mNAMEESC[m    beta - beta reduction.
+
+ESC[1mRELATIONESC[m 
+        cost-equivalent: ≲≳ 
+
+ESC[1mSYNOPSISESC[m
+        beta 
+   
+ESC[1mEXAMPLESESC[m
+
+    Correct application of beta:
+
+        unie> trans $(λx.x) a$
+        (λx.x) a
+        [1]> beta
+        ≲≳ a
+
+    Incorrect applications of beta:
+
+        unie> trans $x$
+        x
+        [1]> beta
+        Error: not a redex.
+
+        unie> trans $(λx.λy.x) a b$
+        (λx.λy.x) a b
+        [1]> beta               -- beta-all is valid here, but beta isn't.
+        Error: not a redex.   
+        [1]> left               -- Instead, nav. to a redex to use beta.
+        ≡ (λx.λy.x) a
+        [2]> beta
+        ≲≳ λy.a
+
+ESC[1mNOTESESC[m
+        beta is only available when the system is in TRANS or TRANSCRIPT mode.
+
+ESC[1mSEE ALSOESC[m
+        beta-all, unbeta

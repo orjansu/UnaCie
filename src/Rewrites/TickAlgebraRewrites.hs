@@ -33,11 +33,11 @@ import qualified Data.Map as Map
 
 
 {-
-  <TO-DO>: - These should be generalised from R.
-           - uncaseEvalR is hacky.
+  <TO-DO>: - These should be generalised from R
+           - uncaseEvalR is hacky
            - make ungcAllR split binders if let will capture
            - unLetFlattenR accepts [Name], but cmd parser can't provide
-             that yet.
+             that yet
 
   Information:
   -----------------------------------------------------------------------------
@@ -46,49 +46,137 @@ import qualified Data.Map as Map
   Working notes:
   -----------------------------------------------------------------------------
   - We have two rewrites per tick law, one for each direction:
-    - Left to right is just the name of the law
+    - Left to right is just the name of the law;
     - Right to left has an 'un' prefix.
+  - The laws defined here are designed to be standalone, i.e., make no 
+    assumptions about their arguments, regardless of how they are used within
+    the system (unless /specifically/ stated otherwise).
 -}
 
-
--- ######### CHECKED #########
--- beta: ----------------------------------------------------------------------
-
--- Note: in this case it's safe for us to use evalR because beta reduction's
--- cannot encode general recursion, therefore it \must\ terminate.
+-------------------------------------------------------------------------------
+-- beta: --
+-------------------------------------------------------------------------------
 
 -- (\x.M) y <~> M[x:= y]
 betaR :: R Ctx 
-betaR  = prefixFailMsg "betaR failed" (acceptWithFailMsgR isRedex "not a redex." >> evalR)
+betaR  = prefixFailMsg "betaR failed: " $ redexAccepterT >> evalBetaR
 
--- M[x:= y] <~> (\x.M) y
+-- Generalisation of above that allows curried functions applied to multiple
+-- arguments to be evaluated in one go.
+-- Only accepts applications whereby the number of arguments <= the arity 
+-- of the function (i.e., partial/full application is allowed).
+betaAllR :: R Ctx 
+betaAllR  = prefixFailMsg "betaAllR failed: " $ do 
+  -- Check is function application.
+  funAppAccepterT
+  funApp <- idR
+  -- Check number of arguments and number of abstractions.
+  let i = numArgs funApp
+  let j = numAbs (fun funApp)
+  -- Only accept partial or full application.
+  guardMsg (i <= j) "invalid function application [too many arguments]."
+  -- Consume all given arguments.
+  andR $ replicate i evalBetaR
+
+-- M[x:= a, y:= b, ..] <~> (\x.\y. .. M) a b ..
+-- A generalised version of beta-expansion.
 unbetaR :: Ctx -> R Ctx 
 unbetaR ctx = prefixFailMsg "unbetaR failed: " $ 
-  if isRedex ctx 
+  if isFunApp ctx 
   then do 
-    reduct <- constT $ applyR (andR $ replicate (numArgs ctx) evalR) emptyKureContext ctx
-    guardMsgM (contextfreeT $ ctxAlphaEq reduct) "invalid redex."
-    return ctx
-  else fail "not a redex."
+    -- Beta reduce the parameter to check compatability.
+    reduct <- prefixFailMsg "parameter error: " $ constT $
+     applyR betaAllR emptyKureContext ctx
+    -- Check reduct is alpha-equiv.
+    ctx <$ guardMsgM (contextfreeT $ ctxAlphaEq reduct) "parameter error: \
+     \incompatible function application."
+  else fail "parameter error: not a function application."
 
 
 
--- ######### CHECKED #########
--- case beta: -----------------------------------------------------------------
+-------------------------------------------------------------------------------
+-- case beta: --
+-------------------------------------------------------------------------------
 
 -- Note: in this case it's safe for us to use substCaseR because case 
--- reduction's cannot encode general recursion, therefore it \must\ terminate.
+-- reduction cannot encode general recursion, therefore it \must\ terminate.
 
 -- case c_j y_ of { c_i x_i_ -> M_i } <~> M_j [x_j_:= y_]
 caseBetaR :: R Ctx 
-caseBetaR  = prefixFailMsg "case-beta failed: " $ caseAccepterT >> substCaseR
+caseBetaR  = prefixFailMsg "caseBetaR failed: " $ caseAccepterT >> substCaseR
 
 --  M_j [x_j:= y] <~> case c_j y of { c_i x_i -> M_i }
 uncaseBetaR :: Ctx -> R Ctx 
 uncaseBetaR ctx = prefixFailMsg "uncaseBaseR failed: " $ do 
-  reduct <- constT $ applyR substCaseR emptyKureContext ctx
-  guardMsgM (contextfreeT $ ctxAlphaEq reduct) "invalid case."
-  return ctx
+  if isCase ctx 
+  then do 
+    -- Case reduce the parameter to check compatability.
+    reduct <- prefixFailMsg "parameter error: " $ constT $ 
+     applyR substCaseR emptyKureContext ctx
+    -- Check reduct is alpha-equiv.
+    ctx <$ guardMsgM (contextfreeT $ ctxAlphaEq reduct) "parameter error: \
+     \incompatible case statement."
+  else fail "parameter error: not a case statement."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -877,12 +965,24 @@ evalInContextR lib
 
 
 -- Helpers: -------------------------------------------------------------------
+                 
+-- Calculate the number of arguments supplied to a (curried) function                                           
+numArgs :: Ctx -> Int 
+numArgs (App Abs{} _) = 1 
+numArgs (App c1 _)    = 1 + numArgs c1
+numArgs _             = 0
 
-                                                                      
-numArgs                 ::  Ctx -> Int 
-numArgs (App Abs{} _)    =  1 
-numArgs (App c1 c2)      =  numArgs c1 + numArgs c2 
-numArgs _                =  1
+-- Project out the function from a function application application
+fun :: Ctx -> Ctx 
+fun (App c1 _) = fun c1 
+fun ctx        = ctx
+
+-- Calculate the number of abstractions in a (curried) function
+numAbs :: Ctx -> Int 
+numAbs (Abs _ ctx) = 1 + numAbs ctx
+numAbs _           = 0
+
+
 
 -- Standard check for a context/substition pair
 ctxSubstCheckT :: Ctx -> Ctx -> CtxKind -> CtxEqLib -> T Ctx ()

@@ -1,0 +1,59 @@
+ESC[1mNAMEESC[m    unbeta - beta expansion.
+
+ESC[1mRELATIONESC[m 
+        cost-equivalent: ≲≳ 
+
+ESC[1mSYNOPSISESC[m
+        unbeta SRC_CODE
+
+ESC[1mDESCRIPTIONESC[m
+        unbeta is used to apply beta expansion. unbeta is opposite to commands 
+        beta and beta-all (not just beta), as its parameter can contain a 
+        (curried) function with arbitrary arity.
+
+        Note that the command's parameter must be a compatible function 
+        application. That is, for a term T currently being transformed, if R 
+        reduces to T (or an alpha-equivalent T') via one or more applications of 
+        beta reduction, then R can be provided as a parameter to unbeta.
+   
+ESC[1mEXAMPLESESC[m
+
+    Correct applications of unbeta:
+
+        unie> trans $a$
+        a
+        [1]> unbeta $(λx.x) a$
+        ≲≳ (λx.x) aa
+
+        unie> trans $a$
+        a
+        [1]> unbeta $(λx.λy.x) a b$
+        ≲≳ (λx.λy.x) a b
+
+        unie> trans $λx.x$
+        λx.x
+        [1]> unbeta $(λx.λy.y) a$    -- Alpha-equiv. to λx.x.
+        ≲≳ (λx.λy.y) a
+
+    Incorrect applications of unbeta:
+        
+        unie> trans $a$
+        a
+        [1]> unbeta $foo$
+        Param. error: not a function application.
+
+        unie> trans $a$
+        a
+        [1]> unbeta $(λx.λy.x) a b c$
+        Param. error: invalid function application [too many arguments].
+
+        unie> trans $a$
+        a
+        [1]> unbeta $(λx.λy.x) 1 2$
+        Param. error: incompatible function application.
+
+ESC[1mNOTESESC[m
+        unbeta is only available when the system is in TRANS or TRANSCRIPT mode.
+
+ESC[1mSEE ALSOESC[m
+        beta, beta-all

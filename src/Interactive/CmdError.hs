@@ -7,9 +7,9 @@ import Utils         (singleton, allEq)
 import PPLib         ( highlightError, highlightCritError
                      , squashString, unlines', indentHighlightError )
 import PrintSettings (terminalLineWidth)
-import Utils         (prepStr)
+import Utils         (stripSpace)
 
-import Data.List  (nub)
+import Data.List  (isInfixOf, nub)
 import Data.List.Split (splitOn)
 import Data.Maybe (fromMaybe)
 
@@ -145,20 +145,22 @@ sortParamErrors pss  =  fromMaybe (head bestErrors) (combine bestErrors)
                              toIdx ExtraParam{}    =  1 :: Int
                              toIdx MissingParam{}  =  2 :: Int
 
--- Output error message to terminal width, highlighted red
+-- Output error message to terminal width, highlighted red.
 outputError :: String -> String
 outputError = unlines' . highlightError . squashString (terminalLineWidth - 2) 
 
--- Output error message to terminal width, highlighted red
+-- Output error message to terminal width, highlighted red.
 outputCritError :: String -> String
 outputCritError = unlines' . highlightCritError . squashString (terminalLineWidth - 2) 
 
--- As above, but we have an additional line at the top
+-- As above, but we have an additional line at the top.
 outputError' :: String -> String -> String
 outputError' title s = unlines' [highTitle, indentHighlightError s] -- unlines' errs
   where highTitle = unlines' $ highlightError [title]
 
-
--- Drop the kure information from error messages for now
+-- Drop the Kure fail information from error messages for now.
 dropKureInfo :: String -> String 
-dropKureInfo = prepStr . last . splitOn ":"
+dropKureInfo s = stripSpace . unwords $  (fmap (\s -> s ++ ":") l) ++ r
+ where 
+      ss = filter (\s -> not $ "failed" `isInfixOf` s) . splitOn ":" $ s
+      (l, r) = splitAt (length ss - 1) ss

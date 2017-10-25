@@ -4,12 +4,13 @@ module Eval
   ( eval
   , evalR
   , substLetR
+  , evalBetaR
   ) where 
 
 import Classes   (addLetBinders)
 import Crumb     (Crumb(..))
 import CtxAST    (Bind(..), Ctx(..))
-import Kure      ( absAllR, appAnyR, appDAnyR'
+import Kure      ( absAllR, appAllR, appAnyR, appDAnyR'
                  , altAllR, bindAllR, caseAllR
                  , cVarAllR, tickAllR,  letAllR
                  )
@@ -19,7 +20,7 @@ import Universes (U)
 
 import Language.KURE ( (<+), applyR, extractR
                      , idR, pathT, promoteR
-                     , repeatR, rewrite
+                     , repeatR, rewrite, setFailMsg
                      )
 
 {-
@@ -50,6 +51,15 @@ evalR  = idR >>= \case
              <+ substCaseR
   CVar{} -> cVarAllR idR idR evalR
   _      -> fail "nothing to evaluate"
+
+
+evalBetaR :: R Ctx 
+evalBetaR = setFailMsg "evalBetaR failed: " $ idR >>= \case 
+  App (Abs ns _) arg -> extractR $ pathT [App_Fun, Abs_Body] 
+                         (promoteR $ substTryR ns arg :: R U)
+  App{} -> appAllR evalBetaR idR 
+  _ -> fail "not a redex."
+
 
 {-
   Substitution for mututally recursive let bindings:

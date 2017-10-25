@@ -15,6 +15,7 @@ module ParamRefine
   , ctxSrcCodeRefine      -- Accepts a Ctx defined in source code.
   , ctxSrcNameRefine      -- Accepts a context source name (uppercase)
   , fileRefine            -- Accepts a filepath.
+  , funAppSrcCodeRefine   -- Accepts a function application.
   , numberRefine          -- Accepts a positive integer.
   , propRefine            -- Accepts a proof proposition.
   , redexSrcCodeRefine    -- Accepts a reducible expression.
@@ -31,7 +32,7 @@ import CmdAST               (LocatedRawParam(..), RawParam(..), Param(..))
 import CmdError             (ParamError(..), sortParamErrors)
 import CtxKind              (strToCtxKind)
 import CtxPatAST            (UPat(..))
-import CtxUtils             (isRedex)
+import CtxUtils             (isFunApp, isRedex)
 import IndentationParserLib (runParser)
 import ParsingUtils         (expectedError)
 import Relations            (Relation, strToRel)
@@ -161,23 +162,9 @@ termSrcCodeRefine (LocatedRawParam rp@(RawSrcCode s) pos) =
 termSrcCodeRefine (LocatedRawParam rp pos) =  
   Left [InvalidParam (expectedError (show rp) "SrcCode :: Term") pos]
 
--- Case source code.
-caseSrcCodeRefine :: LocatedRawParam -> Either [ParamError] Param     
-caseSrcCodeRefine (LocatedRawParam rp@(RawSrcCode s) pos) = 
-  case runParser P.esac s of
-    Just t  -> Right (TermSrcCode $ UCtx t)
-    Nothing -> Left [InvalidParam (expectedError (show rp) "SrcCode :: Case") pos]
-caseSrcCodeRefine (LocatedRawParam rp pos) = 
-  Left [InvalidParam (expectedError (show rp) "SrcCode :: Case") pos]         
+        
 
--- Redex source code.
-redexSrcCodeRefine :: LocatedRawParam -> Either [ParamError] Param 
-redexSrcCodeRefine (LocatedRawParam rp@(RawSrcCode s) pos) = 
-  case runParser P.term s of
-    Just t  | isRedex t -> Right (TermSrcCode $ UCtx t)
-    _ -> Left [InvalidParam (expectedError (show rp) "SrcCode :: Redex") pos]
-redexSrcCodeRefine (LocatedRawParam rp pos) = 
-  Left [InvalidParam (expectedError (show rp) "SrcCode :: Redex") pos]  
+ 
 
 -- List of bindings source code.
 -- We can only do one at a time for now.
@@ -276,3 +263,37 @@ ctxKindRefine (LocatedRawParam  rp@(RawCmdName s) pos) =
     Nothing -> Left [InvalidParam (expectedError (show rp) "CtxKind") pos]
 ctxKindRefine (LocatedRawParam rp pos) = Left [InvalidParam (show rp) pos]
 
+
+
+
+-- Refines for tick algebra commands: -----------------------------------------
+
+-- Redex source code.
+-- Accepts both terms and contexts.
+redexSrcCodeRefine :: LocatedRawParam -> Either [ParamError] Param 
+redexSrcCodeRefine (LocatedRawParam rp@(RawSrcCode s) pos) = 
+  case runParser P.ctx s of
+    Just t | isRedex t -> Right (SrcCode $ UCtx t)
+    _ -> Left [InvalidParam (expectedError (show rp) "SrcCode :: Redex") pos]
+redexSrcCodeRefine (LocatedRawParam rp pos) = 
+  Left [InvalidParam (expectedError (show rp) "SrcCode :: Redex") pos]  
+
+-- Function application source code.
+-- Accepts both terms and contexts.
+funAppSrcCodeRefine :: LocatedRawParam -> Either [ParamError] Param 
+funAppSrcCodeRefine (LocatedRawParam rp@(RawSrcCode s) pos) = 
+  case runParser P.ctx s of
+    Just t | isFunApp t -> Right (SrcCode $ UCtx t)
+    _ -> Left [InvalidParam (expectedError (show rp) "SrcCode :: FunApp") pos]
+funAppSrcCodeRefine (LocatedRawParam rp pos) = 
+  Left [InvalidParam (expectedError (show rp) "SrcCode :: FunApp") pos] 
+
+-- Case source code.
+-- Accepts both terms and contexts.
+caseSrcCodeRefine :: LocatedRawParam -> Either [ParamError] Param     
+caseSrcCodeRefine (LocatedRawParam rp@(RawSrcCode s) pos) = 
+  case runParser P.esac s of
+    Just t  -> Right (SrcCode $ UCtx t)
+    Nothing -> Left [InvalidParam (expectedError (show rp) "SrcCode :: Case") pos]
+caseSrcCodeRefine (LocatedRawParam rp pos) = 
+  Left [InvalidParam (expectedError (show rp) "SrcCode :: Case") pos] 

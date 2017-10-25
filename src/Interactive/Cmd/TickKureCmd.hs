@@ -43,24 +43,31 @@ import Text.PrettyPrint.HughesPJ
 -------------------------------------------------------------------------------
 -- beta: --
 -------------------------------------------------------------------------------
--- Beta reduction, doesn't require any parameters.
+-- Beta reduction. Doesn't require any parameters.
 
 matcher_beta :: Matcher
 matcher_beta  = cmdMatcherNoParams "beta" RawKureCmd
 
+matcher_betaAll :: Matcher 
+matcher_betaAll  = cmdMatcherNoParams "beta-all" RawKureCmd
+
 refiner_beta :: Refiner
-refiner_beta (RawKureCmd "beta" ps) = 
-  bimap ParamErr (KureCmd "beta") $ paramsRefine ps [[]]
+refiner_beta (RawKureCmd s ps) | s `elem` ["beta", "beta-all"] = 
+  bimap ParamErr (KureCmd s) $ paramsRefine ps [[]]
 refiner_beta _ = Left $ InternalErr $ WrongRefine "refiner_beta"
 
 interp_beta :: Interp
-interp_beta cmd@(KureCmd "beta" ps) mrel st
+interp_beta cmd@(KureCmd s ps) mrel st
   -- Only available in a transformation state.
-  | isTransState st = case ps of
-     [] -> applyRTermCurrPathLog (cmd, mrel) betaR 
-     _  -> outputCmdError $ InternalErr $ UnexpectedParams 
-             "interp_beta" $ fmap show ps
+  | isTransState st = case (s, ps) of
+     ("beta", [])     -> applyRTermCurrPathLog (cmd, mrel) betaR 
+     ("beta", _)      -> err ps 
+     ("beta-all", []) -> applyRTermCurrPathLog (cmd, mrel) betaAllR
+     ("beta-all", _)  -> err ps
+     _ -> outputCmdError $ InternalErr $ WrongInter "interp_beta"
   | otherwise = outputCmdError (StateErr st)
+  where err ps = outputCmdError $ InternalErr $ UnexpectedParams 
+                  "interp_beta" $ fmap show ps
 -- Error case.
 interp_beta _ _ _ = outputCmdError $ InternalErr $ WrongInter "interp_beta"
 
@@ -69,22 +76,22 @@ interp_beta _ _ _ = outputCmdError $ InternalErr $ WrongInter "interp_beta"
 -------------------------------------------------------------------------------
 -- unbeta: --
 -------------------------------------------------------------------------------
--- Unapply beta-reduction, needs a compatible redex parameter
--- to replace the reduct.
+-- Unapply beta reduction (i.e., beta expansion). Requires a compatible 
+-- function application parameter to replace the reduct.
 
 matcher_unbeta :: Matcher
 matcher_unbeta  = cmdMatcher "unbeta" RawKureCmd [[srcCodeMatcher]]
 
 refiner_unbeta :: Refiner
 refiner_unbeta (RawKureCmd "unbeta" ps) = 
-  bimap ParamErr (KureCmd "unbeta") $ paramsRefine ps [[redexSrcCodeRefine]]
+  bimap ParamErr (KureCmd "unbeta") $ paramsRefine ps [[funAppSrcCodeRefine]]
 refiner_unbeta _ = Left $ InternalErr $ WrongRefine "refiner_unbeta"
 
 interp_unbeta :: Interp
 interp_unbeta cmd@(KureCmd "unbeta" ps) mrel st
   -- Only available in a transformation state.
   | isTransState st = case ps of
-      [TermSrcCode (UCtx t)] -> applyRTermCurrPathLog (cmd, mrel) (unbetaR t)
+      [SrcCode (UCtx ctx)] -> applyRTermCurrPathLog (cmd, mrel) (unbetaR ctx)
       _ -> outputCmdError $ InternalErr $ UnexpectedParams 
              "interp_unbeta" $ fmap show ps
   | otherwise = outputCmdError (StateErr st)
@@ -137,7 +144,7 @@ interp_uncaseBeta :: Interp
 interp_uncaseBeta cmd@(KureCmd "uncase-beta" ps) mrel st
   -- Only available in a transformation state.
   | isTransState st = case ps of
-      [TermSrcCode (UCtx t)] -> applyRTermCurrPathLog (cmd, mrel) (uncaseBetaR t)
+      [SrcCode (UCtx ctx)] -> applyRTermCurrPathLog (cmd, mrel) (uncaseBetaR ctx)
       _ -> outputCmdError $ InternalErr $ UnexpectedParams
              "interp_uncaseBeta" $ fmap show ps
   | otherwise = outputCmdError (StateErr st)

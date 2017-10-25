@@ -27,6 +27,7 @@ module CtxUtils
   , isCVar
   , isCase
   , isDatatype
+  , isFunApp
   , isHole
   , isLet
   , isList
@@ -251,9 +252,14 @@ isTerm  = go
 
 -- Check if the given context is a reducible expression (redex).
 isRedex :: Ctx -> Bool 
-isRedex (App Abs{} _)     = True 
-isRedex (App ctx@App{} _) = isRedex ctx
-isRedex _                 = False  
+isRedex (App Abs{} _) = True 
+isRedex _             = False
+
+-- Check if the given context is a function application.
+isFunApp :: Ctx -> Bool 
+isFunApp (App Abs{} _)    = True 
+isFunApp (App c1@App{} _) = isFunApp c1
+isFunApp _                = False  
 
 -- Specific variables: --------------------------------------------------------
 

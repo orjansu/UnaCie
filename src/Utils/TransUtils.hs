@@ -72,8 +72,10 @@ module TransUtils
   , appDAccepterT
   , cVarAccepterT
   , caseAccepterT
+  , funAppAccepterT
   , holeAccepterT
   , letAccepterT
+  , redexAccepterT
   , tickAccepterT
   , valAccepterT
   , varAccepterT
@@ -111,8 +113,8 @@ import KureContext (emptyKureContext)
 import KureExtra   (concatMapT, liftT)
 import Universes   (L_U(..), U(..))
 import Utils       ((.*), concatMapM, groupOthers) 
-import CtxUtils    ( isAbs, isApp, isCVar, isCase, isDatatype
-                   , isHole, isLet, isNonSubstCVar
+import CtxUtils    ( isAbs, isApp, isCVar, isCase, isDatatype, isFunApp
+                   , isHole, isLet, isNonSubstCVar, isRedex
                    , isTick, isVal, isVar, lookupBind
                    , reindexBinds )
 import Kure        ( absT, altCtxT, altT, appDT, appT, bindCtxT
@@ -549,7 +551,7 @@ letAccepterT  :: Monad m => Transform c m Ctx ()
 letAccepterT   = void $ acceptWithFailMsgR isLet "not a Let."
 
 caseAccepterT :: Monad m => Transform c m Ctx ()
-caseAccepterT  = void $ acceptWithFailMsgR isCase "not a Case."
+caseAccepterT  = void $ acceptWithFailMsgR isCase "not a case statement."
 
 appDAccepterT :: Monad m => Transform c m Ctx ()
 appDAccepterT  = void $ acceptWithFailMsgR isDatatype "not an AppD."
@@ -562,6 +564,12 @@ cVarAccepterT  = void $ acceptWithFailMsgR isCVar "not a CVar."
 
 valAccepterT  :: Monad m => Transform c m Ctx ()
 valAccepterT   = void $ acceptWithFailMsgR isVal "not a Value."
+
+redexAccepterT :: Monad m => Transform c m Ctx ()
+redexAccepterT  = void $ acceptWithFailMsgR isRedex "not a redex." 
+
+funAppAccepterT :: Monad m => Transform c m Ctx ()
+funAppAccepterT  = void $ acceptWithFailMsgR isFunApp "not a function application." 
 
 -- Path helper functions: -----------------------------------------------------
 

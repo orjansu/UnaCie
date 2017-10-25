@@ -1,0 +1,55 @@
+ESC[1mNAMEESC[m    beta-all - (repeated) beta reduction for curried functions.
+
+ESC[1mRELATIONESC[m 
+        cost-equivalent: ≲≳ 
+
+ESC[1mSYNOPSISESC[m
+        beta-all
+
+ESC[1mDESCRIPTIONESC[m
+        In the case where a (curried) function is applied to multiple arguments, 
+        beta-all will apply beta reduction to the nested application repeatedly 
+        until all arguments have been consumed:
+
+         (1) Beta reduce inner application
+               
+          ESC[30mESC[48;5;252m(λx.λy.x) aESC[m b
+
+         (2) Beta reduce outer application
+            
+          ESC[30mESC[48;5;252m(λy.a) bESC[m
+
+         (3) Result
+
+          ≲≳ a
+
+        Note that the given number of arguments must be less than or equal to 
+        the arity of the function, otherwise the command will fail. (I.e.,
+        partial/full application is allowed). 
+   
+ESC[1mEXAMPLESESC[m
+
+    Correct application of beta-all:
+
+        unie> trans $(λx.λy.x) a b$
+        (λx.λy.x) a b
+        [1]> beta-all
+        ≲≳ a
+
+    Incorrect applications of beta-all:
+
+        unie> trans $x$
+        x
+        [1]> beta-all
+        Error: not a function application.
+
+        unie> trans $(λx.λy.x) a b c$
+        (λx.λy.x) a b c
+        [1]> beta-all
+        Error: invalid function application [too many arguments].
+
+ESC[1mNOTESESC[m
+        beta-all is only available when the system is in TRANS or TRANSCRIPT mode.
+
+ESC[1mSEE ALSOESC[m
+        beta, unbeta
