@@ -1,0 +1,122 @@
+ESC[1mOVERVIEWESC[m
+
+The University of Nottingham Improvement Engine (Unie) is an interactive tool 
+that supports inequational reasoning about program time efficiency in a 
+call-by-need setting. More specifically, the system mechanically supports 
+constructing proofs of program improvement based on the theoretic work of 
+improvement theory, first introduced by Andrew Moran and David Sands in the 90s.
+
+An article that introduces this system and reviews the technical details of
+improvement theory can be found at the following address: 
+
+  ESC[1mhttp://www.cs.nott.ac.uk/~psxmah/improving.pdfESC[m
+
+ESC[1mQUICK INTRODUCTIONESC[m
+
+In short, improvement proofs are constructed via a sequence of program 
+transformations that follow the typical calculational style. For example, if we 
+wish to prove that a term N is a time improvement over a term M, written M ≳ N, 
+then, by starting at M, we aim to apply a sequence of program transformations 
+and arrive at N. However, each transformation we apply must imply the
+improvement relation ≳ in order for the calculation to be logically correct.
+
+As an example, let us prove that ✔x ≳ x interactively. When Unie is first 
+loaded, we arrive at a welcome screen that prompts us for input. By entering the
+following command and parameters, we can enter the system's 'transformation' 
+mode in which we can construct our desired improvement proof.
+
+  unie> trans $`x$ IMP $x$
+
+In doing so, we receive the following response:
+
+   Global relation set: ≳
+   Transformation goal set: x
+
+  Info: transformation started.
+  ✔x
+
+The command we entered not only instructs the system to enter its transformation 
+mode, but also specifies our desired proof statement ✔x ≳ x. This statement
+enables Unie to instantiate a number of its proof settings. Specifically, the 
+transformation goal x is used to notify us when the proof is complete, and the 
+global relation ≳ is used to prevent any invalid transformations (i.e., those 
+whose operators do not imply ≳) from being applied.
+
+We are now greeted with a different command prompt:
+
+  [1]>
+
+This prompt appears each time the system enters its transformation mode, and 
+indicates the current proof state. As we have just initiated the proof, we are 
+in the first proof state.
+
+From the definition of tick ✔ and the improvement relation ≳, we know that 
+removing a tick is an improvement. Thus we can apply a rule to remove the tick:
+
+  [1]> tick-elim
+  Info: transformation goal reached!
+  ≳ x
+
+By entering this command, not only have we removed the tick and improved the 
+term, we have also arrived at our transformation goal. The proof is complete.
+
+We may often wish to review each step in a complete improvement proof, or the 
+previous steps in a proof currently under construction. We can do this as 
+follows.
+
+  [2]> show-hist
+
+  Transformation history:
+
+        { trans $ ✔x $ IMP $ x $ }
+   ✔x
+      ≳ { tick-elim }
+   x
+
+Here we can see that the transformation's history is presented in the style of a
+mathematical proof, with the hints between each step corresponding to the 
+command and parameters that were entered to advance to the next proof state.
+
+ESC[1mKEY INFORMATIONESC[m
+
+In order to adequately support mechanising improvement proofs, the system 
+provides a wide range of features. These include: navigating through terms in 
+order to apply transformations to specific subterms; importing definitions into 
+the system's library to transform or to provide as arguments to transformation 
+commands; scripting transformations in order to reuse them modularly; generating
+program contexts to be used in conjunction with transformation commands; 
+revisiting previous proof states.
+
+To describe in detail the usage and significance of the above features (and 
+others), we provide a separate help file for each. These can be accessed by 
+specifying the appropriate feature name as a parameter to the help command. For 
+example, enter the following command to learn about navigating through terms:
+
+  unie> help navigation
+
+To see a complete list of all help options, use:
+
+  unie> help options
+
+ESC[1mABOUTESC[m
+
+The University of Nottingham Improvement Engine was designed and implemented by 
+Martin A.T. Handley, a second year PhD student at the University of Nottingham.
+If you would like to get in touch with him, feel free to send an email to the
+following address:
+
+  ESC[1mmartin.handley@nottingham.ac.ukESC[m
+
+Alternatively, you may wish to review his academic profile:
+
+  ESC[1mhttp://www.cs.nott.ac.uk/~psxmah/ESC[m
+
+Thank you.
+
+  ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m      ESC[m ESC[48;5;255m  ESC[m ESC[48;5;255m      ESC[m   
+  ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m    
+  ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m ESC[48;5;255m      ESC[m 
+  ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m    ESC[48;5;255m  ESC[m
+  ESC[48;5;255m      ESC[m ESC[48;5;255m  ESC[m  ESC[48;5;255m  ESC[m ESC[48;5;255m  ESC[m ESC[48;5;255m      ESC[m
+  ESC[38;5;255m_.-"/______________////_ESC[m
+  ESC[38;5;255m`'-.\--------------\\\\"ESC[m

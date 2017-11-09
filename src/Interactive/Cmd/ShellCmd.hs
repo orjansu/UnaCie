@@ -11,6 +11,7 @@ import CmdAST      (Cmd(..), Param(..), RawCmd(..))
 import CmdError    (CmdError(..), InternalError(..))
 import Display     (display)
 import CmdParser   (cmdMatcher, cmdMatcherNoParams)
+import Help        (lookupHelp)
 import InterState  (isTransState)
 import Man         (lookupMan)
 import NavSettings (isHigh, updateHighPath)
@@ -55,7 +56,7 @@ matchers  =
   [ cmdMatcherNoParams "quit" RawShellCmd                  -- Quit the system.
   , cmdMatcherNoParams "zoom-in"  RawShellCmd              -- Zoom into a sub-term.
   , cmdMatcherNoParams "zoom-out" RawShellCmd              -- Zoom out to expose full term.
---  , cmdMatcher "help" RawShellCmd [[], [cmdNameMatcher]]   -- Show a help menu.
+  , cmdMatcher "help" RawShellCmd [[], [cmdNameMatcher]]   -- Show a help menu.
   , cmdMatcher "highlight" RawShellCmd [[cmdNameMatcher]]  -- Turn focus highlighting on/off.
   , cmdMatcher "man" RawShellCmd [[cmdNameMatcher]]        -- Show a man entry.
   ]
@@ -71,8 +72,8 @@ refineRawShellCmd (RawShellCmd s [])
   | otherwise = Left $ InternalErr (WrongRefine "refineRawShellCmd")
 
 -- help takes no parameter or a command name.
---refineRawShellCmd (RawShellCmd "help" ps) =
---  bimap ParamErr (ShellCmd "help") $ paramsRefine ps [[], [anyCmdNameRefine]]
+refineRawShellCmd (RawShellCmd "help" ps) =
+  bimap ParamErr (ShellCmd "help") $ paramsRefine ps [[], [anyCmdNameRefine]]
 
 -- highlight takes a command name
 refineRawShellCmd (RawShellCmd "highlight" ps) =
@@ -96,9 +97,13 @@ shellInterp (ShellCmd "quit" []) _ _ =
 shellInterp (ShellCmd "quit" ps) _ _ = shellInterpUnexpectedParams ps
 
 -- Display help menus.
-shellInterp (ShellCmd "help" []) _ _ = interPutWarning "<TO-DO>: make help file"
+shellInterp (ShellCmd "help" []) _ _ = case lookupHelp "introduction" of
+  Just help -> liftIO $ display help 
+  Nothing   -> interPutError "no help file."
 shellInterp (ShellCmd "help" ps) _ _ = case ps of 
-  [CmdName _] -> interPutWarning "<TO-DO>: make help file"
+  [CmdName ns] -> case lookupHelp ns of
+    Just help -> liftIO $ display help 
+    Nothing   -> interPutError $ "no help file for '" ++ ns ++ "'."
   _ -> shellInterpUnexpectedParams ps
 
 -- Displaying man entries.
@@ -171,5 +176,4 @@ genGoodbyeMsg :: IO String
 genGoodbyeMsg  = (goodbyeMsgs !!) <$> randomRIO (0, length goodbyeMsgs - 1)
 
 goodbyeMsgs :: [String]
-goodbyeMsgs =  
-  [ "Thanks for using Unie!"]
+goodbyeMsgs  = ["Thanks for using Unie!"]
