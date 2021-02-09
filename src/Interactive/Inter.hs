@@ -15,7 +15,23 @@ import InterPrintUtils (terminalAddTitleFrame, colouredFancyHeader)
 import InterPrintUtils ( transPrompt, scriptPrompt
                        , transScriptPrompt )
 import Types           (Matcher)
-import InterUtils
+import InterUtils      ( exitActiveScript
+                       , fromScriptState
+                       , getActiveScriptCmd
+                       , getCurrActiveScript
+                       , getGRel
+                       , getInterEnv
+                       , getInterState
+                       , initSettings
+                       , interact
+                       , interGetLine
+                       , InterM
+                       , interPutCritError
+                       , interPutInfo
+                       , interPutStrLn
+                       , modifyInterEnv
+                       , nextActiveScriptCmd
+                       , outputCmdError)
 
 -- External interpreters and matchers
 import NavCmd          (navInterp       , matchers, navCmds)
@@ -128,7 +144,7 @@ run  =  getInterState >>= \case
                                  --          (flip prepCmd mRel =<< parse gMatchers s)
 
                                  interp :: InterM InterEnv ()
-                                 interp = case parse' gMatchers s of 
+                                 interp = case parse' gMatchers s of
                                    Left errs -> mapM_ (interPutStrLn . show) errs
                                    Right cmds  -> runCmds cmds
 
@@ -162,7 +178,7 @@ run  =  getInterState >>= \case
                               ShellCmd{}      -> shellInterp      cmd mrel st
                               BaseLibCmd{}    -> baseLibInterp    cmd mrel st
                               TransEnvCmd{}   -> transEnvInterp   cmd mrel st
-                              AssumptionCmd{} -> assumptionInterp cmd mrel st 
+                              AssumptionCmd{} -> assumptionInterp cmd mrel st
                               StateCmd{}      -> stateInterp      cmd mrel st gMatchers
                               ScriptCmd{}     -> scriptInterp     cmd mrel st gMatchers
 
