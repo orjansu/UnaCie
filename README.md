@@ -14,7 +14,8 @@ The following command will install the necessary packages that Unie requires:
 
 Be sure to execute from the root directory:
 
-> \> ghci /src/Interactive/Inter.hs
+> \> ghci src/Interactive/Inter.hs
+> \> main
 
 Also please use an ANSI terminal with light font on a dark background.
 
