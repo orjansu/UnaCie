@@ -3,10 +3,24 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: GraphSCC-1.0.4@sha256:dc3c6d6c59c15a50c9ce701bdead86f19bc2367e0d30c81a7bf55ccc6e5bd04d,936
+    pantry-tree:
+      size: 333
+      sha256: 9a52cc3eafbca3ab1b9f7e3de63f7311ae82ec1cdaa1202eead796011e47bc25
+  original:
+    hackage: GraphSCC-1.0.4@sha256:dc3c6d6c59c15a50c9ce701bdead86f19bc2367e0d30c81a7bf55ccc6e5bd04d,936
+- completed:
+    hackage: kure-2.16.12@sha256:c36bbf59fbc77e91cde91f00acbc558e70efa4283ad60b44e6827eba2923a01f,2880
+    pantry-tree:
+      size: 2077
+      sha256: e0653a4eb70d342fdbd4cfe8ad07ec8a595d054b3ee8bfb207de207887e6d321
+  original:
+    hackage: kure-2.16.12@sha256:c36bbf59fbc77e91cde91f00acbc558e70efa4283ad60b44e6827eba2923a01f,2880
 snapshots:
 - completed:
-    size: 339676
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/0/7.yaml
-    sha256: e91362af2d88b5e18c7dc5d35e288ca22cc48db81e33742bea1404d7152028a8
-  original: lts-0.7
+    size: 537868
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/9/21.yaml
+    sha256: 0a3be91c2bce851de4755003cfb1d85d62b6f90276231fcc305729c0c5c864a9
+  original: lts-9.21
