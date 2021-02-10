@@ -1,3 +1,6 @@
 .DS_Store
 command_history
 /src/Testing/*
+
+.stack-work/*
+anteckningar.txt
