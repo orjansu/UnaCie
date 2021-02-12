@@ -287,7 +287,7 @@ kureCmdSettings  = Map.fromList
                    , refiner = TickKureCmd.refiner_varBeta
                    , interp  = TickKureCmd.interp_varBeta
                    })
- , 
+ ,
   ("var-beta-wce"
   , KureCmdSetting { rel     = R_WCE
                    , matcher = TickKureCmd.matcher_varBetaWCE
@@ -418,4 +418,3 @@ kureCmdSettings  = Map.fromList
                    })
 
  ]
-

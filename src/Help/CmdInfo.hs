@@ -1,5 +1,5 @@
 
-module CmdInfo (commands, display) where 
+module CmdInfo (commands, display) where
 
 import CmdAST (CmdName)
 
@@ -28,20 +28,20 @@ import qualified Brick.Main   as M
 data Name = VP deriving (Ord, Show, Eq)
 
 drawUi :: [String] -> () -> [Widget Name]
-drawUi ss = const [ padLeft (T.Pad 1) 
+drawUi ss = const [ padLeft (T.Pad 1)
                     . padTop (T.Pad 1)
                     . padBottom (T.Pad 1)
-                    . viewport VP Vertical 
-                    . vBox 
+                    . viewport VP Vertical
+                    . vBox
                     $ str <$> ss ]
-                    
+
 vpScroll :: M.ViewportScroll Name
 vpScroll  = M.viewportScroll VP
 
 appEvent :: () -> T.BrickEvent Name e -> T.EventM Name (T.Next ())
-appEvent _ (T.VtyEvent (V.EvKey V.KDown [])) = 
+appEvent _ (T.VtyEvent (V.EvKey V.KDown [])) =
   M.vScrollBy vpScroll 1 >> M.continue ()
-appEvent _ (T.VtyEvent (V.EvKey V.KUp [])) = 
+appEvent _ (T.VtyEvent (V.EvKey V.KUp [])) =
   M.vScrollBy vpScroll (-1) >> M.continue ()
 appEvent _ (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt ()
 appEvent _ (T.VtyEvent (V.EvKey (V.KChar 'q') [])) = M.halt ()

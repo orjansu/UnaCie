@@ -8,7 +8,7 @@ module Utils
   , deggar            -- Pad list of strings to same length using whitespace.
   , deleteAtIdx       -- Delete an element of a list by index.
   , divide            -- Divide a list in two sub-lists in all possible ways.
-  , eitherHead        -- Safe head with error message. 
+  , eitherHead        -- Safe head with error message.
   , groupOthers       -- Group other elements in a list aside curr. index.
   , names             -- Infinite list of variable names for alpha-renaming.
   , noDupes           -- Check a list has no duplicates.
@@ -44,12 +44,12 @@ import Language.KURE (SnocPath(..))
 
 data Padme m = (:-) { padded :: [m], padder :: m } deriving (Show, Eq)
 
-instance Functor Padme where 
+instance Functor Padme where
   fmap = (<*>) . pure
 
 instance Applicative Padme where
   pure                    = ([] :-)
-  (fs :- f) <*> (ss :- s) = zapp fs ss :- f s 
+  (fs :- f) <*> (ss :- s) = zapp fs ss :- f s
                             where
                               zapp  []        ss       = map f ss
                               zapp  fs        []       = map ($ s) fs
@@ -67,7 +67,7 @@ names :: [String]
 names  = [1..] >>= flip replicateM ['a'..'z']
 
 -- Check if all list elements are unique.
-noDupes :: Eq a => [a] -> Bool 
+noDupes :: Eq a => [a] -> Bool
 noDupes  = flip go []
             where
              go []       _  = True
@@ -75,13 +75,13 @@ noDupes  = flip go []
 
 -- Generate all ways of matching elements in two lists
 combinations :: [a] -> [a] -> [[(a, a)]]
-combinations xs ys 
+combinations xs ys
   | length xs /= length ys = error "shouldn't happen: combinations"
   | otherwise              = fmap (zip xs) (permutations ys)
 
 -- Check if all elements in a list are equal.
 allEq :: Eq a => [a] -> Bool
-allEq xs = all (== head xs) (tail xs) 
+allEq xs = all (== head xs) (tail xs)
 
 -- Divide a list in two sub-lists in all possible ways.
 divide :: Eq a => [a] -> [([a], [a])]
@@ -91,26 +91,26 @@ divide xs = zip (powerset xs) (powerset' xs)
 -- Replace an element of a list by index.
 replaceAtIdx :: Int -> a -> [a] -> [a]
 replaceAtIdx _   _   []     = error "index too large: replaceAtIdx"
-replaceAtIdx 0   x (_ : ys) = x : ys 
+replaceAtIdx 0   x (_ : ys) = x : ys
 replaceAtIdx idx x (y : ys) = y : replaceAtIdx (idx - 1) x ys
 
 -- Delete an element by index.
 deleteAtIdx :: Int -> [a] -> Maybe [a]
 deleteAtIdx i _  | i < 0 = Nothing
-deleteAtIdx i xs = case r of 
-                     []     -> Nothing 
+deleteAtIdx i xs = case r of
+                     []     -> Nothing
                      _ : r' -> Just (l ++ r')
                    where (l, r) = splitAt i xs
 
 -- E.g., [1,2,3] -> [[2,3], [1,3], [1,2]]
 groupOthers :: [a] -> [[a]]
-groupOthers xs = init . fmap (\(us, ws) -> us ++ drop 1 ws) 
-                  $ zip (inits xs) (tails xs)    
+groupOthers xs = init . fmap (\(us, ws) -> us ++ drop 1 ws)
+                  $ zip (inits xs) (tails xs)
 
 -- I use this for function composition with two arguments.
 infixr 8 .*
 (.*) :: (Functor f, Functor g) => (a -> b) -> f (g a) -> f (g b)
-(.*)  = fmap . fmap 
+(.*)  = fmap . fmap
 
 -- ConcatMap for monadic actions.
 concatMapM :: Monad m => (a -> m [b]) -> [a] -> m [b]
@@ -119,11 +119,11 @@ concatMapM f xs = concat <$> mapM f xs
 powerset :: [a] -> [[a]]
 powerset  = filterM (const [True, False])
 
-notNull :: [a] -> Bool 
-notNull  = not . null 
+notNull :: [a] -> Bool
+notNull  = not . null
 
-singleton :: [a] -> Bool 
-singleton [_] = True 
+singleton :: [a] -> Bool
+singleton [_] = True
 singleton _   = False
 
 safeHead :: [a] -> Maybe a
@@ -132,7 +132,7 @@ safeHead xs  = Just (head xs)
 
 eitherHead :: String -> [a] -> Either String a
 eitherHead s []      = Left s
-eitherHead _ (x : _) = Right x  
+eitherHead _ (x : _) = Right x
 
 safeTail :: [a] -> [a]
 safeTail []  = []
@@ -140,18 +140,18 @@ safeTail xs  = tail xs
 
 safeTailSnocPath :: SnocPath c -> SnocPath c
 safeTailSnocPath (SnocPath [])       = SnocPath []
-safeTailSnocPath (SnocPath (_ : cs)) = SnocPath cs 
+safeTailSnocPath (SnocPath (_ : cs)) = SnocPath cs
 
 -- Basic string operations: ---------------------------------------------------
 
-stripStartSpace :: String -> String 
+stripStartSpace :: String -> String
 stripStartSpace  = dropWhile isSpace
 
-stripEndSpace :: String -> String 
+stripEndSpace :: String -> String
 stripEndSpace  = dropWhileEnd isSpace
 
-stripSpace :: String -> String 
+stripSpace :: String -> String
 stripSpace  = stripStartSpace . stripEndSpace
 
-prepStr :: String -> String 
+prepStr :: String -> String
 prepStr  = stripSpace . fmap toLower

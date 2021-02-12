@@ -13,7 +13,7 @@ import CtxEqLib      ( CtxEqLib, emptyCtxEqLib, insertCtxEqs
                      , deleteCtxEqs, deleteCtxEq )
 import Crumb         (Crumb)
 import CmdError      (CmdError(..))
-import CmdLexUtils 
+import CmdLexUtils
 import CmdParser
 import Relations     (Relation)
 import Universes     (U)
@@ -334,11 +334,11 @@ transEnvCritError         =  interPutCritError "expected \
                               \resetting state..."
                              >> fromTransState
 
--- Critical error if can't project node at current path 
+-- Critical error if can't project node at current path
 pathCritError            ::  InterM InterEnv ()
 pathCritError             =  interPutCritError "can't display \
                               \focussed node, resetting state..."
-                             >> fromTransState                          
+                             >> fromTransState
 
 -- Term: --
 
@@ -459,11 +459,11 @@ putNavSettings         ::  NavSettings -> TransEnv -> TransEnv
 putNavSettings ns env   =  env { navSettings = ns }
 
 highlightNav           ::  AbsolutePath Crumb -> TransEnv -> TransEnv
-highlightNav p env      =  env { navSettings = NavSettings.highlight p 
+highlightNav p env      =  env { navSettings = NavSettings.highlight p
                             (navSettings env) }
 
-unHighlightNav         ::  TransEnv -> TransEnv 
-unHighlightNav env      =  env { navSettings = NavSettings.unHighlight 
+unHighlightNav         ::  TransEnv -> TransEnv
+unHighlightNav env      =  env { navSettings = NavSettings.unHighlight
                             (navSettings env) }
 
 -- ScriptEnv: -----------------------------------------------------------------
@@ -667,9 +667,9 @@ applyRTermLog log r  =  modifyTransEnv $ \transEnv ->
                             Right term -> return $ update log
                                            (putTerm term) transEnv
 
--- Apply a transformation at the current path 
+-- Apply a transformation at the current path
 -- Update function to handle result
-applyTTermCurrPathUpdate :: T Term b 
+applyTTermCurrPathUpdate :: T Term b
                             -> (b -> InterM InterEnv ())
                             -> InterM InterEnv ()
 applyTTermCurrPathUpdate t f
@@ -682,9 +682,9 @@ applyTTermCurrPathUpdate t f
                             . applyAtSnocPathT p
                             . promoteWithFailMsgT focussedErr
                             $ t)
-                           (sv2KureMEnv svs) term of 
+                           (sv2KureMEnv svs) term of
         Left err   -> outputCmdError (KureErr err)
-        Right term -> f term  
+        Right term -> f term
 
     where focussedErr = "attempting to apply a term rewrite when \
                         \focussed on different AST constructor e.g., \
@@ -695,23 +695,23 @@ applyTTermCurrPathUpdate t f
 -- User choices: --------------------------------------------------------------
 
 usrChoiceIdxWithCancel        ::  Int -> InterM InterEnv (Maybe Int)
-usrChoiceIdxWithCancel maxIdx  =  go 
-  where 
-       go = fmap prepStr <$> interGetLine "> " >>= \case 
+usrChoiceIdxWithCancel maxIdx  =  go
+  where
+       go = fmap prepStr <$> interGetLine "> " >>= \case
              Nothing       -> critErr >> return Nothing
-             Just "cancel" -> return Nothing 
-             Just inp      -> case runParser integer inp of 
+             Just "cancel" -> return Nothing
+             Just inp      -> case runParser integer inp of
                                Nothing -> inpErr >> go
                                Just n  -> if n >= 1 && n <= (maxIdx + 1)
                                              then return (Just $ n - 1)
                                              else idxErr >> go
        inpErr  = interPutError "invalid input, please choose an index or 'cancel'."
        idxErr  = interPutError "invalid index, please choose again or 'cancel'."
-       critErr = interPutCritError "interGetLine returned Nothing." 
+       critErr = interPutCritError "interGetLine returned Nothing."
 
 -- Import a script from file, takes a name to use for storing it in the library.
 importScript :: FilePath  -> String -> [[LocatedToken] -> [Either CmdError UnsafeRawCmd]] -> InterM InterEnv ()
-importScript fp s matchers = 
-  either outputCmdError (\script -> modifyInterEnv (addScript s script) 
+importScript fp s matchers =
+  either outputCmdError (\script -> modifyInterEnv (addScript s script)
     >> interPutInfo "library updated.")
   =<< liftIO (parseScriptFile fp $ parseScript matchers)

@@ -18,7 +18,7 @@ import NavSettings (isHigh, updateHighPath)
 import ParamParser (cmdNameMatcher)
 import ParamRefine (anyCmdNameRefine, cmdNameRefine, paramsRefine)
 import Types       (Interp, Matcher, Refiner)
-import InterUtils 
+import InterUtils
   ( InterM
   , getNavSettings
   , getPath
@@ -52,7 +52,7 @@ shellCmds  = [ {--"help",--} "highlight", "man", "quit", "zoom-in", "zoom-out" ]
 -- Matchers for above commands: -----------------------------------------------
 
 matchers :: [Matcher]
-matchers  = 
+matchers  =
   [ cmdMatcherNoParams "quit" RawShellCmd                  -- Quit the system.
   , cmdMatcherNoParams "zoom-in"  RawShellCmd              -- Zoom into a sub-term.
   , cmdMatcherNoParams "zoom-out" RawShellCmd              -- Zoom out to expose full term.
@@ -67,7 +67,7 @@ matchers  =
 refineRawShellCmd :: Refiner
 
 -- No parameters for quit, zoom-in, zoom-out and help
-refineRawShellCmd (RawShellCmd s []) 
+refineRawShellCmd (RawShellCmd s [])
   | s `elem` ["quit", "zoom-in", "zoom-out", "help"] = Right (ShellCmd s [])
   | otherwise = Left $ InternalErr (WrongRefine "refineRawShellCmd")
 
@@ -92,34 +92,34 @@ refineRawShellCmd _ = Left $ InternalErr (WrongRefine "refineRawShellCmd")
 shellInterp :: Interp
 
 -- Quitting the system.
-shellInterp (ShellCmd "quit" []) _ _ = 
+shellInterp (ShellCmd "quit" []) _ _ =
   liftIO (genGoodbyeMsg >>= putStrLn >> exitSuccess)
 shellInterp (ShellCmd "quit" ps) _ _ = shellInterpUnexpectedParams ps
 
 -- Display help menus.
 shellInterp (ShellCmd "help" []) _ _ = case lookupHelp "introduction" of
-  Just help -> liftIO $ display help 
+  Just help -> liftIO $ display help
   Nothing   -> interPutError "no help file."
-shellInterp (ShellCmd "help" ps) _ _ = case ps of 
+shellInterp (ShellCmd "help" ps) _ _ = case ps of
   [CmdName ns] -> case lookupHelp ns of
-    Just help -> liftIO $ display help 
+    Just help -> liftIO $ display help
     Nothing   -> interPutError $ "no help file for '" ++ ns ++ "'."
   _ -> shellInterpUnexpectedParams ps
 
 -- Displaying man entries.
-shellInterp (ShellCmd "man" ps) _ _ = case ps of 
-  [CmdName ns] -> case Man.lookupMan ns of 
+shellInterp (ShellCmd "man" ps) _ _ = case ps of
+  [CmdName ns] -> case Man.lookupMan ns of
     Nothing   -> interPutError $ "no man entry for '" ++ ns ++ "'."
     Just info -> liftIO $ display info
   _ -> shellInterpUnexpectedParams ps
 
 -- Highlighting the current focus.
-shellInterp (ShellCmd "highlight" ps) _ st = case ps of 
+shellInterp (ShellCmd "highlight" ps) _ st = case ps of
   [CmdName "ON"]  -> highlight True
   [CmdName "OFF"] -> highlight False
   _ -> shellInterpUnexpectedParams ps
-  where highlight b 
-         | isTransState st = modifyTransEnv $ \transEnv -> 
+  where highlight b
+         | isTransState st = modifyTransEnv $ \transEnv ->
            let ns = getNavSettings transEnv
            in if | isHigh ns && b -> do
                     interPutWarning "focus highlighting already on."
@@ -127,36 +127,36 @@ shellInterp (ShellCmd "highlight" ps) _ st = case ps of
                  | b -> do
                     interPutInfo "focus highlighting on."
                     return (highlightNav (getPath transEnv) transEnv)
-                 | isHigh ns -> do 
+                 | isHigh ns -> do
                     interPutInfo "focus highlighting off."
                     return (unHighlightNav transEnv)
-                 | otherwise -> do 
+                 | otherwise -> do
                     interPutWarning "focus highlighting already off."
                     return transEnv
          | otherwise = outputCmdError (StateErr st)
 
 -- Zooming in.
-shellInterp (ShellCmd "zoom-in" []) _ st 
+shellInterp (ShellCmd "zoom-in" []) _ st
   | isTransState st = modifyTransEnv $ \transEnv ->
-    let ns = getNavSettings transEnv  
-    in if isHigh ns 
+    let ns = getNavSettings transEnv
+    in if isHigh ns
        then return (putNavSettings (updateHighPath (getPath transEnv) ns) transEnv)
        else interPutError "focus highlighting is off." >> return transEnv
   | otherwise = outputCmdError (StateErr st)
 shellInterp (ShellCmd "zoom-in" ps) _ _ = shellInterpUnexpectedParams ps
 
 -- Zooming out.
-shellInterp (ShellCmd "zoom-out" []) _ st 
- | isTransState st = modifyTransEnv $ \transEnv -> 
+shellInterp (ShellCmd "zoom-out" []) _ st
+ | isTransState st = modifyTransEnv $ \transEnv ->
    let ns = getNavSettings transEnv
-   in if isHigh ns 
+   in if isHigh ns
       then return (putNavSettings (updateHighPath mempty ns) transEnv)
       else interPutError "focus highlighting is off." >> return transEnv
  | otherwise = outputCmdError (StateErr st)
 shellInterp (ShellCmd "zoom-out" ps) _ _ = shellInterpUnexpectedParams ps
 
 -- Error cases.
-shellInterp cmd@ShellCmd{} _ _ = 
+shellInterp cmd@ShellCmd{} _ _ =
   outputCmdError $ InternalErr $ UnexpectedCmd "shellInterp" $ show cmd
 shellInterp _ _ _ = outputCmdError $ InternalErr $ WrongInter "shellInterp"
 
@@ -166,9 +166,9 @@ shellInterp _ _ _ = outputCmdError $ InternalErr $ WrongInter "shellInterp"
 
 -- Error message for unexpected parameters.
 shellInterpUnexpectedParams :: [Param] -> InterM s ()
-shellInterpUnexpectedParams ps = outputCmdError 
-                                  . InternalErr 
-                                  . UnexpectedParams "shellInterp" 
+shellInterpUnexpectedParams ps = outputCmdError
+                                  . InternalErr
+                                  . UnexpectedParams "shellInterp"
                                   $ fmap show ps
 
 -- Goodbye messages that UNIE can display on exit.

@@ -1,5 +1,5 @@
 
-module NavSettings where 
+module NavSettings where
 
 import Crumb         (Crumb)
 import Language.KURE (AbsolutePath)
@@ -23,17 +23,17 @@ initNavSettings  = NavSettings { isHigh = False, highPath = mempty }
 
 -- Helpers: -------------------------------------------------------------------
 
-isHighlighted :: NavSettings -> Bool 
-isHighlighted  = isHigh 
+isHighlighted :: NavSettings -> Bool
+isHighlighted  = isHigh
 
 highlight :: AbsolutePath Crumb -> NavSettings -> NavSettings
 highlight p ns = ns { isHigh = True, highPath = p }
 
-unHighlight :: NavSettings -> NavSettings 
+unHighlight :: NavSettings -> NavSettings
 unHighlight ns = ns { isHigh = False, highPath = mempty }
 
 updateHighPath :: AbsolutePath Crumb -> NavSettings -> NavSettings
 updateHighPath p ns = ns { highPath = p }
 
-getHighPath :: NavSettings -> AbsolutePath Crumb 
+getHighPath :: NavSettings -> AbsolutePath Crumb
 getHighPath  = highPath

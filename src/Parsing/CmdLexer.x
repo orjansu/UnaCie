@@ -1,7 +1,7 @@
 
 {
-    
-module CmdLexer where 
+
+module CmdLexer where
 
 import CmdLexUtils (LocatedToken(..), Pos(..), Token(..))
 
@@ -34,19 +34,19 @@ $opChar          =  [\!\#\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
 @rel      =  IMP | WI | CE | WCE
 @cmdName  =  $cmdChar+ | "(" $opChar+ ")" | $cmdChar+ $digit+
 
-tokens :- 
- 
+tokens :-
+
   $whiteNoNewline+         ;
 
   -- Comments: ----------------------------------------------------------------
 
   "--" .* | "--" . * \n    ;
-    
+
   -- Prop: --------------------------------------------------------------------
 
-  @src $whiteNoNewline+ 
-       @rel 
-       $whiteNoNewline+ 
+  @src $whiteNoNewline+
+       @rel
+       $whiteNoNewline+
        @src                { toProp }
 
   -- Command separator: -------------------------------------------------------
@@ -56,12 +56,12 @@ tokens :-
   -- Source name: -------------------------------------------------------------
 
  --  -- List of source names
- --  (@srcName $white*)+ 
+ --  (@srcName $white*)+
  --                          { \p s -> error $ show s }
 
   @srcName                 { \p s -> tokenize SrcName p (toSrcName s) }
 
- 
+
   -- Source code: -------------------------------------------------------------
 
   @srcCode                 { \p s -> tokenize SrcCode p (toSrc s) }
@@ -77,7 +77,7 @@ tokens :-
 
   -- Number: ------------------------------------------------------------------
 
-  $digit+                  { \p s -> tokenize Number p (toInt s) } 
+  $digit+                  { \p s -> tokenize Number p (toInt s) }
 
   -- Command name: ------------------------------------------------------------
 
@@ -88,20 +88,20 @@ tokens :-
 -- Helpers: -------------------------------------------------------------------
 
 tokenize :: (a -> Token) -> AlexPosn -> a -> LocatedToken
-tokenize f p x = LocatedToken { tok = f x, pos = alexPosnToPos p } 
+tokenize f p x = LocatedToken { tok = f x, pos = alexPosnToPos p }
 
 constTokenize :: Token -> AlexPosn -> String -> LocatedToken
-constTokenize t p _ = LocatedToken { tok = t, pos = alexPosnToPos p } 
+constTokenize t p _ = LocatedToken { tok = t, pos = alexPosnToPos p }
 
-alexPosnToPos :: AlexPosn -> Pos 
+alexPosnToPos :: AlexPosn -> Pos
 alexPosnToPos (AlexPn _ l c) = Pos { lineNo = l, colNo = c }
 
 toProp :: AlexPosn -> String -> LocatedToken
-toProp p s = 
+toProp p s =
   LocatedToken { tok = Prop (srcTok src1) (CmdName rel) (srcTok src2)
                , pos = alexPosnToPos p }
-  where 
-    srcTok ('\'' : s) = SrcName s 
+  where
+    srcTok ('\'' : s) = SrcName s
     srcTok ('$'  : s) = SrcCode $ takeWhile (/= '$') s
     srcTok _          = error "shouldn't happen: toProp"
     [src1, rel, src2] = splitString s
@@ -115,17 +115,17 @@ toProp p s =
     splitString s = split : splitString (drop (length split) s)
       where split = takeWhile (/= ' ') s
 
-toSrc :: String -> String 
-toSrc  = takeWhile (/= '$') . drop 1 
+toSrc :: String -> String
+toSrc  = takeWhile (/= '$') . drop 1
 
 toSrcName :: String -> String
 toSrcName = drop 1
 
-toFp :: Int -> String -> FilePath 
-toFp n = drop n 
+toFp :: Int -> String -> FilePath
+toFp n = drop n
 
-toQuotFp :: Int -> String -> FilePath 
-toQuotFp n = takeWhile (/= '\"') . drop (n + 1) 
+toQuotFp :: Int -> String -> FilePath
+toQuotFp n = takeWhile (/= '\"') . drop (n + 1)
 
 toInt :: String -> Int
 toInt  = foldl (\n c -> 10 * n + digitToInt c) 0

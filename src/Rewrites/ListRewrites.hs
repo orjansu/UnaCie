@@ -21,7 +21,7 @@ import Language.KURE ( MonadCatch, Rewrite
 appendFun :: Term
 appendFun  = Var "(++)"
 
--- Re-associating append from left to right is an improvement: 
+-- Re-associating append from left to right is an improvement:
 -- (xs ++ ys) ++ xs ~> xs ++ (ys ++ zs).
 appendAssoc_LR_R :: MonadCatch m => Rewrite c m Term
 appendAssoc_LR_R
@@ -29,14 +29,14 @@ appendAssoc_LR_R
    contextfreeT $ \case
     App (App (t1) (App (App t2 xs) ys)) zs
       | and [ t1 == appendFun
-            , t2 == appendFun 
-           --  , isList xs      
-           --  , isList ys      
-           --  , isList zs 
+            , t2 == appendFun
+           --  , isList xs
+           --  , isList ys
+           --  , isList zs
             ] -> return $ App (App t1 xs) (App (App t2 ys) zs)
     _  -> fail "incorrect form."
 
--- Re-associating append from right to left is a weak improvement: 
+-- Re-associating append from right to left is a weak improvement:
 -- xs ++ (ys ++ zs) ~~> (xs ++ ys) ++ zs.
 appendAssoc_RL_R :: MonadCatch m => Rewrite c m Term
 appendAssoc_RL_R
@@ -44,14 +44,14 @@ appendAssoc_RL_R
    contextfreeT $ \case
      App (App t1 xs) (App (App t2 ys) zs)
       | and [ t1 == appendFun
-            , t2 == appendFun 
-          --  , isList xs      
-          --  , isList ys      
-          --  , isList zs 
+            , t2 == appendFun
+          --  , isList xs
+          --  , isList ys
+          --  , isList zs
             ] -> return $ App (App t1 (App (App t2 xs) ys)) zs
      _ -> fail "incorrect form."
 
--- Evaluating append's left identity is an improvement: 
+-- Evaluating append's left identity is an improvement:
 -- [] ++ xs ~> xs.
 appendIdentR :: MonadCatch m => Rewrite c m Term
 appendIdentR

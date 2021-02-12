@@ -51,7 +51,7 @@ data CmdError  =
                -- Internal errors: my implementation went wrong
                |  InternalErr InternalError
 
-instance Show CmdError where 
+instance Show CmdError where
   show (LexErr err)          = outputError . ("Lexical error: " ++) $ show err
   show (InvalidCmd s _)      = outputError $ ("Invalid command: " ++ s)
   show (ScriptErr _ cmdErrs) = outputError' "Script error(s):" sCmdErrs
@@ -59,7 +59,7 @@ instance Show CmdError where
   show (ParamErr parErrs)    = outputError' "Parameter error(s):" sParErrs
     where sParErrs           = unlines' $ fmap show parErrs
   show (RelationErr s)       = outputError $ "Relation error: " ++ s
-  show (StateErr _)          = outputError $ "Error: command not available in this program mode." 
+  show (StateErr _)          = outputError $ "Error: command not available in this program mode."
   show (FileErr s)           = outputError s
   show (LibErr s)            = outputError s
   show (HistErr s)           = outputError s
@@ -95,7 +95,7 @@ data ParamError  =  InvalidParam String Pos
                  |  MissingParam String
                     deriving Eq
 
-instance Show ParamError where 
+instance Show ParamError where
   show (InvalidParam s pos) = outputError $ show pos ++ " " ++ s
   show (ExtraParam s pos)   = outputError $ "Extra param: " ++ show pos ++ " " ++ s
   show (MissingParam s)     = outputError $ "Missing param: " ++ s
@@ -147,11 +147,11 @@ sortParamErrors pss  =  fromMaybe (head bestErrors) (combine bestErrors)
 
 -- Output error message to terminal width, highlighted red.
 outputError :: String -> String
-outputError = unlines' . highlightError . squashString (terminalLineWidth - 2) 
+outputError = unlines' . highlightError . squashString (terminalLineWidth - 2)
 
 -- Output error message to terminal width, highlighted red.
 outputCritError :: String -> String
-outputCritError = unlines' . highlightCritError . squashString (terminalLineWidth - 2) 
+outputCritError = unlines' . highlightCritError . squashString (terminalLineWidth - 2)
 
 -- As above, but we have an additional line at the top.
 outputError' :: String -> String -> String
@@ -159,8 +159,8 @@ outputError' title s = unlines' [highTitle, indentHighlightError s] -- unlines' 
   where highTitle = unlines' $ highlightError [title]
 
 -- Drop the Kure fail information from error messages for now.
-dropKureInfo :: String -> String 
+dropKureInfo :: String -> String
 dropKureInfo s = stripSpace . unwords $  (fmap (\s -> s ++ ":") l) ++ r
- where 
+ where
       ss = filter (\s -> not $ "failed" `isInfixOf` s) . splitOn ":" $ s
       (l, r) = splitAt (length ss - 1) ss

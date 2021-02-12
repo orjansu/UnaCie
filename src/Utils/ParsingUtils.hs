@@ -1,7 +1,7 @@
 
 module ParsingUtils
  ( expectedError -- An errror message that specifies what was expected.
- ) where 
+ ) where
 
 {-
   Information:
@@ -10,5 +10,5 @@ module ParsingUtils
 -}
 
 -- Generate an error message specifying what was expected.
-expectedError :: String -> String -> String 
+expectedError :: String -> String -> String
 expectedError par ex = "param: '" ++ par ++ "', expected: " ++ ex

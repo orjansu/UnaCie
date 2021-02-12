@@ -4,7 +4,7 @@
 module Universes
   ( U(..)     -- Universe type U, see KURE paper for details.
   , L_U(..)   -- Labelled universe type.
-  ) where 
+  ) where
 
 import CtxAST        ( Alt, Bind, Ctx, GBind
                      , L_Alt, L_Bind, L_Ctx, L_GBind )
@@ -17,48 +17,48 @@ import Text.PrettyPrint.HughesPJ (renderStyle)
 
 {-
   Information:
-  ----------------------------------------------------------------------------- 
+  -----------------------------------------------------------------------------
   - The Universe type U encompasses all traversable constructors of CtxAST;
   - See KURE papers for more information as to why this is necessary.
 -}
 
 data U = UGBind GBind
-       | UCtx   Ctx 
+       | UCtx   Ctx
        | UBind  Bind
        | UAlt   Alt
-         deriving Eq         
+         deriving Eq
 
 -- Printing: ------------------------------------------------------------------
 
-instance Outputable U where 
-  ppr (UCtx ctx)     = ppr ctx 
-  ppr (UGBind gbind) = ppr gbind 
-  ppr (UBind b)      = ppr b 
+instance Outputable U where
+  ppr (UCtx ctx)     = ppr ctx
+  ppr (UGBind gbind) = ppr gbind
+  ppr (UBind b)      = ppr b
   ppr (UAlt a)       = ppr a
 
-instance Show U where 
-  show = renderStyle terminalLineStyle . ppr 
+instance Show U where
+  show = renderStyle terminalLineStyle . ppr
 
 -- Injecting/projecting data types into/out of U: -----------------------------
 
-instance Injection GBind U where 
-  inject               = UGBind 
-  project (UGBind g)   = Just g 
+instance Injection GBind U where
+  inject               = UGBind
+  project (UGBind g)   = Just g
   project _            = Nothing
 
-instance Injection Ctx U where 
+instance Injection Ctx U where
   inject               = UCtx
   project (UCtx ctx)   = Just ctx
   project _            = Nothing
 
-instance Injection Bind U where 
-  inject               = UBind 
+instance Injection Bind U where
+  inject               = UBind
   project (UBind bind) = Just bind
-  project _            = Nothing 
+  project _            = Nothing
 
-instance Injection Alt U where 
-  inject               = UAlt 
-  project (UAlt alt)   = Just alt 
+instance Injection Alt U where
+  inject               = UAlt
+  project (UAlt alt)   = Just alt
   project _            = Nothing
 
 -------------------------------------------------------------------------------

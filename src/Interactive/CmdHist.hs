@@ -4,7 +4,7 @@ module CmdHist
   , emptyCmdHist  -- Initial settings.
   , steps         -- Number of command steps in history.
   , navSteps      -- Number of navigation command steps in history.
-  ) where 
+  ) where
 
 import CmdAST    (Cmd(..))
 import Relations (Relation)
@@ -16,9 +16,9 @@ import Relations (Relation)
 
   Information:
   -----------------------------------------------------------------------------
-  - The command history stores commands executed that affect the proof state 
+  - The command history stores commands executed that affect the proof state
     and their corresponding relation;
-  -- Not all commands executed by the interpreter are stored, for example, 
+  -- Not all commands executed by the interpreter are stored, for example,
      state/shell commands are not.
   - This history can then be reported to the user or exported as a command
     script to be re-executed in the future.
@@ -30,16 +30,16 @@ type CmdHist = [(Cmd, Maybe Relation)]
 
 emptyCmdHist :: CmdHist
 emptyCmdHist  = []
-     
+
 -- Helpers: -------------------------------------------------------------------
 
 -- Number of command steps stored in history.
-steps :: CmdHist -> Int 
+steps :: CmdHist -> Int
 steps  = length
 
 -- Number of navigation commands stored in history.
-navSteps :: CmdHist -> Int 
+navSteps :: CmdHist -> Int
 navSteps  = length . filter (\(cmd, _) -> isNav cmd)
-            where 
-              isNav NavCmd{} = True 
+            where
+              isNav NavCmd{} = True
               isNav _        = False

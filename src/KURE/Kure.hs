@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}  
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE LambdaCase            #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -15,27 +15,27 @@ module Kure
  , absAnyR
  , absOneR
  , absT
- , altAllR 
- , altAnyR 
+ , altAllR
+ , altAnyR
  , altCtxT
- , altOneR 
- , altT 
+ , altOneR
+ , altT
  , appAllR
  , appAnyR
- , appDAllR 
+ , appDAllR
  , appDAllR'
- , appDAnyR 
+ , appDAnyR
  , appDAnyR'
  , appDOneR
  , appDOneR'
- , appDT 
- , appDT'  
+ , appDT
+ , appDT'
  , appOneR
  , appT
  , bindAllR
- , bindAnyR 
+ , bindAnyR
  , bindCtxT
- , bindOneR 
+ , bindOneR
  , bindT
  , cBindAllR
  , cBindAnyR
@@ -44,11 +44,11 @@ module Kure
  , cVarAllR
  , cVarAnyR
  , cVarOneR
- , cVarT 
- , caseAllR 
+ , cVarT
+ , caseAllR
  , caseAnyR
- , caseOneR 
- , caseT 
+ , caseOneR
+ , caseT
  , letAllR
  , letAnyR
  , letOneR
@@ -62,17 +62,17 @@ module Kure
  , tickOneR
  , tickT
  , varR
- , varT 
+ , varT
 
  -- Special congruence combinators for binder renaming rewrites: --
  -- ManBind = manually add bindings to KURE's context.
  -- NoBind  = don't add bindings.
 
- , absTManBind 
+ , absTManBind
  , absTNoBind
  , altTManBind
  , altTNoBind
- , letTManBind 
+ , letTManBind
  , letTNoBind
 
  ) where
@@ -84,7 +84,7 @@ import CtxAST    ( Alt(..), Bind(..), Con
 import CtxKind   (CtxKind)
 import Universes (U(..))
 
-import Language.KURE  
+import Language.KURE
   ( ExtendPath
   , MonadCatch
   , ReadPath
@@ -122,14 +122,14 @@ import Language.KURE
   Working notes:
   -----------------------------------------------------------------------------
   - See KURE papers for information on all/any/one, but they basically do the
-    obvious thing: succeeding if all/any/one rewrite(s) on their child node(s) 
+    obvious thing: succeeding if all/any/one rewrite(s) on their child node(s)
     succeed;
-  - See KURE papers for information regarding congruence combinators: It's 
+  - See KURE papers for information regarding congruence combinators: It's
     worth reading up in detail about them because they are a central aspect of
     /all/ transformations.
 -}
 
--- Walker instance minimal definition is allR, other functions have default 
+-- Walker instance minimal definition is allR, other functions have default
 -- implementationd which are suitable for our purposes.
 instance ( ExtendPath c Crumb, ReadPath c Crumb
          , AddBinders c ) => Walker c U where
@@ -166,7 +166,7 @@ instance ( ExtendPath c Crumb, ReadPath c Crumb
 
 -- Congruence combinators for constructors in CtxAST: -------------------------
 
--- CBind: --------------------------------------------------------------------- 
+-- CBind: ---------------------------------------------------------------------
 
 cBindT :: (ExtendPath c Crumb, ReadPath c Crumb, Monad m)
           => Transform c m CtxKind a1
@@ -192,7 +192,7 @@ cBindAnyR :: (ExtendPath c Crumb, ReadPath c Crumb, MonadCatch m)
              -> Rewrite c m Name
              -> Rewrite c m Ctx
              -> Rewrite c m GBind
-cBindAnyR r1 r2 r3 = unwrapAnyR $ cBindAllR (wrapAnyR r1) 
+cBindAnyR r1 r2 r3 = unwrapAnyR $ cBindAllR (wrapAnyR r1)
                       (wrapAnyR r2) (wrapAnyR r3)
 
 cBindOneR :: (ExtendPath c Crumb, ReadPath c Crumb, MonadCatch m)
@@ -200,10 +200,10 @@ cBindOneR :: (ExtendPath c Crumb, ReadPath c Crumb, MonadCatch m)
              -> Rewrite c m Name
              -> Rewrite c m Ctx
              -> Rewrite c m GBind
-cBindOneR r1 r2 r3 = unwrapOneR $ cBindAllR (wrapOneR r1) 
+cBindOneR r1 r2 r3 = unwrapOneR $ cBindAllR (wrapOneR r1)
                       (wrapOneR r2) (wrapOneR r3)
 
--- TBind: --------------------------------------------------------------------- 
+-- TBind: ---------------------------------------------------------------------
 
 tBindT :: (ExtendPath c Crumb, ReadPath c Crumb, Monad m)
           => Transform c m Name a1
@@ -303,7 +303,7 @@ appOneR :: (ExtendPath c Crumb, MonadCatch m)
            -> Rewrite c m Ctx
 appOneR r1 r2 = unwrapOneR $ appAllR (wrapOneR r1) (wrapOneR r2)
 
--- Ticks: --------------------------------------------------------------------- 
+-- Ticks: ---------------------------------------------------------------------
 
 tickT :: (ExtendPath c Crumb, Monad m)
          => Transform c m Ctx a
@@ -328,7 +328,7 @@ tickOneR :: (ExtendPath c Crumb, MonadCatch m)
             -> Rewrite c m Ctx
 tickOneR r = unwrapOneR $ tickAllR (wrapOneR r)
 
--- Let: ----------------------------------------------------------------------- 
+-- Let: -----------------------------------------------------------------------
 
 letT :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
         => (Int -> Transform c m Bind a1)
@@ -336,7 +336,7 @@ letT :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
         -> ([a1] -> a2 -> b)
         -> Transform c m Ctx b
 letT t1 t2 f = transform $ \c ctx -> case ctx of
-  Let bs ctx -> f <$> sequence 
+  Let bs ctx -> f <$> sequence
    [ applyT (t1 idx) (addLetBinders bs c @@ Let_Bind idx) b
    | (b, idx) <- zip bs [0..] ]
                   <*> applyT t2 (addLetBinders bs c @@ Let_Body) ctx
@@ -360,7 +360,7 @@ letOneR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
            -> Rewrite c m Ctx
 letOneR r1 r2 = unwrapOneR $ letAllR (wrapOneR . r1) (wrapOneR r2)
 
--- Bind: ---------------------------------------------------------------------- 
+-- Bind: ----------------------------------------------------------------------
 
 bindT :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
          => Transform c m Name a1
@@ -368,7 +368,7 @@ bindT :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
          -> Transform c m Int a3
          -> (a1 -> a2 -> a3 -> b)
          -> Transform c m Bind b
-bindT t1 t2 t3 f = transform $ \c (Bind ns ctx idx) -> 
+bindT t1 t2 t3 f = transform $ \c (Bind ns ctx idx) ->
   f <$> applyT t1 (c @@ Bind_Name idx) ns
     <*> applyT t2 (addBinders [ns] c @@ Bind_Body idx) ctx
     <*> applyT t3 (c @@ Bind_Idx idx) idx
@@ -391,7 +391,7 @@ bindAnyR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
             -> Rewrite c m Ctx
             -> Rewrite c m Int
             -> Rewrite c m Bind
-bindAnyR r1 r2 r3 = unwrapAnyR $ bindAllR (wrapAnyR r1) 
+bindAnyR r1 r2 r3 = unwrapAnyR $ bindAllR (wrapAnyR r1)
                      (wrapAnyR r2) (wrapAnyR r3)
 
 bindOneR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
@@ -433,7 +433,7 @@ caseOneR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
             -> Rewrite c m Ctx
 caseOneR r1 r2 = unwrapOneR $ caseAllR (wrapOneR r1) (wrapOneR . r2)
 
--- Alt: ----------------------------------------------------------------------- 
+-- Alt: -----------------------------------------------------------------------
 
 altT :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
         => Transform c m Con a1
@@ -442,7 +442,7 @@ altT :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
         -> Transform c m Int a4
         -> (a1 -> [a2] -> a3 -> a4 -> b)
         -> Transform c m Alt b
-altT t1 t2 t3 t4 f  = transform $ \c (Alt con nss ctx idx) -> 
+altT t1 t2 t3 t4 f  = transform $ \c (Alt con nss ctx idx) ->
   f <$> applyT t1 (c @@ Alt_Con) con
     <*> sequence [ applyT (t2 idx) (c @@ Alt_Name idx) ns
                  | (ns, idx) <- zip nss [0..] ]
@@ -469,7 +469,7 @@ altAnyR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
            -> Rewrite c m Ctx
            -> Rewrite c m Int
            -> Rewrite c m Alt
-altAnyR r1 r2 r3 r4 = unwrapAnyR $ altAllR (wrapAnyR r1) (wrapAnyR . r2) 
+altAnyR r1 r2 r3 r4 = unwrapAnyR $ altAllR (wrapAnyR r1) (wrapAnyR . r2)
                        (wrapAnyR r3) (wrapAnyR r4)
 
 altOneR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
@@ -478,7 +478,7 @@ altOneR :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, MonadCatch m)
            -> Rewrite c m Ctx
            -> Rewrite c m Int
            -> Rewrite c m Alt
-altOneR r1 r2 r3 r4 = unwrapOneR $ altAllR (wrapOneR r1) (wrapOneR . r2) 
+altOneR r1 r2 r3 r4 = unwrapOneR $ altAllR (wrapOneR r1) (wrapOneR . r2)
                        (wrapOneR r3) (wrapOneR r4)
 
 -- AppD: ----------------------------------------------------------------------
@@ -520,7 +520,7 @@ appDT' :: (ExtendPath c Crumb, Monad m)
           -> (Con -> [a] -> b)
           -> Transform c m Ctx b
 appDT' t f = transform $ \c ctx -> case ctx of
-  AppD con ctxs -> f con <$> sequence 
+  AppD con ctxs -> f con <$> sequence
    [ applyT (t idx) (c @@ AppD_Body idx) ctx
    | (ctx, idx) <- zip ctxs [0..] ]
   _ -> fail "not an AppD."
@@ -540,7 +540,7 @@ appDOneR' :: (ExtendPath c Crumb, MonadCatch m)
              -> Rewrite c m Ctx
 appDOneR' r = unwrapOneR $ appDAllR' (wrapOneR . r)
 
--- CVar: ---------------------------------------------------------------------- 
+-- CVar: ----------------------------------------------------------------------
 -- Has to be /Maybe/ because might not be substituted.
 
 cVarT :: (ExtendPath c Crumb, Monad m)
@@ -584,7 +584,7 @@ cVarOneR :: (ExtendPath c Crumb, MonadCatch m)
             -> Rewrite c m Name
             -> Rewrite c m Ctx
             -> Rewrite c m Ctx
-cVarOneR r1 r2 r3 = changedR $ unwrapOneR $ cVarAllR (wrapOneR r1) 
+cVarOneR r1 r2 r3 = changedR $ unwrapOneR $ cVarAllR (wrapOneR r1)
                      (wrapOneR r2) (wrapOneR r3)
 
 
@@ -596,9 +596,9 @@ cVarOneR r1 r2 r3 = changedR $ unwrapOneR $ cVarAllR (wrapOneR r1)
 -------------------------------------------------------------------------------
 {-
   - For some transformations/rewrites involving Ctxs, we want to traverse
-    into e.g., a let body /without/ adding its let binders to the context, or 
+    into e.g., a let body /without/ adding its let binders to the context, or
     whilst adding our own bound variables etc;
-  - This happens in /very/ particular circumstances and any combinators below 
+  - This happens in /very/ particular circumstances and any combinators below
     should be used with caution.
 -}
 
@@ -624,7 +624,7 @@ letTManBind :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
                -> ([a1] -> a2 -> b)
                -> Transform c m Ctx b
 letTManBind bss t1 t2 f = transform $ \c ctx -> case ctx of
-  Let bs ctx -> f <$> sequence 
+  Let bs ctx -> f <$> sequence
    [ applyT (t1 idx) (addBinders bss c @@ Let_Bind idx) b
    | (b, idx) <- zip bs [0..] ]
                   <*> applyT t2 (addBinders bss c @@ Let_Body) ctx
@@ -674,8 +674,8 @@ altTNoBind :: (ExtendPath c Crumb, ReadPath c Crumb, AddBinders c, Monad m)
               -> Transform c m Ctx a3
               -> Transform c m Int a4
               -> (a1 -> [a2] -> a3 -> a4 -> b)
-              -> Transform c m Alt b 
-altTNoBind t1 t2 t3 t4 f = transform $ \c (Alt con nss ctx idx) -> 
+              -> Transform c m Alt b
+altTNoBind t1 t2 t3 t4 f = transform $ \c (Alt con nss ctx idx) ->
   f <$> applyT t1 (c @@ Alt_Con) con
     <*> sequence [ applyT (t2 idx) (c @@ Alt_Name idx) ns
                  | (ns, idx) <- zip nss [0..] ]

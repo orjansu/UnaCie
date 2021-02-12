@@ -1,5 +1,5 @@
-:set -isrc/ 
-:set -isrc/AST 
+:set -isrc/
+:set -isrc/AST
 :set -isrc/Parsing
 :set -isrc/Utils
 :set -isrc/Printing

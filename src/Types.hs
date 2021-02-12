@@ -16,7 +16,7 @@ import Relations   (Relation)
 {-
   Information:
   -----------------------------------------------------------------------------
-  - A number of key types used throughout different modules. 
+  - A number of key types used throughout different modules.
 -}
 
 {-
@@ -33,13 +33,13 @@ type Interp = Cmd
 {-
   - The type of a command matcher;
   - Takes a list of located tokens and attempts to construct an unsafe raw
-    command. The list output corresponds to multiple matching options, 
+    command. The list output corresponds to multiple matching options,
     which is due to the fact that commands may have different parameter
     options.
 -}
 type Matcher = [LocatedToken] -> [Either CmdError UnsafeRawCmd]
 
-{- 
+{-
   - The type of a command refiner;
   - Takes a raw command and attempts to refine it to a fully-fledged command
     by performing additional validation checks on its parameter(s);

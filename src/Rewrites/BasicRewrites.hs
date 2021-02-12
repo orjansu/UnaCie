@@ -1,8 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase       #-}
 
-module BasicRewrites  
-  ( 
+module BasicRewrites
+  (
     -- Applying/unapplying context/term definitions: --
     -- Capture avoiding and 'not capture avoiding' options.
 
@@ -17,7 +17,7 @@ module BasicRewrites
 
   , addTickR     -- Add a tick.
   , removeTickR  -- Remove a tick.
-  
+
   ) where
 
 import Classes     (boundVarsContext, isFreeContext)
@@ -77,7 +77,7 @@ import Language.KURE
 
 -- Apply a term's definition, this is /definitional equality/.
 capAvoidApplyTermDefR :: Name -> Term -> AbsolutePath Crumb -> R Term
-capAvoidApplyTermDefR ns sub p = 
+capAvoidApplyTermDefR ns sub p =
   prefixFailMsg "capAvoidApplyTermDefR failed: " $ do
 
     -- Ensure free variables in the sub won't be captured.
@@ -85,13 +85,13 @@ capAvoidApplyTermDefR ns sub p =
     -- Note that this will rename the odd one unecessarily from
     -- time to time, but for now that's okay.
     unsafes <- constT $ freeVars sub
- 
+
     -- Note: ns must be free here, so any renaming won't effect /it/.
     -- Just replace the first one we come to, fail if none.
     renameR unsafes >>> replaceR
-  
-  where 
-    renameR  = extractR . any0tdR . safeBindersUR' 
+
+  where
+    renameR  = extractR . any0tdR . safeBindersUR'
     replaceR = setFailMsg ("no free occurrence of '" ++ ns ++ "\' in scope.") $
                 extractR . applyAtSnocPathR p . onetdR $ freeVarReplaceR ns sub
 
@@ -99,34 +99,34 @@ capAvoidApplyTermDefR ns sub p =
 
 -- As above, but doesn't take var capture of sub into consideration.
 nonCapAvoidApplyTermDefR :: Name -> Term -> R Term
-nonCapAvoidApplyTermDefR ns sub = 
-  prefixFailMsg  "nonCapAvoidApplyTermDefR failed: " 
+nonCapAvoidApplyTermDefR ns sub =
+  prefixFailMsg  "nonCapAvoidApplyTermDefR failed: "
    . setFailMsg ("no free occurrence of '" ++ ns ++ "\' in scope.")
-   . extractR 
-   . onetdR 
+   . extractR
+   . onetdR
    $ freeVarReplaceR ns sub
 
 
 
 -- Unapply a term's definition: this is /definitional equality/.
 capAvoidUnapplyTermDefR :: Name -> Term -> AbsolutePath Crumb -> R Term
-capAvoidUnapplyTermDefR ns sub p = 
-  prefixFailMsg "capAvoidUnapplyTermDefR failed: " $ do 
+capAvoidUnapplyTermDefR ns sub p =
+  prefixFailMsg "capAvoidUnapplyTermDefR failed: " $ do
 
     -- Ensure free variables in the sub aren't captured.
     unsafes <- constT $ freeVars sub
 
     -- Note: rename any binders that will capture ns when replaced.
     renameR [ns] >>> replaceR unsafes
-  
-  where 
-    renameR = extractR . any0tdR . safeBindersUR' 
-    
-    replaceR unsafes = 
-      setFailMsg ("no free definition of '" ++ ns ++ "\' in scope.") 
+
+  where
+    renameR = extractR . any0tdR . safeBindersUR'
+
+    replaceR unsafes =
+      setFailMsg ("no free definition of '" ++ ns ++ "\' in scope.")
        . extractR
-       . applyAtSnocPathR p 
-       . onetdR 
+       . applyAtSnocPathR p
+       . onetdR
        $ do
            -- Project term/KURE's context
            (c, UCtx ctx) <- exposeT
@@ -138,11 +138,11 @@ capAvoidUnapplyTermDefR ns sub p =
 
 -- As above, but doesn't take var capture of sub into consideration.
 nonCapAvoidUnapplyTermDefR :: Name -> Term -> R Term
-nonCapAvoidUnapplyTermDefR ns sub = 
-  prefixFailMsg "nonCapAvoidUnapplyTermDefR failed: " 
-   . setFailMsg ("no definition of '" ++ ns ++ "\' in scope.") 
+nonCapAvoidUnapplyTermDefR ns sub =
+  prefixFailMsg "nonCapAvoidUnapplyTermDefR failed: "
+   . setFailMsg ("no definition of '" ++ ns ++ "\' in scope.")
    . extractR
-   . onetdR 
+   . onetdR
    $ do
        -- Project term.
        UCtx ctx <- idR
@@ -154,34 +154,34 @@ nonCapAvoidUnapplyTermDefR ns sub =
 
 -- Apply a context's definition: this is /definitional equality/.
 capAvoidApplyCtxDefR :: CtxKind -> Name -> Ctx -> AbsolutePath Crumb -> R Term
-capAvoidApplyCtxDefR k ns sub p = 
-  prefixFailMsg "capAvoidApplyCtxDefR failed: " $ do 
-    
+capAvoidApplyCtxDefR k ns sub p =
+  prefixFailMsg "capAvoidApplyCtxDefR failed: " $ do
+
     -- Ensure free variables in the sub won't be captured.
     -- This is done by renaming bindings in t /up front/.
     -- Note that this will rename the odd one unecessarily from
     -- time to time, but for now that's okay.
     unsafes <- constT $ freeVars sub
- 
+
     -- Note: ns relates to a CVar, so won't be renamed.
     renameR unsafes >>> replaceR
-  
-  where 
-    renameR  = extractR . any0tdR . safeBindersUR' 
+
+  where
+    renameR  = extractR . any0tdR . safeBindersUR'
     replaceR = setFailMsg ("no substituted occurrence of '" ++ ns ++ "\' in scope.")
-                . extractR 
-                . applyAtSnocPathR p 
-                . onetdR 
+                . extractR
+                . applyAtSnocPathR p
+                . onetdR
                 $ cVarReplaceR k ns sub
 
 
 -- As above, but doesn't take var capture of sub into consideration.
 nonCapAvoidApplyCtxDefR :: CtxKind -> Name -> Ctx -> R Term
-nonCapAvoidApplyCtxDefR k ns sub = 
-  prefixFailMsg "nonCapAvoidApplyCtxDefR failed: " 
+nonCapAvoidApplyCtxDefR k ns sub =
+  prefixFailMsg "nonCapAvoidApplyCtxDefR failed: "
    . setFailMsg ("no substituted occurrence of '" ++ ns ++ "\' in scope.")
-   . extractR 
-   . onetdR 
+   . extractR
+   . onetdR
    $ cVarReplaceR k ns sub
 
 
@@ -189,17 +189,17 @@ nonCapAvoidApplyCtxDefR k ns sub =
 -- Unapply a context's definition: this is /definitional equality/.
 -- Note: doesn't use alpha-equiv.
 capAvoidUnapplyCtxDefR :: CtxKind -> Name -> Ctx -> R Term
-capAvoidUnapplyCtxDefR k ns sub = 
-  prefixFailMsg "capAvoidUnapplyCtxDefR failed: " $ 
-    
+capAvoidUnapplyCtxDefR k ns sub =
+  prefixFailMsg "capAvoidUnapplyCtxDefR failed: " $
+
     -- Ensure sub has holes.
     constT (applyT holePathsT emptyKureContext $ inject sub) >>= \case
-         
-      -- If no holes, fail (for now, because would result in 
+
+      -- If no holes, fail (for now, because would result in
       -- an un-subst. CVar, which we don't allow yet).
-      [] -> fail "can only unapply contexts with holes." 
-      (hPath : _) -> do 
-        
+      [] -> fail "can only unapply contexts with holes."
+      (hPath : _) -> do
+
         -- Convert sub to a pattern for matching.
         let sub' = ctxToCtxPat sub
 
@@ -209,14 +209,14 @@ capAvoidUnapplyCtxDefR k ns sub =
         -- Do the replacing.
         replaceR unsafes sub' hPath
 
- where replaceR unsafes sub' hPath = 
-        setFailMsg ("no free definition of '" ++ ns ++ "\' in scope.") 
+ where replaceR unsafes sub' hPath =
+        setFailMsg ("no free definition of '" ++ ns ++ "\' in scope.")
          . extractR
-         . onetdR 
+         . onetdR
          $ do
              -- Project term/KURE's context
              (c, UCtx ctx) <- exposeT
-             -- Make sure is match and no frees are captured. 
+             -- Make sure is match and no frees are captured.
              guardM (eqCtxPat sub' ctx)
              guardM (null $ unsafes `intersect` boundVarsContext c)
              hSub <- extractT . applyAtSnocPathT hPath . promoteT $ idR
@@ -226,31 +226,31 @@ capAvoidUnapplyCtxDefR k ns sub =
 
 -- As above, but doesn't take var capture of sub into consideration.
 nonCapAvoidUnapplyCtxDefR :: CtxKind -> Name -> Ctx -> R Term
-nonCapAvoidUnapplyCtxDefR k ns sub = 
-  prefixFailMsg "nonCapAvoidUnapplyCtxDefR failed: " $ 
-    
+nonCapAvoidUnapplyCtxDefR k ns sub =
+  prefixFailMsg "nonCapAvoidUnapplyCtxDefR failed: " $
+
     -- Ensure sub has holes.
     constT (applyT holePathsT emptyKureContext $ inject sub) >>= \case
-         
-      -- If no holes, fail (for now, because would result in 
+
+      -- If no holes, fail (for now, because would result in
       -- an un-subst. CVar, which we don't allow yet).
-      [] -> fail "can only unapply contexts with holes." 
-      (hPath : _) -> do 
-        
+      [] -> fail "can only unapply contexts with holes."
+      (hPath : _) -> do
+
         -- Convert sub to a pattern for matching.
         let sub' = ctxToCtxPat sub
 
         -- Do the replacing.
         replaceR sub' hPath
 
- where replaceR sub' hPath = 
-        setFailMsg ("no definition of '" ++ ns ++ "\' in scope.") 
+ where replaceR sub' hPath =
+        setFailMsg ("no definition of '" ++ ns ++ "\' in scope.")
          . extractR
-         . onetdR 
+         . onetdR
          $ do
              -- Project term/KURE's context
              UCtx ctx <- idR
-             -- Make sure is match and no frees are captured. 
+             -- Make sure is match and no frees are captured.
              guardM (eqCtxPat sub' ctx)
              hSub <- extractT . applyAtSnocPathT hPath . promoteT $ idR
              return (UCtx $ CVar k ns $ Just hSub)

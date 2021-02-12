@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts  #-}
 
-module InterPrintUtils where 
+module InterPrintUtils where
 
 import CmdAST        ( Cmd(..), Param(..), RawCmd(..)
                      , RawParam(..), LocatedRawParam(..)
@@ -47,37 +47,37 @@ import Control.Monad.IO.Class    (liftIO)
   - The PrintSettings module controls the line width for the terminal/files
     and these print functions adhere (as best as they can) to those settings;
   - Current setting are 80 line width for terminal and 100 for files.
--} 
+-}
 
 -------------------------------------------------------------------------------
 -- Terminal printing constants/primitives: --
 -------------------------------------------------------------------------------
 
--- Relations: -- 
+-- Relations: --
 
-relWidth        ::  Int 
-relWidth         =  2 
+relWidth        ::  Int
+relWidth         =  2
 
-relLeftPadding  ::  Int 
+relLeftPadding  ::  Int
 relLeftPadding   =  1    -- '  'REL
 
-relRightPadding ::  Int  
+relRightPadding ::  Int
 relRightPadding  =  1    -- REL''
 
-relPaddedWidth  ::  Int 
-relPaddedWidth   =  relWidth 
+relPaddedWidth  ::  Int
+relPaddedWidth   =  relWidth
                      + relLeftPadding
                      + relRightPadding
 
 -- Proof hints: --
 
-hintBorderWidth      ::  Int 
+hintBorderWidth      ::  Int
 hintBorderWidth       =  1    -- '{'
 
-hintInnerPadding     ::  Int 
+hintInnerPadding     ::  Int
 hintInnerPadding      =  1    -- {' '    ' '}
 
-innerHintWidth       ::  Int -> Int 
+innerHintWidth       ::  Int -> Int
 innerHintWidth outer  =  outer
                           - relPaddedWidth
                           - 2 * hintBorderWidth
@@ -85,52 +85,52 @@ innerHintWidth outer  =  outer
 
 -- Character bullets: --
 
-defaultBullet      ::  Char 
+defaultBullet      ::  Char
 defaultBullet       =  '\9702'
 
-spaceBullet        ::  Char 
+spaceBullet        ::  Char
 spaceBullet         =  ' '
 
-bulletWidth        ::  Int 
-bulletWidth         =  1 
+bulletWidth        ::  Int
+bulletWidth         =  1
 
-bulletRightPadding ::  Int 
+bulletRightPadding ::  Int
 bulletRightPadding  =  1
 
--- Numbered bullets: -- 
+-- Numbered bullets: --
 
-numberedBulletWidth        ::  Int -> Int 
+numberedBulletWidth        ::  Int -> Int
 numberedBulletWidth n       =  n + 2 -- '(X)'
 
-numberedBulletRightPadding ::  Int 
+numberedBulletRightPadding ::  Int
 numberedBulletRightPadding  =  1     -- (X)' '
 
 -- Framed output: --
 
-outerFrameWidth          ::  Int 
+outerFrameWidth          ::  Int
 outerFrameWidth           =  1     -- '|'
 
-outerFramePadding        ::  Int 
+outerFramePadding        ::  Int
 outerFramePadding         =  1     -- |' '
 
-terminalInnerFramedWidth ::  Int 
-terminalInnerFramedWidth  =  terminalLineWidth 
-                              - 2 * outerFrameWidth 
+terminalInnerFramedWidth ::  Int
+terminalInnerFramedWidth  =  terminalLineWidth
+                              - 2 * outerFrameWidth
                               - 2 * outerFramePadding
 
 -- Separators: --
 
-terminalLineSep            ::  String 
+terminalLineSep            ::  String
 terminalLineSep             =  replicate terminalLineWidth '-'
 
-terminalInnerFramedLineSep ::  String 
+terminalInnerFramedLineSep ::  String
 terminalInnerFramedLineSep  =  replicate terminalInnerFramedWidth '-'
 
-fileLineSep                ::  String 
+fileLineSep                ::  String
 fileLineSep                 =  replicate fileLineWidth '-'
 
 -------------------------------------------------------------------------------
--- Terminal printing: -- 
+-- Terminal printing: --
 -------------------------------------------------------------------------------
 -- All output to terminal has non-strict line output, see CmdAST for details.
 
@@ -139,30 +139,30 @@ fileLineSep                 =  replicate fileLineWidth '-'
 {-
 
 -- Transformation state prompt:
---- Shows a sub-term of the term being transformed (using the current path 
+--- Shows a sub-term of the term being transformed (using the current path
 --- through the term's AST) and TransHist state
 transPrompt  ::  InterM InterEnv (Maybe Int)
-transPrompt   
+transPrompt
  =  getInterEnv mTransEnv >>= \case
-     Just transEnv -> do 
+     Just transEnv -> do
 
       let t  = getTerm transEnv
-          p  = getPath transEnv 
+          p  = getPath transEnv
           g  = getGoal transEnv
           hi = (length . stateHist . getHist) transEnv
 
       -- Check transformation goal and output info message
       -- if reached. <TO-DO> this should be alpha-equiv
-      if Just t == g 
+      if Just t == g
          then interPutInfo "transformation goal reached."
          else return ()
- 
+
       -- Print relation of last command
       maybe (return ()) interPrint (getCRel transEnv)
 
       -- Print sub-term from current location in term's AST
       either (const $ -- \err -> outputCmdError err  -- KURE error is crumb failure
-               interPutWarning "invalid path, resetting..." 
+               interPutWarning "invalid path, resetting..."
                >> interPutStrLn (renderStyle terminalLineStyle $ ppr t)
                >> modifyInterEnv (putTransEnv $ nullPath transEnv)
                >> return (Just hi))
@@ -187,86 +187,86 @@ vanilla _ _ = defaultShowSettings
 
 transPrompt :: InterM InterEnv (Maybe Int)
 transPrompt  = getInterEnv mTransEnv >>= \case
-  Just transEnv -> do 
+  Just transEnv -> do
 
    let t  = getTerm transEnv
-       p  = getPath transEnv 
+       p  = getPath transEnv
        g  = getGoal transEnv
        hi = (length . stateHist . getHist) transEnv
-       ns = getNavSettings transEnv 
+       ns = getNavSettings transEnv
        resetPath = resetPath' t hi transEnv
 
    -- Check transformation goal and output info message
    -- if reached. <TO-DO> this should be alpha-equiv
-   if Just t == g 
+   if Just t == g
       then interPutInfo "transformation goal reached!"
       else return ()
 
    -- Print relation of last command
    maybe (return ()) interPrint (getCRel transEnv)
 
-   if isHigh ns 
+   if isHigh ns
 
    -- Navigation frozen: ------------------------------------------------------
-      
+
    then let (SnocPath fp) = getHighPath ns
             (SnocPath cp) = p
 
         in if (reverse fp) `isPrefixOf` (reverse cp)
 
    -- User is still in frozen view: -------------------------------------------
-            
+
            then let (highP, projP) = splitAt (length cp - length fp) cp
-                in case transExec (applyAtSnocPathT (SnocPath projP) idR 
-                     >>> uToShowUT (highlightFocus $ SnocPath highP)) t of 
-                     Left _   -> resetPath 
+                in case transExec (applyAtSnocPathT (SnocPath projP) idR
+                     >>> uToShowUT (highlightFocus $ SnocPath highP)) t of
+                     Left _   -> resetPath
                      Right su -> outputShowU su >> return (Just hi)
-                     
+
    -- User navigated out of frozen view: --------------------------------------
 
-            else case transExec (applyAtSnocPathT p idR 
+            else case transExec (applyAtSnocPathT p idR
                   >>> uToShowUT (highlightFocus mempty)) t of
-                  Left _   -> resetPath 
-                  Right su -> do 
+                  Left _   -> resetPath
+                  Right su -> do
                    interPutWarning "navigated outside of frozen view, \
                                     \updating view..."
-                   modifyInterEnv (putTransEnv $ putNavSettings 
+                   modifyInterEnv (putTransEnv $ putNavSettings
                     (updateHighPath p ns) transEnv)
                    outputShowU su
                    return (Just hi)
-               
+
    -- Navigation frozen -------------------------------------------------------
 
-      else case transExec (applyAtSnocPathT p idR >>> uToShowUT vanilla) t of 
+      else case transExec (applyAtSnocPathT p idR >>> uToShowUT vanilla) t of
             Left _   -> resetPath
             Right su -> outputShowU su >> return (Just hi)
 
   -- Critical error if we've ended up in the transformation
   -- state /without/ a transEnv being set
   Nothing -> transEnvCritError >> return Nothing
- 
+
  where
-  resetPath' t hi transEnv = case transExec (uToShowUT vanilla) t of 
+  resetPath' t hi transEnv = case transExec (uToShowUT vanilla) t of
    -- Critical error if we can't print the entire term
    Left _   -> pathCritError >> return Nothing
-   Right su -> do 
-    interPutWarning "invalid path, resetting..." 
+   Right su -> do
+    interPutWarning "invalid path, resetting..."
     modifyInterEnv (putTransEnv . unHighlightNav . nullPath $ transEnv)
     outputShowU su
     return (Just hi)
 
-  outputShowU su = interPutStrLn (renderStyle terminalLineStyle 
+  outputShowU su = interPutStrLn (renderStyle terminalLineStyle
                     $ ppr (su, fancyKeywords, inherit))
 
 
-   
 
 
 
 
 
 
-           
+
+
 
 
 
@@ -293,43 +293,43 @@ transPrompt  = getInterEnv mTransEnv >>= \case
 --- from the script on <return>
 scriptPrompt ::  InterM InterEnv ()
 scriptPrompt  =  getInterEnv getActiveScripts >>= \case
-                  
-                  ((s, ref, i) : _) -> 
+
+                  ((s, ref, i) : _) ->
 
                     let cmdWidth  = terminalLineWidth - length prompt - 3 -- 3 = ' --'
-                        prompt    = " Active script: "  
-                                     ++ chop 10 ref -- only 10 chars of script name 
+                        prompt    = " Active script: "
+                                     ++ chop 10 ref -- only 10 chars of script name
                                      ++ " | next command (" ++ show i ++ "): "
-                    
-                    in interPutStrLn $ "\ESC[30m\ESC[3m\ESC[48;5;252m" 
-                                        ++ padTo ' ' terminalLineWidth (prompt 
-                                        ++ nextCmd s i cmdWidth) 
-                                        ++ " \ESC[m " 
+
+                    in interPutStrLn $ "\ESC[30m\ESC[3m\ESC[48;5;252m"
+                                        ++ padTo ' ' terminalLineWidth (prompt
+                                        ++ nextCmd s i cmdWidth)
+                                        ++ " \ESC[m "
 
                   -- Critical error when in script state
                   -- but no active script
                   []                -> scriptEnvCritError
-                 where nextCmd s i cmdWidth 
+                 where nextCmd s i cmdWidth
                         | i >= length s = "<end of script> "
-                        | otherwise     = (chop cmdWidth 
-                                           . newlinesToSpaces 
-                                             -- doesn't matter about render as chopped   
+                        | otherwise     = (chop cmdWidth
+                                           . newlinesToSpaces
+                                             -- doesn't matter about render as chopped
                                            . renderStyle terminalLineStyle
                                            . pprRawCmdNoLocNS) (s !! i)
-                    
+
 transScriptPrompt ::  InterM InterEnv (Maybe Int)
 transScriptPrompt  =  scriptPrompt >> transPrompt
 
 -- Command history: -----------------------------------------------------------
 
 cmdHistToTerminal  ::  CmdHist -> [String]
-cmdHistToTerminal h  
- =  terminalMultiNumberedList' "Command history" 
+cmdHistToTerminal h
+ =  terminalMultiNumberedList' "Command history"
      $ fmap showCmd $ reverse h
-    where  
-         showCmd     = lines . renderStyle cmdStyle . pprCmdNS . fst         
+    where
+         showCmd     = lines . renderStyle cmdStyle . pprCmdNS . fst
          maxNumWidth = length $ show $ length h - 1
-         cmdWidth    = terminalInnerFramedWidth 
+         cmdWidth    = terminalInnerFramedWidth
                         - numberedBulletWidth maxNumWidth
                         - numberedBulletRightPadding
          cmdStyle    = genStyle cmdWidth
@@ -338,50 +338,50 @@ cmdHistToTerminal h
 
 stateHistToTerminal  ::  TransHist -> [String]
 stateHistToTerminal h
- =  (terminalMultiNumberedList' "State history" 
+ =  (terminalMultiNumberedList' "State history"
      . fmap (\(t, _) -> showTerm t)
-     . reverse) states 
-    where 
-         showTerm    = lines . renderStyle termStyle . ppr 
+     . reverse) states
+    where
+         showTerm    = lines . renderStyle termStyle . ppr
          maxNumWidth = length $ show $ length states - 1
-         termWidth   = terminalInnerFramedWidth 
+         termWidth   = terminalInnerFramedWidth
                         - numberedBulletWidth maxNumWidth
                         - numberedBulletRightPadding
-         termStyle   = genStyle termWidth                      
-         states      = stateHist h 
+         termStyle   = genStyle termWidth
+         states      = stateHist h
 
 -- Transformation history: ----------------------------------------------------
 
 transHistToTerminal  ::  TransHist -> [String]
-transHistToTerminal h  
+transHistToTerminal h
  =  terminalAddCentreHighlightedTitle "Transformation history" $
-     if h == emptyTransHist 
+     if h == emptyTransHist
         then ["<empty>"]
-        else concatMap (\((c, r), (t, _)) -> showRelCmd r c 
+        else concatMap (\((c, r), (t, _)) -> showRelCmd r c
               ++ showTerm t) xs
-    where 
+    where
          showTerm = lines . renderStyle termStyle . ppr
 
          showRelCmd r c = (ys ++ xs) : fmap (whitePad relPaddedWidth ++) xss
-                          where 
+                          where
                                ys         = showRel r
-                               (xs : xss) = showCmd c 
+                               (xs : xss) = showCmd c
 
          showRel Nothing  = whitePad relPaddedWidth
-         showRel (Just r) = let sr = show r 
+         showRel (Just r) = let sr = show r
                             in whitePad relLeftPadding
                                 ++ whitePad (relWidth - length sr)
                                 ++ sr
-                                ++ whitePad relRightPadding 
+                                ++ whitePad relRightPadding
 
          showCmd cmd = let (f : fs) = deggar $ lines $ renderStyle hintStyle $ pprCmdNS cmd
                            (g : gs) = reverse $ ('{' : whitePad hintInnerPadding ++ f)
                                        : fmap (whitePad (hintInnerPadding + 1) ++) fs
                        in reverse $ (g ++ whitePad hintInnerPadding ++ "}") : gs
 
-         termStyle = genStyle terminalInnerFramedWidth                 
-         hintStyle = genStyle (innerHintWidth terminalInnerFramedWidth)                 
-         
+         termStyle = genStyle terminalInnerFramedWidth
+         hintStyle = genStyle (innerHintWidth terminalInnerFramedWidth)
+
          xs        = reverse (zip cmds states)
          states    = stateHist h
          cmds      = cmdHist h
@@ -389,45 +389,45 @@ transHistToTerminal h
 -- Map keys: ------------------------------------------------------------------
 
 mapKeysToTerminal       ::  String -> Map.Map String a -> [String]
-mapKeysToTerminal title  =  terminalMultiDefaultBulletList title 
-                             . fmap (squashString keyWidth) 
+mapKeysToTerminal title  =  terminalMultiDefaultBulletList title
+                             . fmap (squashString keyWidth)
                              . Map.keys
-                            where keyWidth = terminalInnerFramedWidth 
+                            where keyWidth = terminalInnerFramedWidth
                                               - bulletWidth
                                               - bulletRightPadding
 
 -- List without bullets, and new style of heading.
 mapKeysToTerminal' :: String -> Map.Map String a -> [String]
-mapKeysToTerminal' title = terminalMultiSpaceBulletList title 
-                            . fmap (squashString keyWidth) 
+mapKeysToTerminal' title = terminalMultiSpaceBulletList title
+                            . fmap (squashString keyWidth)
                             . Map.keys
-                           where keyWidth = terminalInnerFramedWidth 
+                           where keyWidth = terminalInnerFramedWidth
                                              - bulletWidth
                                              - bulletRightPadding
 -- Cost-equivalent contexts library: ------------------------------------------
 
 ctxEqLibToTerminal     ::  CtxEqLib -> [[String]]
-ctxEqLibToTerminal lib  =  fmap (\k -> terminalMultiNumberedList' 
-                            (ctxKindToDescrip k) . render  
-                              $ (ctxKindToProj k) lib) 
+ctxEqLibToTerminal lib  =  fmap (\k -> terminalMultiNumberedList'
+                            (ctxKindToDescrip k) . render
+                              $ (ctxKindToProj k) lib)
                            [minBound..maxBound]
-                           where 
-                                render ctxEqs = let l = length $ show $ length ctxEqs - 1 
-                                                in fmap (lines 
-                                                          . renderStyle (ctxEqStyle l) 
+                           where
+                                render ctxEqs = let l = length $ show $ length ctxEqs - 1
+                                                in fmap (lines
+                                                          . renderStyle (ctxEqStyle l)
                                                           . ppr) ctxEqs
 
-                                ctxEqStyle l = genStyle $ terminalInnerFramedWidth 
+                                ctxEqStyle l = genStyle $ terminalInnerFramedWidth
                                                            - numberedBulletWidth l
                                                            - numberedBulletRightPadding
 
 ctxEqsToTerminal       ::  CtxKind -> CtxEqLib -> [String]
-ctxEqsToTerminal k lib  =  terminalMultiNumberedList' (ctxKindToDescrip k) $ 
+ctxEqsToTerminal k lib  =  terminalMultiNumberedList' (ctxKindToDescrip k) $
                             fmap (lines . renderStyle ctxEqStyle . ppr) ctxEqs
-                           where 
+                           where
                                 ctxEqs     = ctxKindToProj k lib
-                                maxLen     = length $ show $ length ctxEqs - 1 
-                                ctxEqStyle = genStyle $ terminalInnerFramedWidth 
+                                maxLen     = length $ show $ length ctxEqs - 1
+                                ctxEqStyle = genStyle $ terminalInnerFramedWidth
                                                          - numberedBulletWidth maxLen
                                                          - numberedBulletRightPadding
 
@@ -435,26 +435,26 @@ ctxEqsToTerminal k lib  =  terminalMultiNumberedList' (ctxKindToDescrip k) $
 
 -- Non-strict line output
 scriptToTerminal :: String -> Script -> [String]
-scriptToTerminal ref s = 
+scriptToTerminal ref s =
   terminalMultiNumberedList' ("Command script: " ++ ref) (terminalRenderScript s)
 
--- Non-script line output                               
+-- Non-script line output
 activeScriptToTerminal :: (Script, String, Int) -> [String]
-activeScriptToTerminal (s, ref, i) = 
+activeScriptToTerminal (s, ref, i) =
   terminalHighlightedMultiNumberedList ("Active command script: " ++ ref)
     i (terminalRenderScript s)
 
--- Non-script line output                                       
+-- Non-script line output
 terminalRenderScript :: Script -> [[String]]
 terminalRenderScript s = fmap showCmd s
-  where 
-    showCmd = fmap (chop cmdWidth) 
-               . lines 
-               . renderStyle cmdStyle 
+  where
+    showCmd = fmap (chop cmdWidth)
+               . lines
+               . renderStyle cmdStyle
                . pprRawCmdNoLocNS
 
     maxNumWidth = length $ show $ length s - 1
-    cmdWidth    = terminalInnerFramedWidth 
+    cmdWidth    = terminalInnerFramedWidth
                    - numberedBulletWidth maxNumWidth
                    - numberedBulletRightPadding
     cmdStyle    = genStyle cmdWidth
@@ -462,37 +462,37 @@ terminalRenderScript s = fmap showCmd s
 -- Transformation goal: -------------------------------------------------------
 
 goalToTerminal          ::  TransEnv -> [String]
-goalToTerminal transEnv  =  terminalAddCentreHighlightedTitle "Transformation goal" $ 
-                            case getGoal transEnv of 
+goalToTerminal transEnv  =  terminalAddCentreHighlightedTitle "Transformation goal" $
+                            case getGoal transEnv of
                              Nothing -> ["<none>"]
-                             Just t  -> lines 
-                                         . renderStyle goalStyle 
-                                         . ppr $ t     
-                            where goalStyle = genStyle terminalInnerFramedWidth  
+                             Just t  -> lines
+                                         . renderStyle goalStyle
+                                         . ppr $ t
+                            where goalStyle = genStyle terminalInnerFramedWidth
 
 -- Transformation global relation: --------------------------------------------
 
 grelToTerminal          ::  TransEnv -> [String]
-grelToTerminal transEnv  =  terminalAddCentreHighlightedTitle "Global relation" $ 
-                            case getGRel transEnv of 
+grelToTerminal transEnv  =  terminalAddCentreHighlightedTitle "Global relation" $
+                            case getGRel transEnv of
                              Nothing  -> ["<none>"]
                              Just rel -> [show rel]
 
 
 -------------------------------------------------------------------------------
--- File printing: -- 
+-- File printing: --
 -------------------------------------------------------------------------------
 -- Some file output has strict line output, see CmdAST for details.
 
 -- State history: -------------------------------------------------------------
-                            
+
 stateHistToFile :: TransEnv -> [String]
 stateHistToFile transEnv = [""] ++ subHeader ++ hist ++ warn
     where
          histHeader  = "State history: --"
          subHeader   = [fileLineSep, histHeader, fileLineSep]
          hist        = stateHistToFileHelper (getHist transEnv)
-         warn        = if gRelSet 
+         warn        = if gRelSet
                           then []
                           else fileLineSep : gRelWarn
          gRelWarn    = squashString fileLineWidth "Warning: the global \
@@ -504,22 +504,22 @@ stateHistToFile transEnv = [""] ++ subHeader ++ hist ++ warn
 
 -- Not-strict line output
 stateHistToFileHelper :: TransHist -> [String]
-stateHistToFileHelper h  
+stateHistToFileHelper h
  =  concatMap (\((_, r), (t, _)) -> [showRel r] ++ showTerm t ++ [""]) xs
-    where 
+    where
          showTerm = lines . renderStyle fileLineStyle . ppr
 
          showRel Nothing  = ""
          showRel (Just r) = show r ++ "\n"
          xs     = reverse (zip cmds states)
          states = stateHist h
-         cmds   = cmdHist h 
+         cmds   = cmdHist h
 
 -- Transformation history: -----------------------------------------------------
 
 transHistToFile :: TransEnv -> [String]
 transHistToFile transEnv =  [""] ++ infoBlock  ++ subHeader ++ hist ++ warn
-  where 
+  where
     infoHeader     = "Transformation info: -----"
     goalHeader     = "-- Goal: -----------------"
     grelHeader     = "-- Global relation: ------"
@@ -531,7 +531,7 @@ transHistToFile transEnv =  [""] ++ infoBlock  ++ subHeader ++ hist ++ warn
                     \transformation steps do not necessarily \
                     \constitute an inequational proof."
 
-    infoBlock  = [ fileLineSep, infoHeader, fileLineSep 
+    infoBlock  = [ fileLineSep, infoHeader, fileLineSep
                  , goalHeader, outGoal
                  , grelHeader, outGRel
                  , stepsHeader, show steps
@@ -540,19 +540,19 @@ transHistToFile transEnv =  [""] ++ infoBlock  ++ subHeader ++ hist ++ warn
 
     subHeader  = [fileLineSep, histHeader, fileLineSep]
 
-    warn       = if gRelSet 
+    warn       = if gRelSet
                    then []
                    else fileLineSep : gRelWarn
 
     hist       = transHistToFileHelper (getHist transEnv)
 
-    outGRel    = case getGRel transEnv of 
+    outGRel    = case getGRel transEnv of
                  Nothing  -> "N/A"
                  Just rel -> show rel
-    outGoal    = case getGoal transEnv of 
+    outGoal    = case getGoal transEnv of
                  Nothing -> "N/A"
                  Just t  -> renderStyle fileLineStyle (ppr t)
-              
+
     gRelSet    = isJust (getGRel transEnv)
     steps      = CmdHist.steps (cmdHist . getHist $ transEnv)
     navSteps   = CmdHist.navSteps (cmdHist . getHist $ transEnv)
@@ -560,18 +560,18 @@ transHistToFile transEnv =  [""] ++ infoBlock  ++ subHeader ++ hist ++ warn
 -- Non-strict line output
 transHistToFileHelper :: TransHist -> [String]
 transHistToFileHelper h  =
-    concatMap (\((c, r), (t, _)) -> showRelCmd r c ++ [""] ++ showTerm t ++ [""]) xs 
-    where 
+    concatMap (\((c, r), (t, _)) -> showRelCmd r c ++ [""] ++ showTerm t ++ [""]) xs
+    where
          showTerm = lines . renderStyle fileLineStyle . ppr
 
          showRelCmd r c = (ys ++ xs) : fmap (whitePad relPaddedWidth ++) xss
-                          where 
+                          where
                                ys         = showRel r
                                (xs : xss) = showCmd c
 
-         showRel Nothing  = whitePad relPaddedWidth 
-         showRel (Just r) = let sr = show r 
-                            in whitePad relLeftPadding  
+         showRel Nothing  = whitePad relPaddedWidth
+         showRel (Just r) = let sr = show r
+                            in whitePad relLeftPadding
                                 ++ whitePad (relWidth - length sr)
                                 ++ sr
                                 ++ whitePad relRightPadding
@@ -581,21 +581,21 @@ transHistToFileHelper h  =
                                        : fmap (whitePad (hintInnerPadding + 1) ++) fs
                            in reverse $ (g ++ whitePad hintInnerPadding ++ "}") : gs
 
-         hintStyle = genStyle (innerHintWidth fileLineWidth)                      
+         hintStyle = genStyle (innerHintWidth fileLineWidth)
          xs        = reverse (zip cmds states)
          states    = stateHist h
-         cmds      = cmdHist h 
+         cmds      = cmdHist h
 
 -- Terms/contexts: ------------------------------------------------------------
 
 termsCtxsLibToFile :: Bool -> Bool -> BaseLib -> [String]
-termsCtxsLibToFile tb cb lib = case (tb, cb) of 
-  (True, True) -> [""] 
+termsCtxsLibToFile tb cb lib = case (tb, cb) of
+  (True, True) -> [""]
                    ++ [fileLineSep, termHeader, fileLineSep]
                    ++ ts
                    ++ [""]
                    ++ [fileLineSep, ctxHeader, fileLineSep]
-                   ++ cs 
+                   ++ cs
   (True, False) -> [fileLineSep, termHeader', fileLineSep]
                     ++ ts
   (False, True) -> [fileLineSep, ctxHeader, fileLineSep]
@@ -614,21 +614,21 @@ termsCtxsLibToFile tb cb lib = case (tb, cb) of
 ctxEqsToFile :: CtxKind -> BaseLib -> [String]
 ctxEqsToFile k lib = [""] ++ subHeader ++ ctxEqs
   where
-    eqsHeader = "-- " ++ ctxKindToDescrip' k ++ ": --" 
+    eqsHeader = "-- " ++ ctxKindToDescrip' k ++ ": --"
     subHeader = [fileLineSep, eqsHeader, fileLineSep]
-    ctxEqs    = (intersperse " " 
-                 . fmap (renderStyle fileLineStyle . ppr) 
-                 . (ctxKindToProj k) 
-                 . ctxEqLib) lib 
+    ctxEqs    = (intersperse " "
+                 . fmap (renderStyle fileLineStyle . ppr)
+                 . (ctxKindToProj k)
+                 . ctxEqLib) lib
 
 -- Scripts: -------------------------------------------------------------------
 
 scriptToFile :: TransEnv -> [String]
 scriptToFile transEnv = [""] ++ subHeader ++ cmds
- where 
+ where
   scriptHeader = "-- Commands: --"
   subHeader    = [ fileLineSep, scriptHeader, fileLineSep ]
-  cmds         = cmdHistToFileAsScript (cmdHist . getHist $ transEnv) 
+  cmds         = cmdHistToFileAsScript (cmdHist . getHist $ transEnv)
 
 
 -- /Strict/ line output
@@ -636,7 +636,7 @@ cmdHistToFileAsScript :: CmdHist -> [String]
 cmdHistToFileAsScript  = fmap (renderStyle fileLineStyle . ppr . fst) . reverse
 
 -------------------------------------------------------------------------------
--- Helpers: -- 
+-- Helpers: --
 -------------------------------------------------------------------------------
 
 -- Terminal helpers: ----------------------------------------------------------
@@ -658,40 +658,40 @@ terminalMultiNumberedList' title xss = terminalAddCentreHighlightedTitle title (
 -- Highlighted numbered bullet list
 terminalHighlightedMultiNumberedList :: String -> Int -> [[String]] -> [String]
 terminalHighlightedMultiNumberedList title _  [] = terminalAddTitleFrame title ["<empty>"]
-terminalHighlightedMultiNumberedList title idx xss  
+terminalHighlightedMultiNumberedList title idx xss
  |  idx < 0          = terminalAddCentreHighlightedTitle          title     (multiNumber  xss)
  |  idx < length xss = terminalAddTitleFrameHighlightIdxHighlight title idx (multiNumber' xss)
  |  otherwise        = terminalAddCentreHighlightedTitle          title     (multiNumber  xss)
 
--- Bullet lists: -- 
+-- Bullet lists: --
 
 terminalMultiDefaultBulletList :: String -> [[String]] -> [String]
 terminalMultiDefaultBulletList title []  = terminalAddTitleFrame title ["<empty>"]
 terminalMultiDefaultBulletList title xss = terminalAddTitleFrame title (multiBullet defaultBullet xss)
-   
+
 terminalMultiSpaceBulletList :: String -> [[String]] -> [String]
-terminalMultiSpaceBulletList title []  = 
+terminalMultiSpaceBulletList title []  =
   terminalAddCentreHighlightedTitle title ["<empty>"]
-terminalMultiSpaceBulletList title xss = 
+terminalMultiSpaceBulletList title xss =
   terminalAddCentreHighlightedTitle title (multiBullet' xss)
 
 
 -- Add centred title with highlighting.
 terminalAddCentreHighlightedTitle :: String -> [String] -> [String]
-terminalAddCentreHighlightedTitle title xs = 
-  ("\ESC[30m\ESC[3m\ESC[48;5;252m" ++ whitePadTo terminalLineWidth 
+terminalAddCentreHighlightedTitle title xs =
+  ("\ESC[30m\ESC[3m\ESC[48;5;252m" ++ whitePadTo terminalLineWidth
   (terminalCentreText title)  ++ "\ESC[m") : " " : xs
 
 
 -- Add title and frame
 terminalAddTitleFrame  ::  String -> [String] -> [String]
-terminalAddTitleFrame title xs  
+terminalAddTitleFrame title xs
  =  line               -- top
      : take n (y : ys) -- title
      ++ line           -- sep
      : drop n (y : ys) -- content
      ++ [line]         -- bottom
-    where 
+    where
          n        = length title'
          (y : ys) = fmap (\x -> "| " ++ x ++ " |") $ deggar (title' ++ xs)
          line     = '+' : replicate (length y - 2) '-' ++ "+"
@@ -701,11 +701,11 @@ terminalAddTitleFrame title xs
 terminalAddTitleFrameHighlightIdxHighlight :: String -> Int -> [[String]] -> [String]
 terminalAddTitleFrameHighlightIdxHighlight title idx xss = concat (title' : rest)
   where
-    title' = ["\ESC[30m\ESC[3m\ESC[48;5;252m" ++ whitePadTo terminalLineWidth 
+    title' = ["\ESC[30m\ESC[3m\ESC[48;5;252m" ++ whitePadTo terminalLineWidth
                (terminalCentreText title)  ++ "\ESC[m", " "]
     rest = l ++ r' : others
-    (l, r : others) = splitAt idx xss 
-    r' =  fmap (\s -> "\ESC[30m\ESC[3m\ESC[48;5;252m" 
+    (l, r : others) = splitAt idx xss
+    r' =  fmap (\s -> "\ESC[30m\ESC[3m\ESC[48;5;252m"
                  ++ whitePadTo terminalLineWidth s
                  ++ "\ESC[m") r
 
@@ -713,106 +713,106 @@ terminalAddTitleFrameHighlightIdxHighlight title idx xss = concat (title' : rest
 
 -- Add title, frame and highlighting
 terminalAddTitleFrameHighlight ::  String -> Int -> [[String]] -> [String]
-terminalAddTitleFrameHighlight title idx xss 
- =  line                  -- top 
+terminalAddTitleFrameHighlight title idx xss
+ =  line                  -- top
      : title''            -- title
-     ++ line              -- sep 
+     ++ line              -- sep
      : concat l           -- non-highlighted content
      ++ fmap highlight r  -- highlighted content
      ++ concat rs         -- non-highlighted content
      ++ [line]            -- bottom
 
-    where 
+    where
          line             = '+' : replicate (n - 2) '-' ++ "+"
          highlight        = (\s -> "\ESC[30m\ESC[48;5;252m" ++ s ++ "\ESC[m")
-         
+
          (l, r : rs)      = splitAt idx xss'
          -- I don't like this but deggar has the wrong type
-         (title'' : xss')  = fmap (fmap (\x -> "| " ++ x ++ " |") 
+         (title'' : xss')  = fmap (fmap (\x -> "| " ++ x ++ " |")
                                   . fmap (whitePadTo maxLen)) (title' : xss)
          n                = length (head title'')
          maxLen           = maximum $ fmap length title' ++ concatMap (fmap length) xss
          title'           = squashString terminalInnerFramedWidth title
 
--- Add number to single line 
+-- Add number to single line
 singleNumber    ::  [String] -> [String]
-singleNumber xs  =  fmap (\(x, i) -> 
-                    
+singleNumber xs  =  fmap (\(x, i) ->
+
                     let si  = show (i :: Int)
-                        l   = length si 
+                        l   = length si
                         pad = whitePad (max - l + 1)
-                    in '(' : si ++ ')' : pad ++ x) 
-                   
+                    in '(' : si ++ ')' : pad ++ x)
+
                     (zip xs [1..])
                     where max = length $ show $ length xs - 1
 
 -- Add number/spacing to multiple lines and concatenate
 multiNumber     ::  [[String]] -> [String]
-multiNumber xss  =  concatMap (\(xs, i) -> 
-                    
+multiNumber xss  =  concatMap (\(xs, i) ->
+
                     let si      = show (i :: Int)
-                        l       = length si 
+                        l       = length si
                         pad     = whitePad (max - l + 1)
                         padRest = whitePad (max + 3)
-                    in case xs of 
+                    in case xs of
                         []       -> []
-                        (y : ys) -> ('(' : si ++ ')' : pad ++ y) 
-                                     : fmap (padRest ++) ys) 
-                   
+                        (y : ys) -> ('(' : si ++ ')' : pad ++ y)
+                                     : fmap (padRest ++) ys)
+
                     (zip xss [1..])
                     where max = length $ show $ length xss - 1
 
 -- Add number/spacing to multiple lines and concatenate
 multiNumber'     ::  [[String]] -> [[String]]
-multiNumber' xss  =  fmap (\(xs, i) -> 
-                    
+multiNumber' xss  =  fmap (\(xs, i) ->
+
                      let si      = show (i :: Int)
-                         l       = length si 
+                         l       = length si
                          pad     = whitePad (max - l + 1)
                          padRest = whitePad (max + 3)
-                     in case xs of 
+                     in case xs of
                          []       -> []
-                         (y : ys) -> ('(' : si ++ ')' : pad ++ y) 
-                                      : fmap (padRest ++) ys) 
-                    
-                     (zip xss [1..])
-                     where max = length $ show $ length xss - 1                  
+                         (y : ys) -> ('(' : si ++ ')' : pad ++ y)
+                                      : fmap (padRest ++) ys)
 
--- Add bullet to single line 
+                     (zip xss [1..])
+                     where max = length $ show $ length xss - 1
+
+-- Add bullet to single line
 singleBullet   ::  Char -> [String] -> [String]
 singleBullet c  =  fmap (\s -> c : ' ' : s)
 
 -- Add bullet/spacing to multiple lines and concatenate
 multiBullet   ::  Char -> [[String]] -> [String]
-multiBullet c  =  concatMap (\ss -> case ss of 
+multiBullet c  =  concatMap (\ss -> case ss of
                    []       -> []
                    (x : xs) -> (c : ' ' : x) : fmap (whitePad 2 ++) xs)
 
 -- Add a single space bullet
 multiBullet' :: [[String]] -> [String]
-multiBullet'  = concatMap (\ss -> case ss of 
+multiBullet'  = concatMap (\ss -> case ss of
                    []       -> []
                    (x : xs) -> (' ' : x) : fmap (whitePad 1 ++) xs)
 
 -- Non-script line output for commands/parameters: --
 
 -- Raw parameters
-pprRawParamNS                              ::  RawParam -> Doc 
+pprRawParamNS                              ::  RawParam -> Doc
 pprRawParamNS (RawSrcName s)                =  char '\'' <> text s
 pprRawParamNS (RawSrcCode s)                =  char '$' <+> text (stripSpace s) <+> char '$'
-pprRawParamNS (RawCmdName s)                =  text s 
-pprRawParamNS (RawFile    s)                =  text s 
+pprRawParamNS (RawCmdName s)                =  text s
+pprRawParamNS (RawFile    s)                =  text s
 pprRawParamNS (RawNumber  n)                =  int n
-pprRawParamNS (RawProp p1 pr p2)            =  pprRawParamsNS [p1, pr, p2] 
+pprRawParamNS (RawProp p1 pr p2)            =  pprRawParamsNS [p1, pr, p2]
 
-pprRawParamsNS                             ::  [RawParam] -> Doc 
+pprRawParamsNS                             ::  [RawParam] -> Doc
 pprRawParamsNS []                           =  empty
 pprRawParamsNS (rp : rps)                   =  fsep [pprRawParamNS rp, pprRawParamsNS rps]
 
 -- Raw commands with no location information on their parameters
-pprRawCmdNoLocNS                           ::  RawCmd -> Doc 
+pprRawCmdNoLocNS                           ::  RawCmd -> Doc
 pprRawCmdNoLocNS (RawNavCmd        s lrps)  =  fsep [text s, pprRawParamsNS (fmap par lrps)]
-pprRawCmdNoLocNS (RawShellCmd      s lrps)  =  fsep [text s, pprRawParamsNS (fmap par lrps)]       
+pprRawCmdNoLocNS (RawShellCmd      s lrps)  =  fsep [text s, pprRawParamsNS (fmap par lrps)]
 pprRawCmdNoLocNS (RawTransEnvCmd   s lrps)  =  fsep [text s, pprRawParamsNS (fmap par lrps)]
 pprRawCmdNoLocNS (RawBaseLibCmd    s lrps)  =  fsep [text s, pprRawParamsNS (fmap par lrps)]
 pprRawCmdNoLocNS (RawScriptCmd     s lrps)  =  fsep [text s, pprRawParamsNS (fmap par lrps)]
@@ -824,18 +824,18 @@ pprRawCmdNoLocNS (RawAssumptionCmd s lrps)  =  fsep [text s, pprRawParamsNS (fma
 pprLocRawParamNS                           ::  LocatedRawParam -> Doc
 pprLocRawParamNS (LocatedRawParam par pos)  =  hsep [ppr pos, pprRawParamNS par]
 
-pprLocRawParamsNS                          ::  [LocatedRawParam] -> Doc 
+pprLocRawParamsNS                          ::  [LocatedRawParam] -> Doc
 pprLocRawParamsNS []                        =  empty
-pprLocRawParamsNS (lrp : lrps)              =  pprLocRawParamNS lrp 
+pprLocRawParamsNS (lrp : lrps)              =  pprLocRawParamNS lrp
                                                 $+$ pprLocRawParamsNS lrps
 
 -- Parameters
-pprParamNS                                 ::  Param -> Doc 
+pprParamNS                                 ::  Param -> Doc
 pprParamNS (CtxSrcName  s)                  =  text ('\'' : s)
 pprParamNS (TermSrcName s)                  =  text ('\'' : s)
 pprParamNS (CmdName     s)                  =  text s
 pprParamNS (File        s)                  =  text s
-pprParamNS (Number      n)                  =  int n 
+pprParamNS (Number      n)                  =  int n
 pprParamNS (Rel         r)                  =  text (relToStr r)
 pprParamNS (SrcCode     u)                  =  char '$' <+> ppr u    <+> char '$'
 pprParamNS (TermSrcCode u)                  =  char '$' <+> ppr u    <+> char '$'
@@ -848,8 +848,8 @@ pprParamNS (Prop p1 r p2)                   =  fsep [ pprParamNS p1
                                                     , pprParamNS p2 ]
 pprParamNS (CtxKind k)                      =  text (show k)
 
--- Commands 
-pprCmdNS                                   ::  Cmd -> Doc 
+-- Commands
+pprCmdNS                                   ::  Cmd -> Doc
 pprCmdNS (BaseLibCmd    s ps)               =  fsep (text s : fmap pprParamNS ps)
 pprCmdNS (StateCmd      s ps)               =  fsep (text s : fmap pprParamNS ps)
 pprCmdNS (ScriptCmd     s ps)               =  fsep (text s : fmap pprParamNS ps)
@@ -869,7 +869,7 @@ fileFancyHeader       ::  [String]
 fileFancyHeader        =  fmap (centreText fileLineWidth) fancyHeader
 
 fancyHeader  ::  [String]
-fancyHeader            
+fancyHeader
  =  deggar [ "   _   _ _   _ _____ ____"
            , "  | | | | \\ | |_   _|  ___|      University of Nottingham"
            , "  | | | |  \\| | | | | |__           Improvement Engine"
@@ -890,39 +890,39 @@ autoGenMsg  = "This file has been automatically generated by UNIE."
 
 u ::  [[String]]
 u  =  replicate 4 [whiteSpace, whiteSpace, " ", " ", whiteSpace, whiteSpace, " "]
-      ++ [replicate 6 whiteSpace ++ [" "]] 
+      ++ [replicate 6 whiteSpace ++ [" "]]
 
 n ::  [[String]]
 n  =  reverse u
 
 i ::  [[String]]
-i  =   reverse $ 
+i  =   reverse $
        (replicate 2 whiteSpace ++ [" "]) : replicate 3 " " :
         replicate 3 (replicate 2 whiteSpace ++ [" "])
 
 eInfo ::  [[String]]
-eInfo  =  [ replicate 6 whiteSpace ++ 
+eInfo  =  [ replicate 6 whiteSpace ++
          ["     \ESC[38;5;255mUniversity of Nottingham\ESC[m"]
-      , [whiteSpace, whiteSpace, " " , " ", whiteSpace, whiteSpace, 
+      , [whiteSpace, whiteSpace, " " , " ", whiteSpace, whiteSpace,
           "        \ESC[38;5;255mImprovement Engine\ESC[m"]
       , replicate 6 whiteSpace ++ [" "]
-      , [whiteSpace, whiteSpace, " ", " ", " ", " ", 
+      , [whiteSpace, whiteSpace, " ", " ", " ", " ",
           "        \ESC[38;5;255mMartin A.T. Handley\ESC[m"]
-      , replicate 6 whiteSpace ++ 
+      , replicate 6 whiteSpace ++
          ["  \ESC[38;5;255mmartin.handley@nottingham.ac.uk\ESC[m"]
       ]
 
 unie ::  [String]
-unie  =  (fmap concat 
-           . transpose 
+unie  =  (fmap concat
+           . transpose
            . concat
-           . fmap transpose) [u, n, i, eInfo] 
+           . fmap transpose) [u, n, i, eInfo]
           ++ [ "\ESC[38;5;255m_.-\"/______________////_\ESC[m"
              , "\ESC[38;5;255m`'-.\\--------------\\\\\\\\\"\ESC[m"
              ]
 
-whiteSpace ::  String       
-whiteSpace  =  "\ESC[48;5;255m \ESC[m" 
+whiteSpace ::  String
+whiteSpace  =  "\ESC[48;5;255m \ESC[m"
 
 -------------------------------------------------------------------------------
 
@@ -933,12 +933,12 @@ fileFancyHeader'      ::  [String]
 fileFancyHeader'       =  fileFancyHeader ++ [""]
 
 -- Centre text in terminal
-terminalCentreText    ::  String -> String 
+terminalCentreText    ::  String -> String
 terminalCentreText s   =  whitePad l ++ s
                           where l = (terminalLineWidth - length s) `div` 2
 
 -- Centre text for a given width
-centreText            ::  Int -> String -> String 
+centreText            ::  Int -> String -> String
 centreText l s         =  whitePad l' ++ s
                           where l' = (l - length s) `div` 2
 
@@ -955,26 +955,26 @@ padTo                 ::  Char -> Int -> String -> String
 padTo c i s            =  s ++ replicate (i - length s) c
 
 -- Chop a string to a specific width
-chop                  ::  Int -> String -> String 
-chop n s               |  length s < n = s 
+chop                  ::  Int -> String -> String
+chop n s               |  length s < n = s
                        |  otherwise    = take (n - 2) s ++ ".."
 
 -- Unlines without the annoying newline for singletons
-unlines'              ::  [String] -> String 
+unlines'              ::  [String] -> String
 unlines' [x]           =  x
 unlines' xs            =  unlines xs
 
 -- Pretty names for CtxKinds
-ctxKindToDescrip :: CtxKind -> String 
+ctxKindToDescrip :: CtxKind -> String
 ctxKindToDescrip STD  = "Standard cost-equivalent contexts library"
-ctxKindToDescrip VAL  = "Value cost-equivalent contexts library"    
+ctxKindToDescrip VAL  = "Value cost-equivalent contexts library"
 ctxKindToDescrip EVAL = "Evaluation cost-equivalent contexts library"
 ctxKindToDescrip APP  = "Applicative cost-equivalent contexts library"
 
 -- Pretty names for CtxKinds
-ctxKindToDescrip' :: CtxKind -> String 
+ctxKindToDescrip' :: CtxKind -> String
 ctxKindToDescrip' STD  = "Standard cost-equivalent contexts"
-ctxKindToDescrip' VAL  = "Value cost-equivalent contexts"    
+ctxKindToDescrip' VAL  = "Value cost-equivalent contexts"
 ctxKindToDescrip' EVAL = "Evaluation cost-equivalent contexts"
 ctxKindToDescrip' APP  = "Applicative cost-equivalent contexts"
 

@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module KureMonad 
+module KureMonad
  ( KureMEnv(..)   -- KURE-transformation-monad's 'default' environment.
  , R              -- Type of rewrites using TM and KureMEnc.
  , RS             -- Type of rewrites paramaterised over TM's environment.
@@ -12,7 +12,7 @@ module KureMonad
  , initKureMEnv   -- Initial 'default' environment for TM.
  , sv2KureMEnv    -- Convert a list of safe variable names to an initial default
                   -- TM environment.
- ) where 
+ ) where
 
 import Classes     (SafeNames(..))
 import CtxAST      (Name)
@@ -27,7 +27,7 @@ import Language.KURE       (MonadCatch(..), Transform)
   Information:
   -----------------------------------------------------------------------------
   - TM = "transformation monad"... which is state + failure;
-  - TM is parametric in the state, however, its typical use case is alongside 
+  - TM is parametric in the state, however, its typical use case is alongside
     the KureMEnv, which stores a list of save variable names that can be used
     for e.g., safe subsitution;
   - When evaluating terms with the abstract machine, a different environment
@@ -35,42 +35,42 @@ import Language.KURE       (MonadCatch(..), Transform)
 
   Working notes:
   -----------------------------------------------------------------------------
-  - Can't use the standard definition for the State monad because the 
+  - Can't use the standard definition for the State monad because the
     'fail' function throws an exception which we don't want, hence the
     newtype wrapper and boilerplate code.
 -}
 
-newtype TM s a = TM  { unTM :: State s (Either String a) }    
-data KureMEnv  = KureMEnv { svs :: [Name] }                   
+newtype TM s a = TM  { unTM :: State s (Either String a) }
+data KureMEnv  = KureMEnv { svs :: [Name] }
 
--- For any state s: -- 
+-- For any state s: --
 
 type TS s a b  = Transform KureContext (TM s) a b -- "T" for transformation.
 type RS s a    = TS s a a                         -- "R" for rewrite.
 
--- Specialised to KureMEnv: --  
+-- Specialised to KureMEnv: --
 
-type T a b     = Transform KureContext (TM KureMEnv) a b      
-type R a       = T a a                                     
- 
--- We generalise some transformations such that they depend only on 
--- environments that provide safe variable names: KureMEnv is one such 
+type T a b     = Transform KureContext (TM KureMEnv) a b
+type R a       = T a a
+
+-- We generalise some transformations such that they depend only on
+-- environments that provide safe variable names: KureMEnv is one such
 -- environment.
 
-instance SafeNames KureMEnv where 
+instance SafeNames KureMEnv where
   putSafes nss env  = env { svs = nss }
   getSafes          = svs
   modifySafes f env = env { svs = f (svs env) }
-  fresh nss env     = case dropWhile (`elem` nss) (svs env) of 
-                       []         -> Nothing 
-                       (xs : xss) -> Just (xs, env { svs = xss } ) 
+  fresh nss env     = case dropWhile (`elem` nss) (svs env) of
+                       []         -> Nothing
+                       (xs : xss) -> Just (xs, env { svs = xss } )
 
 -- Initial settings for KureMEnv: ---------------------------------------------
 
-initKureMEnv :: KureMEnv 
+initKureMEnv :: KureMEnv
 initKureMEnv  = KureMEnv names
 
-sv2KureMEnv :: [Name] -> KureMEnv 
+sv2KureMEnv :: [Name] -> KureMEnv
 sv2KureMEnv  = KureMEnv
 
 -- Boilerplate: ---------------------------------------------------------------
@@ -88,7 +88,7 @@ instance Monad (TM s) where
               (Right x, n') -> return $ runState (unTM $ f x) n'
               (Left s, n')  -> return (Left s, n')
 
-  -- We don't raise an exception, we return Left, cf. standard either. 
+  -- We don't raise an exception, we return Left, cf. standard either.
   fail s = TM $ StateT $ \n -> return (Left s, n)
 
 instance MonadState s (TM s) where

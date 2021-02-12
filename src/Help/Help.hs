@@ -146,4 +146,3 @@ introductionHelp  = terminalAddCentreHighlightedTitle "Introduction"
   , "  \ESC[38;5;255m_.-\"/______________////_\ESC[m"
   , "  \ESC[38;5;255m`'-.\\--------------\\\\\\\\\"\ESC[m"
   ]
-

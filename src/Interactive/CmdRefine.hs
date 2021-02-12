@@ -77,7 +77,7 @@ refineRawCmd cmd@RawBaseLibCmd{}    = refineRawBaseLibCmd    cmd
 refineRawCmd cmd@RawTransEnvCmd{}   = refineRawTransEnvCmd   cmd
 refineRawCmd cmd@RawStateCmd{}      = refineRawStateCmd      cmd
 refineRawCmd cmd@RawScriptCmd{}     = refineRawScriptCmd     cmd
-refineRawCmd cmd@RawAssumptionCmd{} = refineRawAssumptionCmd cmd 
+refineRawCmd cmd@RawAssumptionCmd{} = refineRawAssumptionCmd cmd
 refineRawCmd cmd@(RawKureCmd s _)   = case refinerLookup s kureCmdSettings of
   Just f  -> f cmd
   Nothing -> Left . InternalErr . NoRefine . show $ cmd

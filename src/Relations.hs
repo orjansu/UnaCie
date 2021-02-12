@@ -1,7 +1,7 @@
 
 module Relations
   ( Relation(..)  -- Datatype to capture relations.
-  , impl          -- Check if one relation implies another according to 
+  , impl          -- Check if one relation implies another according to
                   -- defined relationships in inclusions.
   , strToRel      -- Convert a string to a relation.
   , relToStr      -- Convert a relation to a string.
@@ -11,7 +11,7 @@ import Utils (prepStr)
 
 {-
   <TO-DO>: - Can we update the relations to their actual symbols from the
-             paper? Looks like we could with our own font (e.g., via Inkscape) 
+             paper? Looks like we could with our own font (e.g., via Inkscape)
              but not sure how practical that is.
 
   Information:
@@ -28,7 +28,7 @@ data Relation = R_WI           -- Weak improvement
               | R_UNDEFINED    -- Undefined relation
                 deriving Eq
 
--- Show instance of each relation is the best approximation of its 
+-- Show instance of each relation is the best approximation of its
 -- actual symbol using existing unicode math symbol(s).
 instance Show Relation where
   show R_WI        = "\10886"           -- (GT or approx.)
@@ -39,7 +39,7 @@ instance Show Relation where
   show R_UNDEFINED = "\8709"            -- (Empty set)
 
 {-
-  - We have the following relationships, taken from the lattice diagram 
+  - We have the following relationships, taken from the lattice diagram
     in the paper;
   - See Relations.agda in the Doc folder for a formalisation.
 

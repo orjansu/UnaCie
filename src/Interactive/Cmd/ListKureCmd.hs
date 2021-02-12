@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module ListKureCmd 
+module ListKureCmd
   ( interp_appAssoc_LR  -- Reassociate append from left to right.
   , interp_appAssoc_RL  -- Reassociate append from right to left.
   , interp_appIdent     -- Append's left identity.
@@ -14,9 +14,9 @@ module ListKureCmd
   , matcher_appIdent
   , refiner_appAssoc_LR
   , refiner_appAssoc_RL
-  , refiner_appIdent 
+  , refiner_appIdent
 
-  ) where 
+  ) where
 
 import CmdAST       (Cmd(..), RawCmd(..))
 import CmdError     (CmdError(..), InternalError(..))
@@ -58,13 +58,13 @@ refiner_appAssoc_LR _ = Left $ InternalErr $ WrongRefine "refiner_appAssoc_LR"
 
 interp_appAssoc_LR :: Interp
 interp_appAssoc_LR cmd@(KureCmd s ps) mrel st
-  | s `elem` appAssocLRCmds && isTransState st && null ps = 
+  | s `elem` appAssocLRCmds && isTransState st && null ps =
       applyRTermCurrPathLog (cmd, mrel) appendAssoc_LR_R
   | s `elem` appAssocLRCmds  && isTransState st =
-      outputCmdError $ InternalErr $ UnexpectedParams 
+      outputCmdError $ InternalErr $ UnexpectedParams
        "interp_appAssoc_LR" $ fmap show ps
   | s `elem` appAssocLRCmds = outputCmdError (StateErr st)
-interp_appAssoc_LR _ _ _ = 
+interp_appAssoc_LR _ _ _ =
   outputCmdError $ InternalErr $ WrongInter "interp_appAssoc_LR"
 
 
@@ -83,21 +83,21 @@ matcher_appAssoc_RL_WCE :: Matcher
 matcher_appAssoc_RL_WCE  = cmdMatcherNoParams "append-assoc-rl-wce" RawKureCmd
 
 refiner_appAssoc_RL :: Refiner
-refiner_appAssoc_RL (RawKureCmd "append-assoc-rl-wi" ps) = 
+refiner_appAssoc_RL (RawKureCmd "append-assoc-rl-wi" ps) =
   bimap ParamErr (KureCmd "append-assoc-rl-wi") $ paramsRefine ps [[]]
-refiner_appAssoc_RL (RawKureCmd "append-assoc-rl-wce" ps) = 
+refiner_appAssoc_RL (RawKureCmd "append-assoc-rl-wce" ps) =
   bimap ParamErr (KureCmd "append-assoc-rl-wce") $ paramsRefine ps [[]]
 refiner_appAssoc_RL _ = Left $ InternalErr $ WrongRefine "refiner_appAssoc_RL"
 
 interp_appAssoc_RL :: Interp
 interp_appAssoc_RL cmd@(KureCmd s ps) mrel st
-  | s `elem` appAssocRLCmds && isTransState st && null ps = 
+  | s `elem` appAssocRLCmds && isTransState st && null ps =
       applyRTermCurrPathLog (cmd, mrel) appendAssoc_RL_R
   | s `elem` appAssocRLCmds  && isTransState st =
-      outputCmdError $ InternalErr $ UnexpectedParams 
+      outputCmdError $ InternalErr $ UnexpectedParams
        "interp_appAssoc_RL" $ fmap show ps
   | s `elem` appAssocRLCmds = outputCmdError (StateErr st)
-interp_appAssoc_RL _ _ _ = 
+interp_appAssoc_RL _ _ _ =
   outputCmdError $ InternalErr $ WrongInter "interp_appAssoc_RL"
 
 
@@ -109,7 +109,7 @@ matcher_appIdent :: Matcher
 matcher_appIdent  = cmdMatcherNoParams "append-ident" RawKureCmd
 
 refiner_appIdent :: Refiner
-refiner_appIdent (RawKureCmd "append-ident" ps) = 
+refiner_appIdent (RawKureCmd "append-ident" ps) =
   bimap ParamErr (KureCmd "append-ident") $ paramsRefine ps [[]]
 refiner_appIdent _ = Left $ InternalErr $ WrongRefine "refiner_appIdent"
 
@@ -117,8 +117,8 @@ interp_appIdent :: Interp
 interp_appIdent cmd@(KureCmd "append-ident" ps) mrel st
   | isTransState st = case ps of
      [] -> applyRTermCurrPathLog (cmd, mrel) appendIdentR
-     _  -> outputCmdError $ InternalErr $ UnexpectedParams 
+     _  -> outputCmdError $ InternalErr $ UnexpectedParams
             "interp_appIdent" $ fmap show ps
   | otherwise = outputCmdError (StateErr st)
-interp_appIdent _ _ _ = 
+interp_appIdent _ _ _ =
   outputCmdError $ InternalErr $ WrongInter "interp_appIdent"

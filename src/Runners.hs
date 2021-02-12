@@ -1,11 +1,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Runners
-  ( applyRCtx     -- Apply a context rewrite with the initial environment. 
-  , applyREnvCtx  -- Apply a context rewrite with a given environment. 
-  , applyREnvU    -- Apply a U rewrite with a given environment. 
+  ( applyRCtx     -- Apply a context rewrite with the initial environment.
+  , applyREnvCtx  -- Apply a context rewrite with a given environment.
+  , applyREnvU    -- Apply a U rewrite with a given environment.
   , applyT'       -- Apply a transformation with the initial environment.
-  , applyTCtx     -- Apply a context transformation with the initial environment. 
+  , applyTCtx     -- Apply a context transformation with the initial environment.
   , applyTEnvCtx  -- Apply a context transformation with a given environment.
   , applyTEnvU    -- Apply a U transformation with a given environment.
   , applyTU       -- Apply a U transformation with the initial environment.
@@ -13,7 +13,7 @@ module Runners
                   -- initial environment.
   , evalTMEnv     -- Evaluate TM computation with a given environment.
   , runTMEnv      -- Run TM computation with a given environment.
-  ) where 
+  ) where
 
 import CtxAST      (Ctx)
 import KureContext (emptyKureContext)
@@ -46,7 +46,7 @@ runTMEnv m env = runState (unTM m) env
 -- Runners for T: --
 -------------------------------------------------------------------------------
 
--- Apply T with the initial (default) environment: -- 
+-- Apply T with the initial (default) environment: --
 
 applyTCtx :: T Ctx b -> Ctx -> Either String b
 applyTCtx t = (flip evalTMEnv initKureMEnv) . applyT t emptyKureContext
@@ -57,31 +57,31 @@ applyTU t = (flip evalTMEnv initKureMEnv) . applyT t emptyKureContext
 applyT' :: T a b -> a -> Either String b
 applyT' t  = (flip evalTMEnv initKureMEnv) . applyT t emptyKureContext
 
-applyTUInj :: Injection a U => T U b -> a -> Either String b 
-applyTUInj t = (flip evalTMEnv initKureMEnv) 
-                . applyT t emptyKureContext 
+applyTUInj :: Injection a U => T U b -> a -> Either String b
+applyTUInj t = (flip evalTMEnv initKureMEnv)
+                . applyT t emptyKureContext
                 . inject
 
--- Apply T with a given environment: -- 
+-- Apply T with a given environment: --
 
-applyTEnvCtx  :: T Ctx b -> KureMEnv -> Ctx -> Either String b 
+applyTEnvCtx  :: T Ctx b -> KureMEnv -> Ctx -> Either String b
 applyTEnvCtx t env = (flip evalTMEnv env) . applyT t emptyKureContext
 
 applyTEnvU :: T U b -> KureMEnv -> U -> Either String b
-applyTEnvU t env = (flip evalTMEnv env) . applyT t emptyKureContext 
+applyTEnvU t env = (flip evalTMEnv env) . applyT t emptyKureContext
 
 -------------------------------------------------------------------------------
 -- Runners for R: --
 -------------------------------------------------------------------------------
 
--- Apply R with the initial (default) environment: -- 
+-- Apply R with the initial (default) environment: --
 
-applyRCtx :: R Ctx -> Ctx -> Either String Ctx 
+applyRCtx :: R Ctx -> Ctx -> Either String Ctx
 applyRCtx r = (flip evalTMEnv initKureMEnv) . applyR r emptyKureContext
 
--- Apply R with a given environment: -- 
+-- Apply R with a given environment: --
 
-applyREnvCtx :: R Ctx -> KureMEnv -> Ctx -> Either String Ctx 
+applyREnvCtx :: R Ctx -> KureMEnv -> Ctx -> Either String Ctx
 applyREnvCtx r env = (flip evalTMEnv env) . applyR r emptyKureContext
 
 applyREnvU :: R U -> KureMEnv -> U -> Either String U

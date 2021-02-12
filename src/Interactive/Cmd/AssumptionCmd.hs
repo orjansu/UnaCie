@@ -1,7 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 
 module AssumptionCmd
-  ( assumptionCmds          -- All base lib. commands.matchers               
+  ( assumptionCmds          -- All base lib. commands.matchers
   , assumptionInterp        -- Interpreter for assumption commands.
   , matchers                -- Command line matchers for valid assumption commands.
   , refineRawAssumptionCmd  -- Refiner for raw assumption commands.
@@ -41,24 +41,24 @@ refineRawAssumptionCmd :: Refiner
 refineRawAssumptionCmd (RawAssumptionCmd "ass" ps) =
   bimap ParamErr (AssumptionCmd "ass") $ paramsRefine ps [[relRefine', termSrcCodeRefine]]
 -- Anything else is invalid.
-refineRawAssumptionCmd cmd@RawAssumptionCmd{} =  
+refineRawAssumptionCmd cmd@RawAssumptionCmd{} =
   Left $ InternalErr $ UnexpectedCmd "refineRawAssumptionCmd" $ show cmd
-refineRawAssumptionCmd _ = Left $ InternalErr $  WrongRefine "refineRawAssumptionCmd"                   
+refineRawAssumptionCmd _ = Left $ InternalErr $  WrongRefine "refineRawAssumptionCmd"
 
 -- Interpreters for above commands, for all states: ---------------------------
 
-assumptionInterp :: Interp 
+assumptionInterp :: Interp
 assumptionInterp cmd _ st | isTransState st = go cmd
                           | otherwise = outputCmdError (StateErr st)
 
-  where 
+  where
     go cmd@(AssumptionCmd "ass" ps) = case ps of
-      [Rel r, TermSrcCode (UCtx t)] -> do 
+      [Rel r, TermSrcCode (UCtx t)] -> do
         applyRTermCurrPathLog (cmd, Just r) (return t)
-      _ -> outputCmdError . InternalErr  . UnexpectedParams 
+      _ -> outputCmdError . InternalErr  . UnexpectedParams
             "assumptionInterp" $ fmap show ps
-    
+
      -- Error cases.
-    go cmd@TransEnvCmd{} = 
+    go cmd@TransEnvCmd{} =
         outputCmdError $ InternalErr $ UnexpectedCmd  "assumptionInterp" $ show cmd
     go _ = outputCmdError $ InternalErr $ WrongInter "assumptionInterp"

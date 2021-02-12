@@ -1,5 +1,5 @@
 
-module NavCmd 
+module NavCmd
   ( matchers         -- Command line matchers for valid nav. commands.
   , navCmds          -- All nav. commands.
   , navInterp        -- Interpreter for nav. commands.
@@ -46,23 +46,23 @@ matchers  = fmap (flip cmdMatcherNoParams RawNavCmd) navCmds
 -- Refiner for above commands: ------------------------------------------------
 
 refineRawNavCmd :: Refiner
--- Just make sure the given command has no parameters and is a 
+-- Just make sure the given command has no parameters and is a
 -- valid direction.
 refineRawNavCmd (RawNavCmd s []) = case strToDir s of
   Just dir -> Right (NavCmd dir)
   Nothing  -> Left $ InternalErr $ UnexpectedParams "refineRawNavCmd" [s]
 -- Error cases.
-refineRawNavCmd (RawNavCmd _ ps) = 
+refineRawNavCmd (RawNavCmd _ ps) =
   Left $ InternalErr $ UnexpectedParams "refineRawNavCmd" $ fmap show ps
-refineRawNavCmd _ = 
+refineRawNavCmd _ =
   Left $ InternalErr $ WrongRefine "refineRawNavCmd"
 
 -- Interpreters for above commands, for all interpreter states: ---------------
 
 navInterp :: Interp
-navInterp cmd@(NavCmd dir) mrel st  
+navInterp cmd@(NavCmd dir) mrel st
     -- Navigation commands are only available when in TRANS/TRANS_SCRIPT state.
-  | isTransState st = 
+  | isTransState st =
      modifyTransEnv $ \transEnv ->
       let t = getTerm transEnv
           p = getPath transEnv

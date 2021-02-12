@@ -2,8 +2,8 @@
 {-# LANGUAGE CPP #-}
 {-# LINE 2 "src/Parsing/CmdLexer.x" #-}
 
-    
-module CmdLexer where 
+
+module CmdLexer where
 
 import CmdLexUtils (LocatedToken(..), Pos(..), Token(..))
 
@@ -216,20 +216,20 @@ alex_actions = array (0::Int,16) [(15,alex_action_2),(14,alex_action_2),(13,alex
 -- Helpers: -------------------------------------------------------------------
 
 tokenize :: (a -> Token) -> AlexPosn -> a -> LocatedToken
-tokenize f p x = LocatedToken { tok = f x, pos = alexPosnToPos p } 
+tokenize f p x = LocatedToken { tok = f x, pos = alexPosnToPos p }
 
 constTokenize :: Token -> AlexPosn -> String -> LocatedToken
-constTokenize t p _ = LocatedToken { tok = t, pos = alexPosnToPos p } 
+constTokenize t p _ = LocatedToken { tok = t, pos = alexPosnToPos p }
 
-alexPosnToPos :: AlexPosn -> Pos 
+alexPosnToPos :: AlexPosn -> Pos
 alexPosnToPos (AlexPn _ l c) = Pos { lineNo = l, colNo = c }
 
 toProp :: AlexPosn -> String -> LocatedToken
-toProp p s = 
+toProp p s =
   LocatedToken { tok = Prop (srcTok src1) (CmdName rel) (srcTok src2)
                , pos = alexPosnToPos p }
-  where 
-    srcTok ('\'' : s) = SrcName s 
+  where
+    srcTok ('\'' : s) = SrcName s
     srcTok ('$'  : s) = SrcCode $ takeWhile (/= '$') s
     srcTok _          = error "shouldn't happen: toProp"
     [src1, rel, src2] = splitString s
@@ -243,34 +243,34 @@ toProp p s =
     splitString s = split : splitString (drop (length split) s)
       where split = takeWhile (/= ' ') s
 
-toSrc :: String -> String 
-toSrc  = takeWhile (/= '$') . drop 1 
+toSrc :: String -> String
+toSrc  = takeWhile (/= '$') . drop 1
 
 toSrcName :: String -> String
 toSrcName = drop 1
 
-toFp :: Int -> String -> FilePath 
-toFp n = drop n 
+toFp :: Int -> String -> FilePath
+toFp n = drop n
 
-toQuotFp :: Int -> String -> FilePath 
-toQuotFp n = takeWhile (/= '\"') . drop (n + 1) 
+toQuotFp :: Int -> String -> FilePath
+toQuotFp n = takeWhile (/= '\"') . drop (n + 1)
 
 toInt :: String -> Int
 toInt  = foldl (\n c -> 10 * n + digitToInt c) 0
 
 
-alex_action_2 =  toProp 
-alex_action_3 =  constTokenize CmdSep 
-alex_action_4 =  \p s -> tokenize SrcName p (toSrcName s) 
-alex_action_5 =  \p s -> tokenize SrcCode p (toSrc s) 
-alex_action_6 =  \p s -> tokenize File p (toFp 0 s)     
-alex_action_7 =  \p s -> tokenize File p (toFp 2 s)     
-alex_action_8 =  \p s -> tokenize File p (toFp 0 s)     
-alex_action_9 =  \p s -> tokenize File p (toQuotFp 0 s) 
-alex_action_10 =  \p s -> tokenize File p (toQuotFp 2 s) 
-alex_action_11 =  \p s -> tokenize File p (toQuotFp 0 s) 
-alex_action_12 =  \p s -> tokenize Number p (toInt s) 
-alex_action_13 =  tokenize CmdName 
+alex_action_2 =  toProp
+alex_action_3 =  constTokenize CmdSep
+alex_action_4 =  \p s -> tokenize SrcName p (toSrcName s)
+alex_action_5 =  \p s -> tokenize SrcCode p (toSrc s)
+alex_action_6 =  \p s -> tokenize File p (toFp 0 s)
+alex_action_7 =  \p s -> tokenize File p (toFp 2 s)
+alex_action_8 =  \p s -> tokenize File p (toFp 0 s)
+alex_action_9 =  \p s -> tokenize File p (toQuotFp 0 s)
+alex_action_10 =  \p s -> tokenize File p (toQuotFp 2 s)
+alex_action_11 =  \p s -> tokenize File p (toQuotFp 0 s)
+alex_action_12 =  \p s -> tokenize Number p (toInt s)
+alex_action_13 =  tokenize CmdName
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}
@@ -440,4 +440,3 @@ alexRightContext (sc) user _ _ input =
         -- TODO: there's no need to find the longest
         -- match when checking the right context, just
         -- the first match will do.
-

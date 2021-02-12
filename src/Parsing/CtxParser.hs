@@ -1,8 +1,8 @@
 {-# LANGUAGE MultiWayIf #-}
 
 module CtxParser
-  ( 
-    -- Various parsers of the source language: -- 
+  (
+    -- Various parsers of the source language: --
 
     alt'     -- Default 0 index.
   , bind'    -- Default 0 index.
@@ -20,7 +20,7 @@ module CtxParser
   , term
   , litStr
 
-  ) where 
+  ) where
 
 import CtxAST   ( Alt(..), Bind(..), Con(..)
                 , Ctx(..), GBind(..), Name, Term )
@@ -60,10 +60,10 @@ import Control.Monad  (guard, mzero)
 
 {-
    <TO-DO>: - Can we parse [a,b,c,d] for a..d variables?
-            - SPL handles duplicates for alt binders but not for let binders, 
+            - SPL handles duplicates for alt binders but not for let binders,
               can we change this to make it the same for both?
             - AppD is omitted for now.
-            
+
    Information:
    ------------
    - Parser for source language, generates abstract syntax from CtxAST;
@@ -82,12 +82,12 @@ import Control.Monad  (guard, mzero)
 -- CtxAST parsers: --
 -------------------------------------------------------------------------------
 
--- Global bindings: -- 
+-- Global bindings: --
 
 gBinds :: Parser [GBind]
 gBinds  = manyOffside1 (cBind +++ tBind)
 
--- As above but cBinds must have holes: -- 
+-- As above but cBinds must have holes: --
 
 gBinds' :: Parser [GBind]
 gBinds'  = manyOffside1 (cBind' +++ tBind)
@@ -100,20 +100,20 @@ cBind  = uncurry CBind <$> ctxKindName <*> (eq_ *> ctx)
 cBind' :: Parser GBind
 cBind'  = uncurry CBind <$> ctxKindName <*> (eq_ *> ctx')
 
-tBind :: Parser GBind 
+tBind :: Parser GBind
 tBind  = TBind <$> SPL.tBindName <*> (eq_ *> term)
 
--- Contexts/terms: -- 
+-- Contexts/terms: --
 
 --ctx :: Parser Ctx
 --ctx  = (list +++ nonAppCtx) `chainl1` app
 
-term :: Parser Term 
+term :: Parser Term
 term  = ctx >>= \c -> c <$ guard (isTerm c)
 
 -- As above but must have holes: --
 
-ctx' :: Parser Ctx 
+ctx' :: Parser Ctx
 ctx'  = ctx >>= \c -> c <$ guard (hasHoles c)
 
 -- Constructors: --------------------------------------------------------------
@@ -122,7 +122,7 @@ var :: Parser Ctx
 var  = SPL.var Var
 
 litInt :: Parser Ctx
-litInt  = SPL.litInt LitInt 
+litInt  = SPL.litInt LitInt
 
 litStr :: Parser Ctx
 litStr  = SPL.litStr LitStr
@@ -132,46 +132,46 @@ abs  = SPL.abs Abs ctx
 
 -- Here we convert infix operators to prefixs.
 app :: Parser (Ctx -> Ctx -> Ctx)
-app  = return $ \c1 c2 -> case c2 of 
+app  = return $ \c1 c2 -> case c2 of
          Var vs | all isSymChar vs -> App (Var $ '(' : vs ++ ")") c1
          _  -> App c1 c2
 
-tick :: Parser Ctx 
-tick  = SPL.tick Tick ctx 
+tick :: Parser Ctx
+tick  = SPL.tick Tick ctx
 
-tel :: Parser Ctx 
-tel = SPL.tel (Let . fmap (uncurry ($)) . flip zip [0..]) bind ctx 
-        >>= \l@(Let bs _) -> 
+tel :: Parser Ctx
+tel = SPL.tel (Let . fmap (uncurry ($)) . flip zip [0..]) bind ctx
+        >>= \l@(Let bs _) ->
         -- Ensure binding names are /unique/.
         l <$ guard (noDupes $ fmap bindBinder bs)
 
-bind :: Parser (Int -> Bind) 
-bind  = SPL.bind Bind ctx 
+bind :: Parser (Int -> Bind)
+bind  = SPL.bind Bind ctx
 
-bind' :: Parser Bind 
+bind' :: Parser Bind
 bind'  = SPL.bind (\ns ctx -> Bind ns ctx 0) ctx
 
 binds :: Parser [Bind]
 binds  = reindexBinds <$> bind' `sepby1` semicolon_
 
-esac :: Parser Ctx 
-esac  = SPL.esac (flip $ flip Case 
-         . fmap (uncurry ($)) 
+esac :: Parser Ctx
+esac  = SPL.esac (flip $ flip Case
+         . fmap (uncurry ($))
          . flip zip [0..]) ctx alt
- 
-alt :: Parser (Int -> Alt) 
+
+alt :: Parser (Int -> Alt)
 alt  = SPL.alt Alt ctx
- 
-alt' :: Parser Alt 
+
+alt' :: Parser Alt
 alt'  = SPL.alt (\con ns ctx -> Alt con ns ctx 0) ctx
 
 -- Omitted for now.
--- appD :: Parser Ctx 
+-- appD :: Parser Ctx
 -- appD  = undefined
 
 -- Various list sugars.
 list :: Parser Ctx
-list  = choice 
+list  = choice
          [ sugar1    -- [LitInt]
          , sugar2    -- [LitInt] with range
          , sugar3    -- [LitStr]
@@ -179,13 +179,13 @@ list  = choice
          , sugar5    -- infix   (:)
          , sugar6    -- singleton
          ]
- where 
+ where
    -- [LitInt]
-   sugar1 = toList <$> bracket lbrack_ (litInt `sepby0` comma_) rbrack_  
+   sugar1 = toList <$> bracket lbrack_ (litInt `sepby0` comma_) rbrack_
    -- [st..fi] for [LitInt]
-   sugar2 = toList <$> bracket lbrack_ ((\st fi -> fmap LitInt [st..fi]) 
+   sugar2 = toList <$> bracket lbrack_ ((\st fi -> fmap LitInt [st..fi])
                                          <$> natural
-                                         <*> (dots_ *> natural)) 
+                                         <*> (dots_ *> natural))
                                rbrack_
    -- [LitStr]
    sugar3 = toList <$> bracket lbrack_ (litStr `sepby0` comma_) rbrack_
@@ -200,9 +200,9 @@ hole  = const Hole <$> emptyhole_
 
 ctxKindName :: Parser (CtxKind, Name)
 ctxKindName  = (,) <$> (upper >>= toKind) <*> (underscore_ *> SPL.cBindName)
-  where  
+  where
        -- Standard contexts are ranged over by C/D (not S)
-       toKind 'C' = return STD 
+       toKind 'C' = return STD
        toKind 'V' = return VAL
        toKind 'E' = return EVAL
        toKind 'A' = return APP
@@ -210,15 +210,15 @@ ctxKindName  = (,) <$> (upper >>= toKind) <*> (underscore_ *> SPL.cBindName)
 
 cVar :: Parser Ctx
 cVar  = uncurry CVar
-          <$> ctxKindName 
+          <$> ctxKindName
           -- Not substituted.
-          <*> (const Nothing <$> emptyhole_) 
+          <*> (const Nothing <$> emptyhole_)
          -- Substituted.
-          +++ (Just <$> bracket lbrack_ ctx rbrack_) 
-                                                    
+          +++ (Just <$> bracket lbrack_ ctx rbrack_)
+
 -- Atomic context
-aCtx :: Parser Ctx 
-aCtx  = choice 
+aCtx :: Parser Ctx
+aCtx  = choice
          [ var                               -- Variable
          , cVar                              -- Context variable
          , litInt                            -- Integer literal
@@ -230,13 +230,13 @@ aCtx  = choice
 
 -- Context
 ctx :: Parser Ctx
-ctx  = choice 
+ctx  = choice
         [ (list +++ aCtx) `chainl1` app    -- Application
         , aCtx                             -- Atomic context
         , abs                              -- Abstraction
         , tel                              -- Let statement
         , esac                             -- Case statement
-        , tick                             -- Tick 
+        , tick                             -- Tick
         ]
 
 -------------------------------------------------------------------------------
@@ -244,6 +244,6 @@ ctx  = choice
 -------------------------------------------------------------------------------
 
 -- Build an AppD list from a [Ctx].
-toList :: [Ctx] -> Ctx 
+toList :: [Ctx] -> Ctx
 toList []       = AppD NIL  []
 toList (c : cs) = AppD CONS [c, toList cs]

@@ -24,12 +24,12 @@ Also please use an ANSI terminal with light font on a dark background.
 A good way to become familiar with the system is to execute one of the
 existing proof scripts. This can be done by using the 'run-script'
 command inside Unie:
-  
+
   > unie> run-script "./Improvement Scripts/reverse_ass_b"
 
 Pressing return once the script is active will execute the next command.
 A script can be fully executed as follows:
-  
+
   > unie> run-script "./Improvement Scripts/reverse_ass_b"
 
   > unie> !
@@ -41,10 +41,10 @@ Once the script has been run, you may wish to review the proof history:
 Note that a number of scripts rely on the use of definitions
 in the 'lib' folders. These are imported by the scripts themselves.
 
-Press tab to see a full list of commands. Typing 
+Press tab to see a full list of commands. Typing
  > unie> man <command_name>
 
-gives information on command usage. Please note, the help/man section is 
+gives information on command usage. Please note, the help/man section is
 currently under development and will be completed soon. Apologies for
 the delay.
 

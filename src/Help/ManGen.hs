@@ -1,12 +1,12 @@
 
-module ManGen (gen) where 
+module ManGen (gen) where
 
 import Utils (deggar)
 
 import Control.Monad    (foldM)
 import Data.Char        (toLower, toUpper)
 import Data.List        ((\\))
-import Data.List.Split  (splitOn) 
+import Data.List.Split  (splitOn)
 import Data.List.Utils  (replace)
 import System.Directory (listDirectory)
 
@@ -17,7 +17,7 @@ import System.Directory (listDirectory)
 -}
 
 -- Filepath of man entries.
-manDir :: String 
+manDir :: String
 manDir  = "./Man/"
 
 -- Header stub.
@@ -26,26 +26,26 @@ header = "\n-- This file has been automatically generated using ManGen.hs.\
            \\n\nmodule Man (lookupMan) where\n"
 
 -- Top-level function for generating the man file.
-gen :: IO () 
+gen :: IO ()
 gen = do
          -- (1) Get all files in man folder, removing Template.
-         fps <- (\\ ["Template"]) <$> listDirectory manDir 
+         fps <- (\\ ["Template"]) <$> listDirectory manDir
 
          -- (2) Read each file.
-         lookups <- foldM (\acc fp -> do 
+         lookups <- foldM (\acc fp -> do
                       man <- readFile (manDir ++ fp)
                       return ((fp, man) : acc)) [] fps
 
          -- (3) Output to single file
          let funs   = fmap (escape . genManEntry) lookups
          let manFun = genManFun fps
-  
+
          writeFile "./src/Help/Man.hs" $ unlines (header : manFun : funs)
          putStrLn "Man file generated."
 
 -- Generate a single man entry.
-genManEntry :: (String, String) -> String 
-genManEntry (man, info) = case lines info of 
+genManEntry :: (String, String) -> String
+genManEntry (man, info) = case lines info of
   []         -> ""
   [info]     -> let ty  = man' ++ " :: [String]"
                     def = man' ++ "  = " ++ show [info]
@@ -54,7 +54,7 @@ genManEntry (man, info) = case lines info of
                     fstDef  = man' ++ "  ="
                     restDef = fstLine inf : fmap nxtLine infs ++ [lstLine]
                 in unlines $ [ty, fstDef] ++ restDef
- where 
+ where
   man'       = editCmdName man
   fstLine "" = "  [ " ++ show "    "
   fstLine s  = "  [ " ++ show s
@@ -63,24 +63,24 @@ genManEntry (man, info) = case lines info of
   lstLine    = "  ]"
 
 -- Generate the man lookup function.
-genManFun :: [String] -> String 
+genManFun :: [String] -> String
 genManFun fs = unlines $ [ty, def]
-  where 
+  where
     ty      = "lookupMan :: String -> Maybe [String]"
     def     = unlines $ "lookupMan s = case s of" : lookups ++ [invalid]
-    lookups = fmap (\(i, f) -> "  " ++ (fs' !! i) ++ " -> Just " ++ editCmdName f) 
+    lookups = fmap (\(i, f) -> "  " ++ (fs' !! i) ++ " -> Just " ++ editCmdName f)
                (zip [0..] fs)
     invalid = "  _ -> Nothing"
     fs'     = deggar $ fmap show fs
 
 -- We have to manually add the backslash to escape codes
 -- otherwise Haskell escapes it when it reads the file?
-escape :: String -> String 
-escape  = replace "ESC[" "\\ESC["  
+escape :: String -> String
+escape  = replace "ESC[" "\\ESC["
 
 -- Edit command names so they don't clash with Haskell keywords.
-editCmdName :: String -> String 
-editCmdName name = case chars of 
+editCmdName :: String -> String
+editCmdName name = case chars of
   [name]     -> lowerFirst name ++ "Cmd"
   (ns : nss) -> (lowerFirst ns) ++ concatMap upperFirst nss ++ "Cmd"
   []         -> ""
@@ -88,5 +88,5 @@ editCmdName name = case chars of
     chars = splitOn "-" name
     upperFirst (c : cs) = toUpper c : cs
     upperFirst []       = []
-    lowerFirst (c : cs) = toLower c : cs 
+    lowerFirst (c : cs) = toLower c : cs
     lowerFirst []       = []

@@ -46,14 +46,14 @@ import Language.KURE
   - I'd like all the traversals to have a "zero or more" option.
 -}
 
-instance Foldable SnocPath where 
+instance Foldable SnocPath where
   foldr f base (SnocPath p) = foldr f base p
-  
+
 -- Lift functions into Transform/Rewrite: -------------------------------------
--- These are fairly trivial but I think the names are useful for in 
+-- These are fairly trivial but I think the names are useful for in
 -- code documentation.
 
-liftT :: Monad m => (a -> b) -> Transform c m a b 
+liftT :: Monad m => (a -> b) -> Transform c m a b
 liftT  = arr
 
 liftR :: Monad m => (a -> a) -> Rewrite c m a
@@ -62,34 +62,34 @@ liftR  = arr
 -- SnocPath transformations: --------------------------------------------------
 
 -- Apply a transformation at a SnocPath
-applyAtSnocPathT :: ( MonadCatch m, ReadPath c Crumb 
-                    , ExtendPath c Crumb, AddBinders c ) 
-                    => SnocPath Crumb 
-                    -> Transform c m U b 
+applyAtSnocPathT :: ( MonadCatch m, ReadPath c Crumb
+                    , ExtendPath c Crumb, AddBinders c )
+                    => SnocPath Crumb
                     -> Transform c m U b
-applyAtSnocPathT  = prefixFailMsg "applyAtSnocPathT failed: " 
-                    .* pathT 
+                    -> Transform c m U b
+applyAtSnocPathT  = prefixFailMsg "applyAtSnocPathT failed: "
+                    .* pathT
                     . snocPathToPath
 
 -- Apply a rewrite at a SnocPath
-applyAtSnocPathR :: ( MonadCatch m, ReadPath c Crumb 
-                    , ExtendPath c Crumb, AddBinders c ) 
-                    => SnocPath Crumb 
-                    -> Rewrite c m U 
+applyAtSnocPathR :: ( MonadCatch m, ReadPath c Crumb
+                    , ExtendPath c Crumb, AddBinders c )
+                    => SnocPath Crumb
+                    -> Rewrite c m U
                     -> Rewrite c m U
 applyAtSnocPathR  = prefixFailMsg "applyAtSnocPathR failed: "
-                     .* pathR 
+                     .* pathR
                      . snocPathToPath
 
 -- Misc.: ---------------------------------------------------------------------
 
 -- Always failing transformation
-failT :: Monad m => String -> Transform c m a b 
-failT  = fail 
+failT :: Monad m => String -> Transform c m a b
+failT  = fail
 
 -- concatMap a transformation over a list
 concatMapT  :: MonadCatch m => Transform c m a [b] -> Transform c m [a] [b]
-concatMapT t = prefixFailMsg "concatMapT failed: " $ 
+concatMapT t = prefixFailMsg "concatMapT failed: " $
                 transform (concatMapM . applyT t)
 
 -- Zero or more anytdR

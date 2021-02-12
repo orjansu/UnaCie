@@ -1,5 +1,5 @@
 
-module ProofTacticParam 
+module ProofTacticParam
   ( PBinding(..)   -- Datatype for proof tactic parameters.
   ) where
 
@@ -11,10 +11,10 @@ import CtxKind (CtxKind)
 
   Information:
   -----------------------------------------------------------------------------
-  - We often need to instantiate some of the parameters of a proof tactic 
+  - We often need to instantiate some of the parameters of a proof tactic
     (e.g., improvement induction). We do this with via parameter bindings;
   - PBindings are typically defined externally by the user in source files and
-    imported into the system, though they can be defined on the command line 
+    imported into the system, though they can be defined on the command line
     if needed.
 -}
 data PBinding = CParam Name CtxKind Ctx   -- <kind>_<param> := <ctx>

@@ -59,29 +59,29 @@ transEnvCmds  = [ "show-hist"    -- Display the program transformation's history
 -- Matchers for above commands: -----------------------------------------------
 
 matchers :: [Matcher]
-matchers  = 
+matchers  =
   [ cmdMatcher "show-hist"   RawTransEnvCmd [[], [cmdNameMatcher]]
   , cmdMatcher "del-hist"    RawTransEnvCmd [[], [numberMatcher]]
   , cmdMatcher "export-hist" RawTransEnvCmd [ [fileMatcher]
                                             , [cmdNameMatcher, fileMatcher] ]
-  , cmdMatcherNoParams "back-hist" RawTransEnvCmd 
-  , cmdMatcherNoParams "show-goal" RawTransEnvCmd 
+  , cmdMatcherNoParams "back-hist" RawTransEnvCmd
+  , cmdMatcherNoParams "show-goal" RawTransEnvCmd
   , cmdMatcherNoParams "show-grel" RawTransEnvCmd
   ]
 
 -- Refiner for above commands: ------------------------------------------------
 
-refineRawTransEnvCmd :: Refiner 
+refineRawTransEnvCmd :: Refiner
 
-refineRawTransEnvCmd (RawTransEnvCmd "show-hist" ps) = 
+refineRawTransEnvCmd (RawTransEnvCmd "show-hist" ps) =
   bimap ParamErr (TransEnvCmd "show-hist") $
    paramsRefine ps [[], [cmdNameRefine ["cmds", "state"]]]
 
-refineRawTransEnvCmd (RawTransEnvCmd "del-hist" ps) = 
+refineRawTransEnvCmd (RawTransEnvCmd "del-hist" ps) =
   bimap ParamErr (TransEnvCmd "del-hist") $
    paramsRefine ps [[], [numberRefine]]
 
-refineRawTransEnvCmd (RawTransEnvCmd "export-hist" ps) = 
+refineRawTransEnvCmd (RawTransEnvCmd "export-hist" ps) =
   bimap ParamErr (TransEnvCmd "export-hist") $
    paramsRefine ps [ [fileRefine]
                    , [ cmdNameRefine ["state"], fileRefine]
@@ -93,7 +93,7 @@ refineRawTransEnvCmd (RawTransEnvCmd "show-goal" []) = Right (TransEnvCmd "show-
 refineRawTransEnvCmd (RawTransEnvCmd "show-grel" []) = Right (TransEnvCmd "show-grel" [])
 
 -- Error cases.
-refineRawTransEnvCmd cmd@RawTransEnvCmd{} = 
+refineRawTransEnvCmd cmd@RawTransEnvCmd{} =
   Left $ InternalErr $ UnexpectedCmd "refineRawTransEnvCmd" $ show cmd
 refineRawTransEnvCmd _ = Left $ InternalErr $ WrongRefine "refineRawTransEnvCmd"
 
@@ -106,7 +106,7 @@ transEnvInterp cmd _ st | isTransState st = go cmd
                         | otherwise = outputCmdError (StateErr st)
  where
   go (TransEnvCmd "show-hist" ps) = case ps of
-  
+
    -- Show history laid out as a proof.
    [] -> getTransEnv $ liftIO . display . transHistToTerminal . getHist
 
@@ -125,7 +125,7 @@ transEnvInterp cmd _ st | isTransState st = go cmd
    [] -> modifyTransEnv $ \transEnv ->
           if getHist transEnv == emptyTransHist
           then interPutError "history is empty." >> return transEnv
-          else do 
+          else do
             interPutInfo "history updated."
             return (putHist emptyTransHist transEnv)
 
@@ -145,7 +145,7 @@ transEnvInterp cmd _ st | isTransState st = go cmd
     -- Can export just the states too.
     [CmdName "state", File fp] -> transEnvExport fp stateHistToFile
     _ -> transEnvUnexpectedParams ps
-  
+
   -- Revert the history by going back to a previous proof state.
   go (TransEnvCmd "back-hist" []) = modifyTransEnv $ \transEnv ->
     if maxHistIndex (getHist transEnv) == 0
@@ -157,7 +157,7 @@ transEnvInterp cmd _ st | isTransState st = go cmd
   go (TransEnvCmd "show-grel" []) = getTransEnv $ liftIO . display . grelToTerminal
 
   -- Error cases.
-  go cmd@TransEnvCmd{} =  
+  go cmd@TransEnvCmd{} =
     outputCmdError $ InternalErr $ UnexpectedCmd  "transEnvInterp" $ show cmd
   go _ = outputCmdError $ InternalErr $ WrongInter "transEnvInterp"
 
@@ -165,7 +165,7 @@ transEnvInterp cmd _ st | isTransState st = go cmd
 
 -- Error message for unexpected parameters.
 transEnvUnexpectedParams :: [Param] -> InterM s ()
-transEnvUnexpectedParams ps = outputCmdError 
-                               . InternalErr 
-                               . UnexpectedParams "transEnvInterp" 
+transEnvUnexpectedParams ps = outputCmdError
+                               . InternalErr
+                               . UnexpectedParams "transEnvInterp"
                                $ fmap show ps

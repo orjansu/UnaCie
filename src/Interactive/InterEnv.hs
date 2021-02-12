@@ -1,18 +1,18 @@
 
-module InterEnv 
+module InterEnv
  ( BaseLib(..)    -- Base library of terms/contexts/cost-equiv. contexts.
  , InterEnv(..)   -- UNIE's interactive environment.
  , ScriptEnv(..)  -- Script environment: active/loaded scripts.
  , TransEnv(..)   -- Transformation environment: transformation history etc.
 
  -- Initial settings: --
- 
- , emptyBaseLib  
+
+ , emptyBaseLib
  , initInterEnv
  , initScriptEnv
  , initTransEnv
 
- ) where 
+ ) where
 
 import CmdAST      (Cmd, Script)
 import Crumb       (Crumb)
@@ -33,27 +33,27 @@ import Language.KURE (AbsolutePath)
   -----------------------------------------------------------------------------
   - UNIE's 'interactive environment', comprising:
   -- Base library of terms, contexts, cost-equivalent contexts;
-  -- Transformation environment detailing the term under transformation, 
-     current path, global relation, relation of last executed command, 
+  -- Transformation environment detailing the term under transformation,
+     current path, global relation, relation of last executed command,
      transformation history etc.
-  -- Script environment detailing loaded and active scripts. Note 
-     that multiple scripts can be active at the same time, which allows 
+  -- Script environment detailing loaded and active scripts. Note
+     that multiple scripts can be active at the same time, which allows
      scripts to make use of other scripts.
-  -- Interpreter state, which dictates how the interpreter responds to 
-     commands etc. For example, navigation commands are only valid when 
+  -- Interpreter state, which dictates how the interpreter responds to
+     commands etc. For example, navigation commands are only valid when
      in the TRANS/TRANS_SCRIPT states.
 -}
 
 -- Library: terms/contexts/cost-equiv. contexts.
-data BaseLib = 
+data BaseLib =
   BaseLib { cBinds    :: Map.Map Name (CtxKind, Ctx)
-          , tBinds    :: Map.Map Name Term          
-          , ctxEqLib  :: CtxEqLib               
-          }                
+          , tBinds    :: Map.Map Name Term
+          , ctxEqLib  :: CtxEqLib
+          }
 
--- Transformation environment: term being transformed, focus path into term, 
+-- Transformation environment: term being transformed, focus path into term,
 -- global relation, transformation goal, etc.
-data TransEnv = 
+data TransEnv =
   TransEnv { term        :: Term
            , path        :: AbsolutePath Crumb
            , svs         :: [Name]
@@ -66,56 +66,56 @@ data TransEnv =
            , navSettings :: NavSettings
            }
 -- Script environment which scripts are loaded/active.
-data ScriptEnv = 
+data ScriptEnv =
   ScriptEnv { scripts       :: Map.Map String Script
             , activeScripts :: [(Script, String, Int)] }
 
 -- InterEnv comprises the above.
-data InterEnv =  
+data InterEnv =
   InterEnv { baseLib   :: BaseLib
            , state     :: InterState
-           , mTransEnv :: Maybe TransEnv 
-           , scriptEnv :: ScriptEnv 
+           , mTransEnv :: Maybe TransEnv
+           , scriptEnv :: ScriptEnv
            }
 
 -- Initial settings: ----------------------------------------------------------
 
 emptyBaseLib :: BaseLib
-emptyBaseLib  = 
+emptyBaseLib  =
   BaseLib { cBinds   = Map.empty
-          , tBinds   = Map.empty 
+          , tBinds   = Map.empty
           , ctxEqLib = emptyCtxEqLib }
 
 -- Transformation environment has to be initialised.
-initTransEnv :: BaseLib 
+initTransEnv :: BaseLib
                 -> Term
-                -> Maybe Relation 
+                -> Maybe Relation
                 -> Maybe Term
-                -> (Cmd, Maybe Relation) 
+                -> (Cmd, Maybe Relation)
                 -> TransEnv
-initTransEnv lib t grel goal cmr  
- =  TransEnv { term        = t 
+initTransEnv lib t grel goal cmr
+ =  TransEnv { term        = t
              , path        = mempty
-             , svs         = names 
-             , cRel        = Nothing 
+             , svs         = names
+             , cRel        = Nothing
              , gRel        = grel
-             , goal        = goal 
+             , goal        = goal
              , hist        = uncurry (initTransHist t) cmr
-             , initTerm    = t 
+             , initTerm    = t
              , initBaseLib = lib
              , navSettings = initNavSettings
-             }                          
+             }
 
 initScriptEnv :: ScriptEnv
-initScriptEnv  = 
+initScriptEnv  =
   ScriptEnv { scripts       = Map.empty
-            , activeScripts = [] 
+            , activeScripts = []
              }
 
 initInterEnv :: InterEnv
-initInterEnv  =  
+initInterEnv  =
   InterEnv { baseLib   = emptyBaseLib
-           , mTransEnv = Nothing 
+           , mTransEnv = Nothing
            , scriptEnv = initScriptEnv
            , state     = INITIAL
            }
