@@ -118,6 +118,13 @@ uncaseBetaR ctx = prefixFailMsg "uncaseBaseR failed: " $ do
      \incompatible case statement."
   else fail "parameter error: not a case statement."
 
+-------------------------------------------------------------------------------
+-- var-subst: --
+-------------------------------------------------------------------------------
+
+varSubst :: R Ctx
+varSubst = undefined
+
 -- #### SPACES ####
 
 -- ######### CHECKED #########

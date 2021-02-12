@@ -294,6 +294,13 @@ kureCmdSettings  = Map.fromList
                    , refiner = TickKureCmd.refiner_varBeta
                    , interp  = TickKureCmd.interp_varBeta
                    })
+ ,
+  ("var-subst"
+  , KureCmdSetting { rel     = R_I
+                   , matcher = TickKureCmd.matcher_varSubst
+                   , refiner = TickKureCmd.refiner_varSubst
+                   , interp  = TickKureCmd.interp_varSubst
+                   })
  -- ListKureCmd: --------------------------------------------------------------
 
  ,

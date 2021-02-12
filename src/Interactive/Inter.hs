@@ -145,7 +145,7 @@ run  =  getInterState >>= \case
 
                                  interp :: InterM InterEnv ()
                                  interp = case parse' gMatchers s of
-                                   Left errs -> mapM_ (interPutStrLn . show) errs
+                                   Left errs -> mapM_ (interPutStrLn . (++"hej") . show) errs
                                    Right cmds  -> runCmds cmds
 
                                  runCmds :: [UnsafeRawCmd] -> InterM InterEnv ()

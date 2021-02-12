@@ -546,7 +546,17 @@ interp_varBeta cmd@(KureCmd s ps) mrel st
 interp_varBeta _ _ _ =
   outputCmdError $ InternalErr $ WrongInter "interp_varBeta"
 
+-------------------------------------------------------------------------------
+-- var-subst: --
+-------------------------------------------------------------------------------
+matcher_varSubst :: Matcher
+matcher_varSubst _ = [] --[Right $ RawKureCmd "let-float-val" []]
 
+refiner_varSubst :: Refiner
+refiner_varSubst _ = Left $ InternalErr $ WrongRefine "refiner error varSubst"
+
+interp_varSubst :: Interp
+interp_varSubst _ _ _ = outputCmdError $ InternalErr $ WrongInter "interpreter error varSubst"
 
 -------------------------------------------------------------------------------
 -- let-float-val: --
