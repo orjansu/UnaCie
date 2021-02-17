@@ -8,7 +8,7 @@ import CtxAST
 import CtxPatAST
 import KureMonad
 import KureContext
-import Eval
+import Eval  (evalBetaR, eval)
 import Kure
 import CtxASTEq
 import CtxUtils
