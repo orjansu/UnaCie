@@ -6,10 +6,17 @@ module TickAlgebraRewrites where
 
 import CtxAST
 import CtxPatAST
-import KureMonad
+import KureMonad (T, R)
 import KureContext
 import Eval
-import Kure
+import Kure ( altAllR
+            , bindAllR
+            , bindCtxT
+            , bindT
+            , caseAllR
+            , letAllR
+            , letT
+            )
 import CtxASTEq
 import CtxUtils
 import CtxEqLib
@@ -17,14 +24,52 @@ import CtxKind
 import CtxGen
 import CtxPatMatch
 import CtxCheck
-import TransUtils
+import TransUtils ( bindBinderT
+                  , boundVarsContextT
+                  , caseAccepterT
+                  , caseAltCtxsT
+                  , caseBindersT
+                  , caseBindersT'
+                  , caseScrutR
+                  , deleteUnusedLetBindingR
+                  , deleteUnusedLetBindingsR
+                  , freeVars
+                  , freeVarsT
+                  , funAppAccepterT
+                  , letAccepterT
+                  , letBindersT
+                  , letBindingCtxsT
+                  , letBindingLookupT
+                  , letBindingsT
+                  , letBodyR
+                  , redexAccepterT
+                  , substEmptyLetBindingsR
+                  , tickAccepterT
+                  , tickBodyR
+                  )
 import Subst
 import KureExtra
 import Utils
 import Classes
 import Universes
 
-import Language.KURE
+import Language.KURE ( andR
+                     , applyR
+                     , applyT
+                     , changedR
+                     , constT
+                     , contextfreeT
+                     , extractR
+                     , guardMsg
+                     , guardMsgM
+                     , idR
+                     , liftContext
+                     , mapT
+                     , prefixFailMsg
+                     , promoteR
+                     , setFailMsg
+                     , tryR
+                     )
 import Control.Arrow
 import Data.Tuple.Select
 import Data.List

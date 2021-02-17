@@ -10,16 +10,62 @@ import InterPrintUtils
 import CmdAST
 import CmdError
 import InterEnv
-import InterUtils -- applyRTermCurrPathLog among others.
+import InterUtils-- applyRTermCurrPathLog among others.
 import InterState (isTransState)
-import CmdParser
+import CmdParser (cmdMatcher, cmdMatcherNoParams)
 import ParamParser
 import ParamRefine
 import Types
 import Universes
 
 -- Rewrites
-import TickAlgebraRewrites
+import TickAlgebraRewrites ( betaAllR
+                           , betaR
+                           , caseBetaR
+                           , caseEvalGenT
+                           , caseEvalMatchT
+                           , caseEvalR
+                           , evalInContextR
+                           , gcAllR
+                           , gcR
+                           , letEvalGenT
+                           , letEvalMatchT
+                           , letEvalR
+                           , letFlattenR
+                           , letFloatValGenT
+                           , letFloatValMatchT
+                           , letFloatValR
+                           , tickEvalGenT
+                           , tickEvalMatchT
+                           , tickEvalR
+                           , unbetaR
+                           , uncaseBetaR
+                           , uncaseEvalGenT
+                           , uncaseEvalMatchT
+                           , uncaseEvalR
+                           , ungcR
+                           , unletEvalGenT
+                           , unletEvalMatchT
+                           , unletEvalMatchT
+                           , unletEvalR
+                           , unletEvalR
+                           , unletFlattenR
+                           , unletFloatValGenT
+                           , unletFloatValMatchT
+                           , unletFloatValR
+                           , untickEvalGenT
+                           , untickEvalMatchT
+                           , untickEvalR
+                           , unvalueBetaGenT
+                           , unvalueBetaMatchT
+                           , unvalueBetaR
+                           , valueBetaGenT
+                           , valueBetaMatchT
+                           , valueBetaR
+                           , varBetaGenT
+                           , varBetaMatchT
+                           , varBetaR
+                           )
 
 import Data.Bifunctor (bimap)
 import Control.Monad.IO.Class
